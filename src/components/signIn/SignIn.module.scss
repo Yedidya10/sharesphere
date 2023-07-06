@@ -1,0 +1,56 @@
+$spotify-color: #1DB954;
+$google-color: #4285F4;
+
+.ul {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-family: var(--inter-font);
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: $spotify-color;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-family: var(--inter-font);
+  font-weight: 600;
+  padding: 12px 24px;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: darken($spotify-color, 10%);
+  }
+
+  &:active {
+    background-color: lighten($spotify-color, 10%);
+  }
+
+  &.secondary {
+    background-color: $google-color;
+    color: white;
+
+    &:hover {
+      background-color: darken($google-color, 10%);
+    }
+
+    &:active {
+      background-color: lighten($google-color, 10%);
+    }
+  }
+}
