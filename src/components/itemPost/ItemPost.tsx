@@ -154,7 +154,6 @@ const ItemPost: React.FC<IItemPost> = ({
     `Please enter max loan period number`
   )
 
-
   useEffect(() => {
     setNameHelperText(`Please enter the ${category} name`)
     setDescriptionHelperText(`Please enter the ${category} description`)
@@ -300,7 +299,7 @@ const ItemPost: React.FC<IItemPost> = ({
     zipCode: '1234567',
   })
 
-  const onSubmit = async (data: object) => {
+  const handleSubmit = async (data: object) => {
     try {
       console.log(data)
     } catch (error) {
@@ -389,7 +388,7 @@ const ItemPost: React.FC<IItemPost> = ({
                           )
                         }
                       />
-                      <FormHelperText children={isbnHelperText} />
+                      <FormHelperText>{isbnHelperText}</FormHelperText>
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -440,7 +439,7 @@ const ItemPost: React.FC<IItemPost> = ({
                           )
                         }
                       />
-                      <FormHelperText children={danacodeHelperText} />
+                      <FormHelperText>{danacodeHelperText}</FormHelperText>
                     </FormControl>
                   </Grid>
                 </Grid>
@@ -704,15 +703,18 @@ const ItemPost: React.FC<IItemPost> = ({
                       category.charAt(0).toUpperCase() + category.slice(1)
                     } Location:`}
                   </Typography>
-                  <FormControlLabel control={<Checkbox />} label="Use my current address" />
-                  <Grid container spacing={.5} columns={20}>
+                  <FormControlLabel
+                    control={<Checkbox />}
+                    label="Use my current address"
+                  />
+                  <Grid container spacing={0.5} columns={20}>
                     <Grid item xs={20} sm={5} md={10}>
                       <TextField
                         fullWidth
                         id="city"
-                        label='City'
+                        label="City"
                         required
-                        type='text'
+                        type="text"
                         helperText={cityHelperText}
                         error={cityError}
                         onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -745,9 +747,9 @@ const ItemPost: React.FC<IItemPost> = ({
                       <TextField
                         fullWidth
                         id="street-name"
-                        label='Street'
+                        label="Street"
                         required
-                        type='text'
+                        type="text"
                         helperText={streetNameHelperText}
                         error={streetNameError}
                         onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -780,7 +782,7 @@ const ItemPost: React.FC<IItemPost> = ({
                       <TextField
                         fullWidth
                         id="street-number"
-                        label='Number'
+                        label="Number"
                         required
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         helperText={streetNumHelperText}
@@ -815,7 +817,7 @@ const ItemPost: React.FC<IItemPost> = ({
                       <TextField
                         fullWidth
                         id="zip-code"
-                        label='Zip Code'
+                        label="Zip Code"
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         helperText={zipCodeHelperText}
                         error={zipCodeError}
@@ -854,11 +856,11 @@ const ItemPost: React.FC<IItemPost> = ({
           <></>
         )}
       </Box>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit}>
         <input
           type="submit"
           value="Submit"
-          disabled={Object.keys(errors).length > 0}
+          disabled={false}
           className={styles.submitButton}
         />
       </form>

@@ -17,6 +17,7 @@ import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export interface ISignIn {
   providersLoginText: string
@@ -148,7 +149,7 @@ const SignIn: React.FC<ISignIn> = ({
                 onClick={() => handleLogin(provider)}
               >
                 {loadingProvider === provider.id ? (
-                  <LoaderIcon label={''} />
+                  <CircularProgress />
                 ) : provider.id === 'facebook' ? (
                   <BsFacebook />
                 ) : (

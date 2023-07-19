@@ -25,7 +25,7 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
   const { options, CacheProvider = DefaultCacheProvider, children } = props;
 
   const [{ cache, flush }] = React.useState(() => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+    // eslint-disable-next-line 
     const cache = createCache({
       key: 'muirtl',
       stylisPlugins: [prefixer, rtlPlugin],
@@ -40,7 +40,7 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
       }
       return prevInsert(...args);
     };
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+    // eslint-disable-next-line 
     const flush = () => {
       const prevInserted = inserted;
       inserted = [];
