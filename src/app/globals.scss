@@ -100,6 +100,16 @@ a {
   text-decoration: none;
 }
 
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button[disabled] {
+  cursor: not-allowed;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

@@ -1,4 +1,5 @@
-import { getProviders, signIn } from 'next-auth/react'
+import { getProviders } from 'next-auth/react'
+import { NextRequest, NextResponse } from "next/server"
 import styles from './page.module.scss'
 import { Metadata } from 'next'
 import SignIn from '@/components/signIn/SignIn'
@@ -15,29 +16,19 @@ export interface ILogin {
   Login: any
 }
 
-export async function getServerSideProps({}: {}) {
-  try {
-    const providers = await getProviders()
-
-    return {
-      props: {
-        providers,
-      },
-    }
-  } catch (error) {
-    console.error('Error fetching providers:', error)
-  }
-}
-
-const Login: React.FC<ILogin> = ({
-  providers
-}) => {
+const Login: React.FC<ILogin> = async () => {
+  const providers = await getProviders()
   const { t } = useTranslation('login')
   const providersLoginText = t('login-with')
 
   return (
+    
     <div>
-      <SignIn providers={providers} providersLoginText={providersLoginText} label={''}/>
+      <SignIn
+        providers={providers}
+        providersLoginText={providersLoginText}
+        label={''}
+      />
     </div>
   )
 }

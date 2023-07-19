@@ -5,7 +5,8 @@
   "defaultLocale": "he",
   "pages": {
     "*": [
-      "common"
+      "common",
+      "header"
     ],
     "/": [
       "home"

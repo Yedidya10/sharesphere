@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import LoaderIcon from './LoaderIcon'
+import Cards from './Cards'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
-const meta: Meta<typeof LoaderIcon> = {
-  title: 'Templates/LoaderIcon',
-  component: LoaderIcon,
+const meta: Meta<typeof Cards> = {
+  title: 'Templates/Cards',
+  component: Cards,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: {
@@ -15,32 +15,32 @@ const meta: Meta<typeof LoaderIcon> = {
 }
 
 export default meta
-type Story = StoryObj<typeof LoaderIcon>
+type Story = StoryObj<typeof Cards>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
     primary: true,
-    label: 'LoaderIcon',
+    label: 'Cards',
   },
 }
 
 export const Secondary: Story = {
   args: {
-    label: 'LoaderIcon',
+    label: 'Cards',
   },
 }
 
 export const Large: Story = {
   args: {
     size: 'large',
-    label: 'LoaderIcon',
+    label: 'Cards',
   },
 }
 
 export const Small: Story = {
   args: {
     size: 'small',
-    label: 'LoaderIcon',
+    label: 'Cards',
   },
 }
