@@ -1,11 +1,11 @@
 {
-  "name": "scalable-next-js-project-template",
-  "description": "A template for creating a production-ready fullstack Next.js application",
+  "name": "ShareSphere",
+  "description": "fullstack Next.js application",
   "license": "MIT",
   "homepage": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yedidya10/scalable-next-js-project-template"
+    "url": "https://github.com/Yedidya10/sharesphere-test1"
   },
   "author": {
     "name": "Aberjel Yedidya",
