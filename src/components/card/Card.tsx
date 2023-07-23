@@ -69,7 +69,7 @@ const Card: React.FC<ICard> = ({
           <span className={styles.author}>מחבר: {author}</span>
         </div>
       </div>
-      {showModal &&
+      {/* {showModal &&
         createPortal(
           <Modal onClose={() => setShowModal(false)} label={''}>
             <CardInfo
@@ -84,7 +84,7 @@ const Card: React.FC<ICard> = ({
             />
           </Modal>,
           document.body
-        )}
+        )} */}
     </>
   )
 }

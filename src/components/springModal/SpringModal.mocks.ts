@@ -3,7 +3,8 @@ import { ISpringModal } from './SpringModal'
 const base: ISpringModal = {
   label: '',
   children: undefined,
-  onClose: function (): void {
+  openModal: false,
+  handleClose: function (): void {
     throw new Error('Function not implemented.')
   }
 }
