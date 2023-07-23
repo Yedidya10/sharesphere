@@ -56,7 +56,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
   minWidth: 320,
   width: '95%',
-  maxWidth: '750px',
+  maxWidth: '800px',
   bgcolor: 'background.paper',
   // borderRadius: 2,
   boxShadow: 24,
