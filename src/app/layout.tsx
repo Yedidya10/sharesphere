@@ -142,10 +142,6 @@ export default async function RootLayout({
             </Box>
           </ThemeRegistry>
         </AuthProvider>
-        <script
-          defer
-          src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyBOr4Nn2N3YzEa2FgTBVt5P_YzmM3-AGR4&libraries=places`}
-        ></script>
       </body>
     </html>
   )

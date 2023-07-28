@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import * as React from 'react'
 import Link from 'next/link'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export interface IAccount {
   buttonText: string
@@ -55,7 +56,7 @@ const Account: React.FC<IAccount> = ({
   label,
   buttonText,
 }) => {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -75,7 +76,9 @@ const Account: React.FC<IAccount> = ({
 
   return (
     <>
-      {session ? (
+      {status === 'loading' && <CircularProgress />}
+
+      {status === 'authenticated' && (
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Account settings">
             <IconButton
@@ -158,7 +161,8 @@ const Account: React.FC<IAccount> = ({
             </MenuItem>
           </Menu>
         </Box>
-      ) : (
+      )}
+      {status === 'unauthenticated' && (
         <Button onClick={() => signIn()}>
           <ListItemIcon>
             <LoginIcon fontSize="small" />

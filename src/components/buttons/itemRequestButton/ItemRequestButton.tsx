@@ -1,10 +1,10 @@
 'use client'
 
-import ItemPost from '@/components/itemPostForm/ItemPostForm'
+import ItemRequestForm from '@/components/itemRequestForm/ItemRequestForm'
 import { Button } from '@mui/material'
 import { useState } from 'react'
 
-export interface IItemPostButton {
+export interface IItemRequestButton {
   /**
    * Is this the principal call to action on the page?
    */
@@ -14,11 +14,11 @@ export interface IItemPostButton {
    */
   backgroundColor?: string
   /**
-   * How large should the ItemPostButton be?
+   * How large should the ItemRequestButton be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * ItemPostButton contents
+   * ItemRequestButton contents
    */
   label: string
   /**
@@ -27,7 +27,7 @@ export interface IItemPostButton {
   onClick?: () => void
 }
 
-const ItemPostButton: React.FC<IItemPostButton> = ({
+const ItemRequestButton: React.FC<IItemRequestButton> = ({
   primary = false,
   label,
 }) => {
@@ -37,10 +37,10 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
 
   return (
     <>
-      <Button onClick={handleOpen}>פרסם פריט להשאלה</Button>
-      <ItemPost label={''} openModal={openModal} handleClose={handleClose} />
+      <Button onClick={handleOpen}>בקש פריט</Button>
+      <ItemRequestForm label={''} openModal={openModal} handleClose={handleClose} />
     </>
   )
 }
 
-export default ItemPostButton
+export default ItemRequestButton

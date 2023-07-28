@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import ItemPost from './ItemPost'
+import ItemPostForm from './ItemPostFormForm'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
-const meta: Meta<typeof ItemPost> = {
-  title: 'Templates/ItemPost',
-  component: ItemPost,
+const meta: Meta<typeof ItemPostForm> = {
+  title: 'Templates/ItemPostForm',
+  component: ItemPostForm,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: {
@@ -15,32 +15,32 @@ const meta: Meta<typeof ItemPost> = {
 }
 
 export default meta
-type Story = StoryObj<typeof ItemPost>
+type Story = StoryObj<typeof ItemPostForm>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
     primary: true,
-    label: 'ItemPost',
+    label: 'ItemPostForm',
   },
 }
 
 export const Secondary: Story = {
   args: {
-    label: 'ItemPost',
+    label: 'ItemPostForm',
   },
 }
 
 export const Large: Story = {
   args: {
     size: 'large',
-    label: 'ItemPost',
+    label: 'ItemPostForm',
   },
 }
 
 export const Small: Story = {
   args: {
     size: 'small',
-    label: 'ItemPost',
+    label: 'ItemPostForm',
   },
 }

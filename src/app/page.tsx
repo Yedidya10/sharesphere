@@ -13,6 +13,7 @@ import styles from './page.module.scss'
 import Card from '@/components/card/Card'
 import Cards from '@/components/cards/Cards'
 import useTranslation from 'next-translate/useTranslation'
+import ItemRequestButton from '@/components/buttons/itemRequestButton/ItemRequestButton'
 
 export default function Home() {
   const { t } = useTranslation('home')
@@ -29,6 +30,8 @@ export default function Home() {
           <AlertTitle>Hello 👋</AlertTitle>
           This app uses the Next.js App Router and Material UI v5.
         </Alert>
+
+        <ItemRequestButton label={''}/>
 
         <Grid container rowSpacing={3} columnSpacing={3}>
           <Grid xs={6}>

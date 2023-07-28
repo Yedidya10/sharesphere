@@ -1,13 +1,13 @@
-import { IItemPost } from './ItemPost'
+import { IItemPostForm } from './ItemPostForm'
 
-const base: IItemPost = {
+const base: IItemPostForm = {
   label: '',
   openModal: false,
   handleClose: function (): void {
     throw new Error('Function not implemented.')
-  }
+  },
 }
 
-export const mockItemPostProps = {
+export const mockItemPostFormProps = {
   base,
 }
