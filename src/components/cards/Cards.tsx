@@ -68,28 +68,28 @@ export interface ICards {
 const Cards: React.FC<ICards> = ({ primary = false, label, ...props }) => {
   const [cards, setCards] = useState<Card[]>([])
 
-  useEffect(() => {
-    async function fetchCards() {
-      try {
-        const response = await fetch('/api/cards', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-        const data = await response.json()
+  // useEffect(() => {
+  //   async function fetchCards() {
+  //     try {
+  //       const response = await fetch('/api/cards', {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       })
+  //       const data = await response.json()
 
-        if (response.ok) {
-          return setCards(data)
-        } else {
-          throw new Error(data.error || 'Failed to fetch cards')
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchCards()
-  }, [])
+  //       if (response.ok) {
+  //         return setCards(data)
+  //       } else {
+  //         throw new Error(data.error || 'Failed to fetch cards')
+  //       }
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  //   fetchCards()
+  // }, [])
 
   return (
     <Grid container rowSpacing={2} columnSpacing={2}>
@@ -97,7 +97,6 @@ const Cards: React.FC<ICards> = ({ primary = false, label, ...props }) => {
         <Grid key={card.id} item xs={4}>
           <MediaCard
             label={''}
-    
             heading={card.details.name}
             description={card.details.description}
             imageSrc={card.details.imageUrl}

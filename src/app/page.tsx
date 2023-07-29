@@ -21,7 +21,7 @@ export default function Home() {
           This app is in beta version. To report malfunctions and suggestions
           click here
         </Alert>
-        <Cards label={''} />
+        {/* <Cards label={''} /> */}
       </Box>
     </Box>
   )
