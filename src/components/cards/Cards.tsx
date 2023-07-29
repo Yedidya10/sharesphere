@@ -1,17 +1,46 @@
 'use client'
 
-import { useState } from 'react'
-import Card from '../card/Card'
+import { useEffect, useState } from 'react'
+import MediaCard from '../mediaCard/MediaCard'
 import styles from './Cards.module.scss'
+import Grid from '@mui/material/Grid'
 
-interface BookCard {
+interface Card {
   id: string
-  title: string
+  heading: string
   author: string
   description: string
   imageSrc: string
   alt: string
 }
+
+interface Card {
+  cardIds: {
+    isbn: string;
+    danacode: string;
+    barcode: string;
+  };
+  details: {
+    category: string;
+    name: string;
+    author: string;
+    brand: string;
+    description: string;
+    imageUrl: string;
+  };
+  condition: string;
+  maxLoanPeriod: string;
+  location: {
+    city: string;
+    streetName: string;
+    streetNumber: string;
+    zipCode: string;
+  };
+  owner: {
+    id: string; // Assuming the 'id' property is a string, you can change it to the appropriate type if needed
+  };
+}
+
 
 export interface ICards {
   /**
@@ -37,24 +66,47 @@ export interface ICards {
 }
 
 const Cards: React.FC<ICards> = ({ primary = false, label, ...props }) => {
-  const [bookCards, setBookCards] = useState<BookCard[]>([])
+  const [cards, setCards] = useState<Card[]>([])
+
+  useEffect(() => {
+    async function fetchCards() {
+      try {
+        const response = await fetch('/api/cards', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        const data = await response.json()
+
+        if (response.ok) {
+          return setCards(data)
+        } else {
+          throw new Error(data.error || 'Failed to fetch cards')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchCards()
+  }, [])
 
   return (
-    <ul className={styles.cards}>
-      {bookCards.map((bookCard: BookCard) => (
-        <Card
-          key={bookCard.id}
-          label={''}
-          imageWidth={200}
-          imageHeight={300}
-          title={bookCard.title}
-          description={bookCard.description}
-          imageSrc={bookCard.imageSrc}
-          alt={bookCard.alt}
-          author={bookCard.author}
-        />
+    <Grid container rowSpacing={2} columnSpacing={2}>
+      {cards.map((card: Card) => (
+        <Grid key={card.id} item xs={4}>
+          <MediaCard
+            label={''}
+    
+            heading={card.details.name}
+            description={card.details.description}
+            imageSrc={card.details.imageUrl}
+            alt={''}
+            author={card.details.author}
+          />
+        </Grid>
       ))}
-    </ul>
+    </Grid>
   )
 }
 

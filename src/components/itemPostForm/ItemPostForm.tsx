@@ -104,7 +104,7 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
 }))
 
 const ItemPostForm: React.FC<IItemPostForm> = ({
-  primary = false, 
+  primary = false,
   label,
   openModal,
   handleClose,
@@ -161,34 +161,34 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     },
   })
 
-  async function fetchUserData() {
-    try {
-      const response = await fetch('/api/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(session?.user?.email),
-      })
-      const responseData = await response.json()
-      if (response.ok) {
-        console.log('User:', responseData)
-        // Optionally, you can redirect the user to a success page
-        // or show a success message on the form.
-        return responseData
-      } else {
-        console.log('Failed to get user:', responseData)
-        // Optionally, you can show an error message on the form.
-      }
-    } catch (error) {
-      console.log('Error:', error)
-    }
-  }
+  // async function fetchUserData() {
+  //   try {
+  //     const response = await fetch('/api/user', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(session?.user?.email),
+  //     })
+  //     const responseData = await response.json()
+  //     if (response.ok) {
+  //       console.log('User:', responseData)
+  //       // Optionally, you can redirect the user to a success page
+  //       // or show a success message on the form.
+  //       return responseData
+  //     } else {
+  //       console.log('Failed to get user:', responseData)
+  //       // Optionally, you can show an error message on the form.
+  //     }
+  //   } catch (error) {
+  //     console.log('Error:', error)
+  //   }
+  // }
 
   const onSubmit = async (data: FormValues) => {
     try {
       const card = {
-        id: {
+        cardIds: {
           isbn: data.isbn,
           danacode: data.danacode,
           barcode: data.barcode,
@@ -209,9 +209,11 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           streetNumber: data['street-number'],
           zipCode: data['zip-code'],
         },
-      
+        owner: {
+          id: session?.user!.id,
+        },
       }
-      // Step 1: Make a POST request to your backend API using fetch
+
       const response = await fetch('/api/cards', {
         method: 'POST',
         headers: {
@@ -220,7 +222,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         body: JSON.stringify(card),
       })
 
-      // Step 2: Handle the response from the server (optional)
       const responseData = await response.json()
       if (response.ok) {
         console.log('Card created successfully:', responseData)
@@ -231,8 +232,12 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         // Optionally, you can show an error message on the form.
       }
     } catch (error) {
-      console.log('Error creating card:', error)
-      // Handle any error that occurred during the API call.
+      if (error instanceof Error) {
+        console.log('Error creating card:', error.message)
+      } else {
+        // If the error is not an instance of Error (unlikely), you can handle it differently
+        console.log('Error creating card:', error)
+      }
     }
   }
 

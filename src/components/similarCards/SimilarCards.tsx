@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Card from '../card/Card'
+import Card from '../mediaCard/MediaCard'
 import styles from './SimilarCards.module.scss'
 
 export interface ISimilarCards {
