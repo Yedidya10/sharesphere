@@ -7,10 +7,13 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(res: NextResponse) {
   try {
     const cards = await db.Card.find({}).exec()
-    return NextResponse.json(cards)
-  } catch (error) {
+    return NextResponse.json({ cards }, { status: 200 })
+  } catch (error: any) {
     console.error('Error fetching cards:', error?.message)
-    return NextResponse.json({ error: 'Internal server error' })
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }
 
@@ -30,7 +33,7 @@ export async function POST(req: NextRequest) {
       { message: 'Card created successfully', card },
       { status: 201 }
     )
-  } catch (error) {
+  } catch (error: any) {
     // If an error occurs during card creation, handle the error
     console.error('Error creating card:', error?.message)
     // Return a JSON response with an error message and status code 500 (Internal Server Error)

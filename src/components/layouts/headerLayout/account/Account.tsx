@@ -44,12 +44,12 @@ export interface IAccount {
   onClick?: () => void
 }
 
-const SETTINGS_LINKS = [
-  { text: 'Profile', href: '/profile', icon: AccountCircleIcon },
-  { text: 'Account', href: '/account', icon: ManageAccountsIcon },
-  { text: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
-  { text: 'Logout', href: '/', icon: LogoutIcon },
-]
+// const SETTINGS_LINKS = [
+//   { text: 'dashboard', href: '/dashboard', icon: AccountCircleIcon },
+//   { text: 'Account', href: '/account', icon: ManageAccountsIcon },
+//   { text: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
+//   { text: 'Logout', href: '/', icon: LogoutIcon },
+// ]
 
 const Account: React.FC<IAccount> = ({
   primary = false,
@@ -136,7 +136,7 @@ const Account: React.FC<IAccount> = ({
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem component={Link} href={'/profile'} onClick={handleClose}>
+            <MenuItem component={Link} href={'/dashboard'} onClick={handleClose}>
               <ListItemIcon>
                 <AccountCircleIcon fontSize="small" />
               </ListItemIcon>

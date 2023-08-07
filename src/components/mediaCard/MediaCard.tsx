@@ -1,24 +1,33 @@
 'use client'
 
-import Image from 'next/image'
-import { useState } from 'react'
-import styles from './MediaCard.module.scss'
-import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
-import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import ItemRequestButton from '../buttons/itemRequestButton/ItemRequestButton'
+
 import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import CardInfo from '../cardInfo/CardInfo'
 
 export interface IMediaCard {
   heading: string
   description: string
   author: string
-
+  imageWidth: number
+  imageHeight: number
+  ownerId: string
   imageSrc: string
   alt: string
+  loanable: boolean
+  itemCondition: string
+  maxLoanPeriod: string
+  itemLocation: {
+    city: string
+    streetName: string
+    streetNumber: string
+    zipCode: string
+  }
+
   /**
    * Is this the principal call to action on the page?
    */
@@ -45,42 +54,68 @@ const MediaCard: React.FC<IMediaCard> = ({
   heading,
   description,
   author,
-
   imageSrc,
   alt,
+  ownerId,
+  loanable,
+  imageHeight,
+  imageWidth,
+  itemCondition,
+  maxLoanPeriod,
+  itemLocation,
 }) => {
-  const [showModal, setShowModal] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const handleOpen = () => setOpenModal(true)
+  const handleClose = () => setOpenModal(false)
+
+  const [isLoanable, setIsLoanable] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    loanable ? setIsLoanable(true) : setIsLoanable(false)
+  }, [])
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
-      <Box
-        sx={{
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-        }}
-      >
-        <Image
-          objectFit='contain'
-          objectPosition='center'
-          alt={alt}
-          fill={true}
-          src={imageSrc}
-        />
-      </Box>
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {heading}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {description}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <ItemRequestButton label={''} />
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
+    <>
+      <Card>
+        <Box onClick={handleOpen}>
+          <Box>
+            <Image
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+              alt={alt}
+              width={imageWidth}
+              height={imageHeight}
+              src={imageSrc}
+            />
+          </Box>
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {heading}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {author}
+            </Typography>
+          </CardContent>
+        </Box>
+      </Card>
+      <CardInfo
+        openModal={openModal}
+        handleClose={handleClose}
+        heading={heading}
+        description={description}
+        author={author}
+        imageSrc={imageSrc}
+        alt={''}
+        label={''}
+        isAvailable={isLoanable !== null ? isLoanable : false}
+        itemCondition={itemCondition}
+        maxLoanPeriod={maxLoanPeriod}
+        itemLocation={itemLocation}
+        ownerId={ownerId}
+      />
+    </>
   )
 }
 

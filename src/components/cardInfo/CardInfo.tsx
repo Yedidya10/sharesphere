@@ -1,20 +1,36 @@
 'use client'
 
+import StarRateIcon from '@mui/icons-material/StarRate'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import ItemRequestButton from '../buttons/itemRequestButton/ItemRequestButton'
+import SpringModal from '../springModal/SpringModal'
 import styles from './CardInfo.module.scss'
-import { BsCalendar3Week } from 'react-icons/bs'
-import { GoStar } from 'react-icons/go'
-import { useState } from 'react'
-import SimilarCards from '../similarCards/SimilarCards'
+import ItemAlertButton from '../buttons/itemAlertButton/ItemAlertButton'
 
 export interface ICardInfo {
-  title: string
+  openModal: boolean
+  handleClose: () => void
+  heading: string
   description: string
   author: string
-  imageWidth: number
-  imageHeight: number
   imageSrc: string
   alt: string
+  isAvailable: boolean
+  ownerId: string
+  itemCondition: string
+  maxLoanPeriod: string
+  itemLocation: {
+    city: string
+    streetName: string
+    streetNumber: string
+    zipCode: string
+  }
+
   /**
    * Is this the principal call to action on the page?
    */
@@ -40,136 +56,117 @@ export interface ICardInfo {
 const CardInfo: React.FC<ICardInfo> = ({
   primary = false,
   label,
-  title,
+  heading,
   description,
   author,
-  imageWidth,
-  imageHeight,
   imageSrc,
   alt,
+  openModal,
+  handleClose,
+  isAvailable,
+  itemLocation,
+  itemCondition,
   ...props
 }) => {
-  const [isAvailable, setAvailable] = useState(true)
-  const [rating, setRating] = useState(2.5)
-  const [isRequested, setRequested] = useState(true)
+  const [maxLoanPeriod, setMaxLoanPeriod] = useState<string>('')
+  const [condition, setCondition] = useState<string>('')
+
+  const [city, streetName, streetNumber, zipCode] = [
+    itemLocation.city,
+    itemLocation.streetName,
+    itemLocation.streetNumber,
+    itemLocation.zipCode,
+  ]
+
+  useEffect(() => {
+    setCondition(itemCondition)
+  }, [itemCondition])
 
   return (
-    <div className={styles.cardInfo}>
-      <div className={styles.itemInfo}>
-        <Image
-          className={styles.image}
-          width={imageWidth}
-          height={imageHeight}
-          style={{ objectFit: 'contain', objectPosition: 'center' }}
-          alt={alt}
-          src={imageSrc}
-        />
-        <div className={styles.content}>
-          <div className={styles.itemContent}>
-            <span className={styles.title}>{title}</span>
-            <span className={styles.author}>מחבר: {author}</span>
-            <p className={styles.description}>{description}</p>
-          </div>
-          <div className={styles.itemLender}>
-            <Image src={''} alt={''}/>
-            <span className={styles.itemLocation}>
-              ירושלים
-            </span>
-          </div>
-        </div>
-        <div className={styles.itemOptions}>
-          {isAvailable && (
-            <button className={styles.itemOption}>
-              {
-                <BsCalendar3Week
-                  size={30}
-                  style={{
-                    color: 'green',
-                  }}
-                />
-              }
-              <span className={styles.optionText}>זמין להשאלה</span>
-            </button>
-          )}
-          {!isAvailable && (
-            <button className={styles.itemOption}>
-              {/* <span className={`${styles.optionText} ${styles.optionBold}`}>
-              יומן השאלות
-            </span> */}
-              {
-                <BsCalendar3Week
-                  size={30}
-                  style={{
-                    color: 'rgb(171, 24, 24)',
-                  }}
-                />
-              }
-              <span className={styles.optionText}>לא זמין</span>
-            </button>
-          )}
-          <div className={styles.itemOption}>
-            {<GoStar size={30} />}
-            <div
-              style={{
+    <SpringModal handleClose={handleClose} openModal={openModal} label={''}>
+      <Box className={styles.cardInfo}>
+        <Grid container columnSpacing={3} columns={100}>
+          <Grid
+            sx={{
+              position: 'relative',
+            }}
+            item
+            xs={22}
+          >
+            <Image
+              className={styles.image}
+              fill={true}
+              alt={alt}
+              objectFit="contain"
+              objectPosition="top"
+              src={imageSrc}
+            />
+          </Grid>
+          <Grid item xs={58}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Typography className={styles.title}>{heading}</Typography>
+              <Typography className={styles.author}>מחבר: {author}</Typography>
+              <Typography component={'p'} className={styles.description}>
+                {description}
+              </Typography>
+              <Box className={styles.itemLender}></Box>
+              <Box className={styles.itemLocation}>
+                <Typography className={styles.optionText}>
+                  מיקום הפריט:
+                </Typography>
+                <Typography className={styles.optionText}>
+                  {streetName}, {city} - מרחק הפריט ממך: {streetNumber} ק"מ
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid
+            item
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: '140px',
+              gap: '10px',
+            }}
+            xs={20}
+            className={styles.itemOptions}
+          >
+            {isAvailable ? (
+              <ItemRequestButton label={''} />
+            ) : (
+              <ItemAlertButton label={''} />
+            )}
+            <Box
+              sx={{
                 display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px',
                 gap: '5px',
+                borderRadius: '3px',
+                boxShadow: '0px 0px 5px 1px rgba(0, 0, 0, 0.15)',
               }}
             >
-              <span className={styles.optionText}>מצב פריט:</span>
-              <span
-                style={{
-                  fontSize: '.75rem',
+              <StarRateIcon fontSize="large" color="primary" />
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                   gap: '5px',
                 }}
-              >{`${rating}/5`}</span>
-            </div>
-          </div>
-          {isAvailable && (
-            <div className={styles.borrowAction}>
-              <button
-                className={`${styles.itemOption} ${styles.askBorrow}`}
-                style={{
-                  width: '100%',
-                  color: 'white',
-                }}
-                disabled={isRequested}
               >
-                <span className={`${styles.optionText} ${styles.optionBold}`}>
-                  בקש להשאלה
-                </span>
-              </button>
-              {isRequested && (
-                <div className={styles.requestStatus}>
-                  <span
-                    className={styles.optionText}
-                    style={{
-                      fontSize: '.7rem',
-                    }}
-                  >
-                    סטטוס בקשה:
-                  </span>
-                  <span className={styles.optionText}>ממתין למענה</span>
-                </div>
-              )}
-            </div>
-          )}
-          {!isAvailable && (
-            <button
-              className={styles.itemOption}
-              style={{
-                backgroundColor: 'orange',
-                color: 'white',
-              }}
-            >
-              <span className={`${styles.optionText} ${styles.optionBold}`}>
-                קבל התראה
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
- 
-    </div>
+                <Typography sx={{ fontSize: '.8rem' }}>Item Status:</Typography>
+                <Typography
+                  sx={{ fontSize: '.8rem' }}
+                >{`${condition}/5`}</Typography>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    </SpringModal>
   )
 }
 

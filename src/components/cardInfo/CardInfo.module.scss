@@ -1,61 +1,25 @@
-.cardInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.itemInfo {
-  display: flex;
-  gap: 15px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.itemContent {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.itemLender {
-  
-}
-
 .title {
   font-weight: bold;
 }
 
-.itemOptions {
-    min-width: 120px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-}
-
 .itemOption {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    gap: 5px;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  gap: 5px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
-
 
 .optionBold {
-    font-weight: bold;
-    font-size: .9rem;
+  font-weight: bold;
+  font-size: 0.9rem;
 }
 
 .optionText {
-    font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 .borrowAction {
@@ -68,19 +32,17 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
-
 .askBorrow {
-    background-color: green,
-  }
-  
+  background-color: green;
+}
+
 .askBorrow[disabled] {
-    background-color: gray;
+  background-color: gray;
+}
 
-  }
-
-  .requestStatus {
-    font-family: .6rem;
-    display: flex;
-    flex-direction: column;
-    padding-block-end: 10px;
-  }
+.requestStatus {
+  font-family: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  padding-block-end: 10px;
+}

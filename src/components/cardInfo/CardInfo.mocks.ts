@@ -2,13 +2,25 @@ import { ICardInfo } from './CardInfo'
 
 const base: ICardInfo = {
   label: '',
-  title: '',
+  heading: '',
   description: '',
   author: '',
-  imageWidth: 0,
-  imageHeight: 0,
   imageSrc: '',
-  alt: ''
+  alt: '',
+  openModal: false,
+  handleClose: function (): void {
+    throw new Error('Function not implemented.')
+  },
+  isAvailable: false,
+  ownerId: '',
+  itemCondition: '',
+  maxLoanPeriod: '',
+  itemLocation: {
+    city: '',
+    streetName: '',
+    streetNumber: '',
+    zipCode: ''
+  }
 }
 
 export const mockCardInfoProps = {

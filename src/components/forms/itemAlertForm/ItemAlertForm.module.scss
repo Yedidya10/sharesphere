@@ -1,3 +1,12 @@
+
+
+.dateRangePicker {
+  z-index: 9999;
+  .rs-picker-menu {
+    z-index: 9999;
+  }
+}
+
 .loanForm {
   display: flex;
   flex-direction: column;

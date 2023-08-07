@@ -1,6 +1,6 @@
 'use client'
 
-import ItemPost from '@/components/itemPostForm/ItemPostForm'
+import ItemPost from '@/components/forms/itemPostForm/ItemPostForm'
 import { Button } from '@mui/material'
 import { useState } from 'react'
 
