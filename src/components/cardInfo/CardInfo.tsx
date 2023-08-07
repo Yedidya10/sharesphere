@@ -115,7 +115,7 @@ const CardInfo: React.FC<ICardInfo> = ({
                   מיקום הפריט:
                 </Typography>
                 <Typography className={styles.optionText}>
-                  {streetName}, {city} - מרחק הפריט ממך: {streetNumber} ק"מ
+                  {streetName}, {city} - מרחק הפריט ממך: {streetNumber} ק&quotמ
                 </Typography>
               </Box>
             </Box>

@@ -370,7 +370,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       gap: 1,
                     }}
                   >
-                    Please enter either the book's ISBN or Danacode number:
+                    Please enter either the book&apos;s ISBN or Danacode number:
                     <HtmlTooltip
                       title={
                         <React.Fragment>
