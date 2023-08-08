@@ -97,25 +97,23 @@ const SpringModal: React.FC<ISpringModal> = ({
   children,
 }) => {
   return (
-    <div>
-      <Modal
-        aria-labelledby="spring-modal-title"
-        aria-describedby="spring-modal-description"
-        open={openModal}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            TransitionComponent: Fade,
-          },
-        }}
-      >
-        <Fade in={openModal}>
-          <Box sx={style}>{children}</Box>
-        </Fade>
-      </Modal>
-    </div>
+    <Modal
+      aria-labelledby="spring-modal-title"
+      aria-describedby="spring-modal-description"
+      open={openModal}
+      onClose={handleClose}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{
+        backdrop: {
+          TransitionComponent: Fade,
+        },
+      }}
+    >
+      <Fade in={openModal}>
+        <Box sx={style}>{children}</Box>
+      </Fade>
+    </Modal>
   )
 }
 

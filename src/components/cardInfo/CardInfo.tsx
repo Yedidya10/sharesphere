@@ -4,13 +4,10 @@ import StarRateIcon from '@mui/icons-material/StarRate'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import ItemRequestButton from '../buttons/itemRequestButton/ItemRequestButton'
 import SpringModal from '../springModal/SpringModal'
 import styles from './CardInfo.module.scss'
-import ItemAlertButton from '../buttons/itemAlertButton/ItemAlertButton'
 
 export interface ICardInfo {
   openModal: boolean
@@ -131,11 +128,11 @@ const CardInfo: React.FC<ICardInfo> = ({
             xs={20}
             className={styles.itemOptions}
           >
-            {isAvailable ? (
+            {/* {isAvailable ? (
               <ItemRequestButton label={''} />
             ) : (
               <ItemAlertButton label={''} />
-            )}
+            )} */}
             <Box
               sx={{
                 display: 'flex',

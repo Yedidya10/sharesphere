@@ -296,17 +296,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     }
   }
 
-  const isIsbnRequired = () => {
-    const danacodeInvalid = getFieldState('danacode').invalid
-    const danacodeDirty = getFieldState('danacode').isDirty
-
-    if (danacodeInvalid) {
-      return true
-    } else {
-      return false
-    }
-  }
-
   return (
     <SpringModal handleClose={handleClose} openModal={openModal} label={''}>
       {status === 'authenticated' ? (

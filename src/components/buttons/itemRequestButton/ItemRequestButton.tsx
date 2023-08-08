@@ -34,9 +34,9 @@ const ItemRequestButton: React.FC<IItemRequestButton> = ({
   primary = false,
   label,
 }) => {
-  const [openModal, setOpenModal] = useState(false)
-  const handleOpenModal = () => setOpenModal(true)
-  const handleCloseModal = () => setOpenModal(false)
+  const [openItemRequestForm, setOpenItemRequestForm] = useState(false)
+  const handleOpenModal = () => setOpenItemRequestForm(true)
+  const handleCloseModal = () => setOpenItemRequestForm(false)
 
   const { data: session, status } = useSession()
 
@@ -91,7 +91,7 @@ const ItemRequestButton: React.FC<IItemRequestButton> = ({
       </Tooltip>
       <ItemRequestForm
         label={''}
-        openModal={openModal}
+        openModal={openItemRequestForm}
         handleClose={handleCloseModal}
       />
     </>

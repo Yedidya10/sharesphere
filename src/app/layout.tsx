@@ -1,4 +1,4 @@
-import 'rsuite/dist/rsuite.min.css'
+// import 'rsuite/dist/rsuite.min.css'
 import './globals.scss'
 import { Inter } from 'next/font/google'
 import { Session } from 'next-auth'

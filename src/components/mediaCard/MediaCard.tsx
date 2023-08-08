@@ -1,6 +1,5 @@
 'use client'
 
-
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -77,8 +76,8 @@ const MediaCard: React.FC<IMediaCard> = ({
   return (
     <>
       <Card>
-        <Box onClick={handleOpen}>
-          <Box>
+        <Box>
+          <Box >
             <Image
               style={{
                 width: '100%',
@@ -100,7 +99,7 @@ const MediaCard: React.FC<IMediaCard> = ({
           </CardContent>
         </Box>
       </Card>
-      <CardInfo
+      {/* <CardInfo
         openModal={openModal}
         handleClose={handleClose}
         heading={heading}
@@ -114,7 +113,7 @@ const MediaCard: React.FC<IMediaCard> = ({
         maxLoanPeriod={maxLoanPeriod}
         itemLocation={itemLocation}
         ownerId={ownerId}
-      />
+      /> */}
     </>
   )
 }

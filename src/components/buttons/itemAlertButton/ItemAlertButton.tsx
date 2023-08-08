@@ -34,10 +34,9 @@ const ItemAlertButton: React.FC<IItemAlertButton> = ({
   primary = false,
   label,
 }) => {
-  const [openModal, setOpenModal] = useState(false)
-
-  const handleOpenModal = () => setOpenModal(true)
-  const handleCloseModal = () => setOpenModal(false)
+  const [openItemAlertForm, setOpenItemAlertForm] = useState(false)
+  const handleOpenModal = () => setOpenItemAlertForm(true)
+  const handleCloseModal = () => setOpenItemAlertForm(false)
   const { data: session, status } = useSession()
 
   return (
@@ -95,7 +94,7 @@ const ItemAlertButton: React.FC<IItemAlertButton> = ({
       </Tooltip>
       <ItemAlertForm
         label={''}
-        openModal={openModal}
+        openModal={openItemAlertForm}
         handleClose={handleCloseModal}
       />
     </>

@@ -1,6 +1,6 @@
 'use client'
 
-import ItemPost from '@/components/forms/itemPostForm/ItemPostForm'
+import ItemPostForm from '@/components/forms/itemPostForm/ItemPostForm'
 import { Button } from '@mui/material'
 import { useState } from 'react'
 
@@ -38,7 +38,7 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
   return (
     <>
       <Button onClick={handleOpen}>פרסם פריט להשאלה</Button>
-      <ItemPost label={''} openModal={openModal} handleClose={handleClose} />
+      <ItemPostForm label={''} openModal={openModal} handleClose={handleClose} />
     </>
   )
 }
