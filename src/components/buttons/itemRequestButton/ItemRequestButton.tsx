@@ -1,6 +1,5 @@
 'use client'
 
-import ItemRequestForm from '@/components/forms/itemRequestForm/ItemRequestForm'
 import EmailIcon from '@mui/icons-material/Email'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
@@ -8,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
 export interface IItemRequestButton {
+  handleClick?: () => void
   /**
    * Is this the principal call to action on the page?
    */
@@ -33,12 +33,9 @@ export interface IItemRequestButton {
 const ItemRequestButton: React.FC<IItemRequestButton> = ({
   primary = false,
   label,
+  handleClick,
 }) => {
-  const [openItemRequestForm, setOpenItemRequestForm] = useState(false)
-  const handleOpenModal = () => setOpenItemRequestForm(true)
-  const handleCloseModal = () => setOpenItemRequestForm(false)
-
-  const { data: session, status } = useSession()
+  const { status } = useSession()
 
   return (
     <>
@@ -65,7 +62,7 @@ const ItemRequestButton: React.FC<IItemRequestButton> = ({
             variant="outlined"
             color={'primary'}
             disabled={status === 'unauthenticated'}
-            onClick={handleOpenModal}
+            onClick={handleClick}
           >
             <Box
               sx={{
@@ -89,11 +86,6 @@ const ItemRequestButton: React.FC<IItemRequestButton> = ({
           </Button>
         </span>
       </Tooltip>
-      <ItemRequestForm
-        label={''}
-        openModal={openItemRequestForm}
-        handleClose={handleCloseModal}
-      />
     </>
   )
 }

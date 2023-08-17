@@ -1,18 +1,18 @@
 'use client'
 
+import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
 import Tab from '@mui/material/Tab'
 import Grid from '@mui/material/Unstable_Grid2'
-import { useSession } from 'next-auth/react'
-import Image from 'next/image'
 import * as React from 'react'
+import ProfileCardInfo from '../cards/profileCardInfo/ProfileCardInfo'
 
 export interface IPublishedItemsLabTabs {
-  sampleTextProp: string
+  currentUserCards: ItemCoreWithLoanDetails[] | null
+  isOwner: boolean
   /**
    * Is this the principal call to action on the page?
    */
@@ -38,51 +38,11 @@ export interface IPublishedItemsLabTabs {
 const PublishedItemsLabTabs: React.FC<IPublishedItemsLabTabs> = ({
   primary = false,
   label,
-  sampleTextProp,
+  isOwner,
+  currentUserCards,
   ...props
 }) => {
   const [value, setValue] = React.useState('1')
-  const { data: session, status } = useSession()
-  const [openModal, setOpenModal] = React.useState(false)
-  const handleOpen = () => setOpenModal(true)
-  const handleClose = () => setOpenModal(false)
-
-  const [isOwner, setIsOwner] = React.useState<boolean | null>(null)
-  const [currentUserCards, setCurrentUserCards] = React.useState([])
-
-  React.useEffect(() => {
-    const currentUserId = session?.user?.id
-
-    // async function getCurrentUserCards() {
-    //   try {
-    //     const response = await fetch(`/api/cards/${currentUserId}`, {
-    //       method: 'GET',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //     })
-    //     const data = await response.json()
-
-    //     if (response.ok) {
-    //       console.log(data)
-    //       return setCurrentUserCards(data)
-    //     } else {
-    //       throw new Error(data.error || 'Failed to fetch cards')
-    //     }
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // }
-    // getCurrentUserCards()
-
-    console.log(currentUserCards)
-  }, [])
-
-  React.useEffect(() => {
-    const currentUserId = session?.user?.id
-    currentUserId ? setIsOwner(true) : setIsOwner(false)
-  }, [])
-
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue)
   }
@@ -91,16 +51,17 @@ const PublishedItemsLabTabs: React.FC<IPublishedItemsLabTabs> = ({
     <Box sx={{ width: '100%', typography: 'body1' }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Pending publication" value="1" />
-            <Tab label="Published" value="2" />
-            <Tab label="Pending response" value="3" />
-            <Tab label="For a loan soon" value="4" />
-            <Tab label="On loan" value="5"></Tab>
-            <Tab label="Late loan" value="6" disabled />
-            <Tab label="History" value="8" />
-            <Tab label="On hold" value="9" />
-            <Tab label="Deleted" value="10" />
+          <TabList
+            onChange={handleChange}
+            aria-label="lab API tabs example"
+            centered
+            variant="fullWidth"
+            sx={{ bgcolor: 'background.paper' }}
+          >
+            <Tab label="Pending response" value="1" />
+            <Tab label="For a loan soon" value="2" />
+            <Tab label="On loan" value="3"></Tab>
+            <Tab label="Late loan" value="4" />
           </TabList>
         </Box>
         <TabPanel
@@ -110,85 +71,129 @@ const PublishedItemsLabTabs: React.FC<IPublishedItemsLabTabs> = ({
           }}
         >
           <Grid container spacing={2}>
-            <Grid
-              xs={12}
-              sx={{
-                height: 160,
-              }}
-            >
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                }}
-              >
-                <Grid container spacing={2}>
+            {currentUserCards?.map(
+              (card) =>
+                card.status === 'pendingResponse' && (
                   <Grid
+                    // @ts-ignore
+                    key={card._id}
                     xs={12}
-                    md={3}
                     sx={{
-                      height: '100%',
-                      width: 'auto',
-                      position: 'relative',
-                      paddingInline: 2,
+                      height: 'max-content',
                     }}
                   >
-                    <Image
-                      src="/images/placeholder.png"
-                      alt={''}
-                      width={80}
-                      height={120}
+                    <ProfileCardInfo
+                      card={card}
+                      isOwner={isOwner!}
+                      isAvailable={true}
+                      label={''}
+                      activeButton={true}
+                      deleteButton={true}
+                      editButton={true}
+                      restoreButton={false}
                     />
                   </Grid>
-                  <Grid xs={12} md={9}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      ></Box>
-                    </Box>
+                )
+            )}
+          </Grid>
+        </TabPanel>
+        <TabPanel
+          value="2"
+          sx={{
+            paddingInline: 0,
+          }}
+        >
+          <Grid container spacing={2}>
+            {currentUserCards?.map(
+              (card) =>
+                card.status === 'forALoanSoon' && (
+                  <Grid
+                    // @ts-ignore
+                    key={card._id}
+                    xs={12}
+                    sx={{
+                      height: 'max-content',
+                    }}
+                  >
+                    <ProfileCardInfo
+                      card={card}
+                      isOwner={isOwner!}
+                      isAvailable={true}
+                      label={''}
+                      activeButton={false}
+                      deleteButton={true}
+                      editButton={true}
+                      restoreButton={false}
+                    />
                   </Grid>
-                </Grid>
-
-                {/* {status === 'authenticated' && isOwner && (
-                  <CardActions>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        onClick={() => {
-                          // Add your deletion logic here
-                          console.log('Item deleted')
-                        }}
-                      >
-                        <DeleteForeverIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Edit">
-                      <IconButton
-                        onClick={() => {
-                          // Add your deletion logic here
-                          console.log('Item Edit')
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </CardActions>
-                )} */}
-              </Card>
-            </Grid>
+                )
+            )}
+          </Grid>
+        </TabPanel>
+        <TabPanel
+          value="3"
+          sx={{
+            paddingInline: 0,
+          }}
+        >
+          <Grid container spacing={2}>
+            {currentUserCards?.map(
+              (card) =>
+                card.status === 'onLoan' && (
+                  <Grid
+                    // @ts-ignore
+                    key={card._id}
+                    xs={12}
+                    sx={{
+                      height: 'max-content',
+                    }}
+                  >
+                    <ProfileCardInfo
+                      card={card}
+                      isOwner={isOwner!}
+                      isAvailable={true}
+                      label={''}
+                      activeButton={true}
+                      deleteButton={true}
+                      editButton={true}
+                      restoreButton={false}
+                    />
+                  </Grid>
+                )
+            )}
+          </Grid>
+        </TabPanel>
+        <TabPanel
+          value="4"
+          sx={{
+            paddingInline: 0,
+          }}
+        >
+          <Grid container spacing={2}>
+            {currentUserCards?.map(
+              (card) =>
+                card.status === 'lateLoan' && (
+                  <Grid
+                    // @ts-ignore
+                    key={card._id}
+                    xs={12}
+                    sx={{
+                      height: 'max-content',
+                    }}
+                  >
+                    <ProfileCardInfo
+                      card={card}
+                      isOwner={isOwner!}
+                      isAvailable={true}
+                      label={''}
+                      activeButton={true}
+                      deleteButton={true}
+                      editButton={true}
+                      restoreButton={false}
+                    />
+                  </Grid>
+                )
+            )}
           </Grid>
         </TabPanel>
       </TabContext>

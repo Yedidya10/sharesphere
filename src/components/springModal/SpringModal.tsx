@@ -1,3 +1,4 @@
+import { IconButton } from '@mui/material'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -30,6 +31,7 @@ const Fade = React.forwardRef<HTMLDivElement, FadeProps>(function Fade(
   const style = useSpring({
     from: { opacity: 0 },
     to: { opacity: open ? 1 : 0 },
+    config: { duration: 300 }, // Adjust the duration value as needed
     onStart: () => {
       if (open && onEnter) {
         onEnter(null as any, true)
@@ -51,22 +53,42 @@ const Fade = React.forwardRef<HTMLDivElement, FadeProps>(function Fade(
 
 const style = {
   position: 'absolute' as 'absolute',
-  top: 'calc(50%)',
+  top: 'calc(45%)',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   minWidth: 320,
   width: '95%',
   maxWidth: '800px',
+}
+
+const iconButtonStyle = {
+  position: 'relative' as 'relative',
+  top: '-2px',
+  left: 'calc(100% - 40px)',
+  zIndex: 1,
+  color: 'text.primary',
   bgcolor: 'background.paper',
+  '&:hover': {
+    color: 'primary.main',
+    bgcolor: 'background.paper',
+  },
+}
+
+const childrenStyle = {
+  position: 'relative' as 'relative',
   // borderRadius: 2,
-  boxShadow: 24,
-  overflow: 'auto', // Add overflow property
   maxHeight: 'calc(80vh - 70px)', // Add max-height property
-  p: 4,
+  boxShadow: 24,
+  overflow: 'auto',
+  p: 3,
+  zIndex: 2,
+  bgcolor: 'background.paper',
+  color: 'text.primary',
 }
 
 export interface ISpringModal {
   openModal: boolean
+  keepMounted?: boolean
   handleClose: () => void
   children: React.ReactNode
   /**
@@ -94,6 +116,7 @@ export interface ISpringModal {
 const SpringModal: React.FC<ISpringModal> = ({
   openModal,
   handleClose,
+  keepMounted,
   children,
 }) => {
   return (
@@ -109,9 +132,32 @@ const SpringModal: React.FC<ISpringModal> = ({
           TransitionComponent: Fade,
         },
       }}
+      keepMounted={keepMounted}
     >
       <Fade in={openModal}>
-        <Box sx={style}>{children}</Box>
+        <Box sx={style}>
+          <IconButton
+            aria-label="close-modal"
+            onClick={handleClose}
+            sx={iconButtonStyle}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                // eslint-disable-next-line max-len
+                d="M12 10.586L5.707 4.293a1 1 0 00-1.414 1.414L10.586 12l-6.293 6.293a1 1 0 101.414 1.414L12 13.414l6.293 6.293a1 1 0 001.414-1.414L13.414 12l6.293-6.293a1 1 0 00-1.414-1.414L12 10.586z"
+              />
+            </svg>
+          </IconButton>
+          <Box sx={childrenStyle}>{children}</Box>
+        </Box>
       </Fade>
     </Modal>
   )

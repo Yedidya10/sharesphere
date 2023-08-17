@@ -12,6 +12,8 @@ import Toolbar from '@mui/material/Toolbar'
 import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import Account from '../account/Account'
+import BackgroundModeSwitch from '@/components/buttons/backgroundModeSwitch/BackgroundModeSwitch'
+import ProfileNotificationsButton from '@/components/buttons/profileNotificationsButton/ProfileNotificationsButton'
 
 export interface IHeader {
   sampleTextProp: string
@@ -61,7 +63,6 @@ const Header: React.FC<IHeader> = ({
   return (
     <AppBar
       position="fixed"
-      sx={{ zIndex: 2000 }}
       color="default"
       enableColorOnDark
     >
@@ -89,7 +90,9 @@ const Header: React.FC<IHeader> = ({
             ))}
           </Box>
           <ItemPostButton label={''} />
+          <ProfileNotificationsButton label={''} />
           <Account buttonText={logIn} label={''} />
+          <BackgroundModeSwitch label={'Mode'} />
         </Toolbar>
       </Container>
     </AppBar>

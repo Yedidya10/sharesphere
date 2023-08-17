@@ -1,13 +1,13 @@
 'use client'
 
-import ItemAlertForm from '@/components/forms/itemAlertForm/ItemAlertForm'
 import AddAlertIcon from '@mui/icons-material/AddAlert'
 import EventBusyIcon from '@mui/icons-material/EventBusy'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
 
 export interface IItemAlertButton {
+  handleClick?: () => void
+  cardId: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -32,13 +32,35 @@ export interface IItemAlertButton {
 
 const ItemAlertButton: React.FC<IItemAlertButton> = ({
   primary = false,
+  // handleClick,
+  cardId,
   label,
 }) => {
-  const [openItemAlertForm, setOpenItemAlertForm] = useState(false)
-  const handleOpenModal = () => setOpenItemAlertForm(true)
-  const handleCloseModal = () => setOpenItemAlertForm(false)
   const { data: session, status } = useSession()
 
+  const handleClick = async () => {
+    try {
+      const itemAlert = {
+        subscriberId: session?.user?.id,
+        alertsRequested: true
+      }
+      const res = await fetch(`/api/cards/cardId/${cardId}/itemAlert`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemAlert,
+        }),
+      })
+
+      const json = await res.json()
+      console.log(json)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   return (
     <>
       <Box
@@ -68,7 +90,7 @@ const ItemAlertButton: React.FC<IItemAlertButton> = ({
             variant="outlined"
             color={'warning'}
             disabled={status === 'unauthenticated'}
-            onClick={handleOpenModal}
+            onClick={handleClick}
           >
             <Box
               sx={{
@@ -92,11 +114,6 @@ const ItemAlertButton: React.FC<IItemAlertButton> = ({
           </Button>
         </span>
       </Tooltip>
-      <ItemAlertForm
-        label={''}
-        openModal={openItemAlertForm}
-        handleClose={handleCloseModal}
-      />
     </>
   )
 }

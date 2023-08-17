@@ -3,7 +3,7 @@ import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import { Roboto } from 'next/font/google'
 import Box from '@mui/material/Box'
-import DashboardDrawer from '@/components/dashboardDrawer/DashboardDrawer'
+import DashboardDrawer from '@/components/layouts/dashboardDrawer/DashboardDrawer'
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -39,6 +39,11 @@ export default async function DashboardLayout({
         flexGrow: 1,
         bgcolor: 'background.default',
         ml: `${DRAWER_WIDTH}px`,
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+        paddingBlock: 1,
+        paddingInline: 2,
+        height: 'calc(100vh - 70px)',
       }}
     >
       <DashboardDrawer

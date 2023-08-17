@@ -1,21 +1,14 @@
 // import 'rsuite/dist/rsuite.min.css'
-import './globals.scss'
-import { Inter } from 'next/font/google'
-import { Session } from 'next-auth'
-import { headers } from 'next/headers'
-import AuthProvider from './AuthProvider'
-import Header from '@/components/layouts/headerLayout/header/Header'
-import useTranslation from 'next-translate/useTranslation'
-import * as React from 'react'
-import { Roboto } from 'next/font/google'
-import Box from '@mui/material/Box'
-import HomeIcon from '@mui/icons-material/Home'
-import StarIcon from '@mui/icons-material/Star'
-import ChecklistIcon from '@mui/icons-material/Checklist'
-import SettingsIcon from '@mui/icons-material/Settings'
-import SupportIcon from '@mui/icons-material/Support'
-import LogoutIcon from '@mui/icons-material/Logout'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
+import Header from '@/components/layouts/headerLayout/header/Header'
+import Box from '@mui/material/Box'
+import { Session } from 'next-auth'
+import useTranslation from 'next-translate/useTranslation'
+import { Inter, Roboto } from 'next/font/google'
+import { headers } from 'next/headers'
+import * as React from 'react'
+import AuthProvider from '../components/AuthProvider'
+import './globals.scss'
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -62,16 +55,13 @@ export default async function RootLayout({
         <AuthProvider session={session}>
           <ThemeRegistry>
             <Header sampleTextProp={''} label={''} />
-          
             <Box
               component="main"
               sx={{
                 width: '100%',
                 flexGrow: 1,
                 bgcolor: 'background.default',
-                // ml: `${DRAWER_WIDTH}px`,
-                mt: ['48px', '56px', '64px'],
-                p: 3,
+                mt: ['48px', '56px', '70px'],
               }}
             >
               {children}

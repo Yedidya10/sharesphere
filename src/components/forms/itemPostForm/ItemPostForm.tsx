@@ -1,5 +1,19 @@
 'use client'
 
+import categories from '@/utils/categories/categories'
+import {
+  regexAddressNamePattern,
+  regexAddressNumberPattern,
+  regexBarcodePattern,
+  regexDanacodePattern,
+  regexImageUrlPattern,
+  regexIsbnPattern,
+  regexMaxLoanPeriodPattern,
+  regexTextPattern,
+  regexZipCodePattern,
+} from '@/utils/regexPatterns'
+import { AddItemFormValues } from '@/utils/types/FormValues'
+import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
@@ -23,25 +37,6 @@ import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
-
-interface FormValues {
-  category: string
-  isbn: string
-  danacode: string
-  barcode: string
-  'item-name': string
-  author: string
-  brand: string
-  'image-url': string
-  description: string
-  'item-condition': string
-  'max-loan-period': string
-  city: string
-  'street-name': string
-  'street-number': string
-  'zip-code': string
-}
-
 export interface IItemPostForm {
   openModal: boolean
   handleClose: () => void
@@ -67,31 +62,6 @@ export interface IItemPostForm {
   onClick?: () => void
 }
 
-const categories = [
-  {
-    value: 'book',
-    label: 'Book',
-    conditionTextValue: {
-      5: 'New/Like New',
-      4: 'Wrinkled Pages',
-      3: 'Torn Cover',
-      2: 'Scribbles Pages, Readable',
-      1: 'Scribbles/Torn Pages, Unreadable',
-    },
-  },
-  {
-    value: 'board-game',
-    label: 'Board Game',
-    conditionTextValue: {
-      5: 'New/Like New',
-      4: 'Wrinkled Parts',
-      3: 'Torn Parts',
-      2: 'Parts are missing, Playable',
-      1: 'Significant parts are missing, Unplayable',
-    },
-  },
-]
-
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -111,17 +81,13 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
   handleClose,
 }) => {
   const { data: session, status } = useSession()
+  const [ownerId, setOwnerId] = useState<string>('')
 
-  const regexTextPattern = /^[A-Ta-t\s\u0590-\u05FF:-]+$/u // English and Hebrew text, hyphens, and colons
-  const regexImageUrlPattern =
-    /https?:\/\/[^\s\/$.?#].[^\s]*\.(?:jpg|jpeg|png|gif|bmp|svg|webp|ico|tiff?)/m // image url
-  const regexDanacodePattern = /^\d{12}$/ // 12 digits
-  const regexIsbnPattern = /^\d{10}(?:\d{3})?$/ // 10-13 digits
-  const regexBarcodePattern = /^\d{12,13}$/ // 12-13 digits
-  const regexMaxLoanPeriodPattern = /^(?:[3-9]|1[0-4])$/ // 3-14 days
-  const regexAddressNumberPattern = /^[0-9]{1,3}$/ // 1-3 digits
-  const regexAddressNamePattern = /^[א-ת\s]+$/u // hebrew text
-  const regexZipCodePattern = /^[0-9]{7}$/ // 7 digits
+  React.useEffect(() => {
+    if (session) {
+      setOwnerId(session.user!.id)
+    }
+  }, [session])
 
   const handleClickBarcodeReader = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -136,12 +102,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     }
   }
 
-  const [user, setUser] = useState({
-    streetName: 'David Hameleh',
-    streetNumber: '1',
-    city: 'Jerusalem',
-    zipCode: '1234567',
-  })
+  const [address, setAddress] = useState({})
 
   const {
     watch,
@@ -150,54 +111,30 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     getFieldState,
     formState: { isValid, isDirty, errors },
     handleSubmit,
-  } = useForm<FormValues>({
+  } = useForm<AddItemFormValues>({
     mode: 'onChange',
     defaultValues: {
       category: '',
       isbn: '',
       danacode: '',
       barcode: '',
-      'item-name': '',
+      itemName: '',
       author: '',
       brand: '',
-      'image-url': '',
+      imageUrl: '',
       description: '',
-      'item-condition': '',
-      'max-loan-period': '',
+      itemCondition: '',
+      maxLoanPeriod: '',
       city: '',
-      'street-name': '',
-      'street-number': '',
-      'zip-code': '',
+      streetName: '',
+      streetNumber: '',
+      zipCode: '',
     },
   })
 
-  // async function fetchUserData() {
-  //   try {
-  //     const response = await fetch('/api/user', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(session?.user?.email),
-  //     })
-  //     const responseData = await response.json()
-  //     if (response.ok) {
-  //       console.log('User:', responseData)
-  //       // Optionally, you can redirect the user to a success page
-  //       // or show a success message on the form.
-  //       return responseData
-  //     } else {
-  //       console.log('Failed to get user:', responseData)
-  //       // Optionally, you can show an error message on the form.
-  //     }
-  //   } catch (error) {
-  //     console.log('Error:', error)
-  //   }
-  // }
-
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: AddItemFormValues) => {
     try {
-      const card = {
+      const card: ItemCoreWithLoanDetails = {
         cardIds: {
           isbn: data.isbn,
           danacode: data.danacode,
@@ -205,31 +142,36 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         },
         details: {
           category: data.category,
-          name: data['item-name'],
+          name: data.itemName,
           author: data.author,
           brand: data.brand,
           description: data.description,
-          imageUrl: data['image-url'],
+          imageUrl: data.imageUrl,
         },
-        condition: parseFloat(data['item-condition']),
-        maxLoanPeriod: parseFloat(data['max-loan-period']),
+        condition: parseFloat(data.itemCondition),
+        maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
           city: data.city,
-          streetName: data['street-name'],
-          streetNumber: data['street-number'],
-          zipCode: data['zip-code'],
+          streetName: data.streetName,
+          streetNumber: data.streetNumber,
+          zipCode: data.zipCode,
         },
-        owner: session?.user!.id,
-        itemStatus: 'active',
-        allBorrowers: [], // Array to store information about borrowers
-        currentBorrower: {},
-        pendingRequests: [], // Array to store information about borrowers who want to borrow
-        rejectedRequests: [], // Array to store information about borrowers who were rejected
-        approvedRequests: [], // Array to store information about borrowers who were approved
-        alertSubscribers: [], // Array to store information about borrowers who want to be alerted
+        owner: ownerId,
+        status: 'active',
+        allBorrowers: [],
+        currentBorrower: {
+          borrowerId: '',
+          startDate: null,
+          endDate: null,
+          loanPeriod: 0,
+        },
+        pendingRequests: [],
+        rejectedRequests: [],
+        approvedRequests: [],
+        alertSubscribers: [],
       }
 
-      const response = await fetch('/api/cards', {
+      const response = await fetch('/api/card', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -285,19 +227,13 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     )
   }
 
-  const isDanacodeRequired = () => {
-    const isbnInvalid = getFieldState('isbn').invalid
-    const isbnDirty = getFieldState('isbn').isDirty
-
-    if (isbnInvalid) {
-      return true
-    } else {
-      return false
-    }
-  }
-
   return (
-    <SpringModal handleClose={handleClose} openModal={openModal} label={''}>
+    <SpringModal
+      handleClose={handleClose}
+      openModal={openModal}
+      label={''}
+      keepMounted={true}
+    >
       {status === 'authenticated' ? (
         <Box
           component="form"
@@ -308,6 +244,53 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           autoComplete="off"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 500 }}>
+              Add New Item
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: '.85rem',
+
+                paddingBlockEnd: 2,
+              }}
+            >
+              If you have multiple items to share with the community, please
+              fill out the form for each item separately, even if they are of
+              the same category.
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: '.85rem',
+                paddingBlockEnd: 2,
+              }}
+            >
+              If you have the same item in different conditions, For example, if
+              you have two copies of the same book, one in good condition and
+              one in excellent condition, you can fill out the form once, click
+              on the &nbsp;
+              <Typography
+                sx={{
+                  display: 'inline',
+                  fontSize: '.85rem',
+                  fontWeight: 500,
+                }}
+              >
+                Add copy
+              </Typography>
+              &nbsp; button and then select its condition status and maximum
+              loan days.
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: '.8rem',
+                fontWeight: 500,
+                paddingBlockEnd: 2,
+              }}
+            >
+              Please select your item category:
+            </Typography>
+          </Box>
           <Controller
             control={control}
             name="category"
@@ -614,7 +597,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       <Grid xs={12} sm={6}>
                         <Controller
                           control={control}
-                          name={'item-name'}
+                          name={'itemName'}
                           rules={{
                             required: `${watch('category'!)
                               .split(' ')
@@ -783,7 +766,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     </Grid>
                     <Controller
                       control={control}
-                      name="image-url"
+                      name="imageUrl"
                       rules={{
                         required: 'Image link is required',
                         pattern: {
@@ -885,7 +868,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     <Grid xs={12} sm={7}>
                       <Controller
                         control={control}
-                        name="item-condition"
+                        name="itemCondition"
                         rules={{
                           required: `${watch('category')
                             .split(' ')
@@ -939,7 +922,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     <Grid xs={12} sm={5}>
                       <Controller
                         control={control}
-                        name="max-loan-period"
+                        name="maxLoanPeriod"
                         rules={{
                           required: 'Max loan period is required',
                           pattern: {
@@ -1017,11 +1000,11 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                               What is the reason for requesting this
                               information?
                             </Typography>
-                            {`We require the address to calculate the distance
+                            {`We require the full address to calculate the distance
                             between the ${watch(
                               'category'
                             )}'s location and the borrower. Rest
-                            assured, the address will not be made public, and it
+                            assured, the full address will not be made public, and it
                             will only be shared with the borrower after your
                             approval.`}
                           </React.Fragment>
@@ -1091,7 +1074,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       <Grid xs={20} sm={10} md={6}>
                         <Controller
                           control={control}
-                          name="street-name"
+                          name="streetName"
                           rules={{
                             required: 'Street name is required',
                             pattern: {
@@ -1140,7 +1123,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       <Grid xs={20} sm={10} md={4}>
                         <Controller
                           control={control}
-                          name="street-number"
+                          name="streetNumber"
                           rules={{
                             required: 'Street number is required',
                             pattern: {
@@ -1191,7 +1174,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       <Grid xs={20} sm={10} md={5}>
                         <Controller
                           control={control}
-                          name="zip-code"
+                          name="zipCode"
                           rules={{
                             required: 'Zip code is required',
                             pattern: {

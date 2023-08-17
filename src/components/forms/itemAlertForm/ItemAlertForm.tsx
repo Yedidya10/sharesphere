@@ -1,29 +1,24 @@
 'use client'
 
+import { ItemAlertFormValues } from '@/utils/types/FormValues'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
+import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { differenceInDays } from 'date-fns'
+import he from 'date-fns/locale/he'
 import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import SpringModal from '../../springModal/SpringModal'
-
-import DatePicker from '@mui/lab/DatePicker'
-import Grid from '@mui/material/Grid'
-import { DateValidationError } from '@mui/x-date-pickers'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-
-interface FormValues {
-  'start-date': object
-  'end-date': object
-}
 
 export interface IItemAlertForm {
-  openModal: boolean
-  handleClose: () => void
+  open: boolean
+  cardId: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -61,60 +56,12 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
 const ItemAlertForm: React.FC<IItemAlertForm> = ({
   primary = false,
   label,
-  openModal,
-  handleClose,
+  open,
+  cardId,
 }) => {
   const { data: session, status } = useSession()
 
-  // State to store the selected start date and end date
-  const [startDate, setStartDate] = useState<object | null>(null)
-  const [endDate, setEndDate] = useState<object | null>(null)
-
-  const [endDateError, setEndDateError] =
-    React.useState<DateValidationError | null>(null)
-  const [startDateError, setStartDateError] =
-    React.useState<DateValidationError | null>(null)
-
-  const startDateErrorMessage = React.useMemo(() => {
-    switch (startDateError) {
-      case 'maxDate':
-      case 'minDate': {
-        return 'Please select a date in the first quarter of 2022'
-      }
-
-      case 'invalidDate': {
-        return 'Your date is not valid'
-      }
-
-      default: {
-        return ''
-      }
-    }
-  }, [startDateError])
-
-  const endDateErrorMessage = React.useMemo(() => {
-    switch (endDateError) {
-      case 'maxDate':
-      case 'minDate': {
-        return 'Please select a date in the first quarter of 2022'
-      }
-
-      case 'invalidDate': {
-        return 'Your date is not valid'
-      }
-
-      default: {
-        return ''
-      }
-    }
-  }, [endDateError])
-
-  const [user, setUser] = useState({
-    streetName: 'David Hameleh',
-    streetNumber: '1',
-    city: 'Jerusalem',
-    zipCode: '1234567',
-  })
+  const [address, setAddress] = useState({})
 
   const {
     watch,
@@ -122,30 +69,44 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
     reset,
     handleSubmit,
     setValue,
-    formState: { errors },
-  } = useForm<FormValues>({
+    formState: { errors, isDirty, isValid },
+  } = useForm<ItemAlertFormValues>({
     defaultValues: {
-      'start-date': {},
-      'end-date': {},
+      startDate: '',
+      endDate: '',
     },
   })
 
-  const onSubmit = async (data: FormValues) => {
-    console.log(data)
+  const onSubmit = async (data: ItemAlertFormValues) => {
     try {
-      const itemLoanRequest = {}
+      const itemAlert = {
+        subscriberId: session?.user?.id,
+        alertsRequested: true
+      }
+      const res = await fetch(`/api/cards/cardId/${cardId}/itemAlert`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemAlert,
+        }),
+      })
+
+      const json = await res.json()
+      console.log(json)
     } catch (error) {
       console.log(error)
     }
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <SpringModal handleClose={handleClose} openModal={openModal} label={''}>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={he}>
+      {open && status === 'authenticated' && (
         <Box
           component="form"
           sx={{
-            '& .MuiTextField-root': { m: 1, maxWidth: '100%' },
+            '& .MuiTextField-root': { maxWidth: '100%' },
           }}
           noValidate
           autoComplete="off"
@@ -153,18 +114,6 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
         >
           <Box>
             <Typography>בחירת תקופת השאלה</Typography>
-
-            {/* <DateRangePicker
-              size="lg"
-              className={styles.dateRangePicker}
-              placeholder="Select Date Range"
-              style={{
-                width: 260,
-                display: 'block',
-                marginBottom: 10,
-                zIndex: 99999,
-              }}
-            /> */}
 
             <Grid
               container
@@ -175,16 +124,17 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
             >
               <Grid item xs={12} sm={6}>
                 <Controller
-                  name="start-date"
+                  name="startDate"
                   control={control}
                   rules={{
                     required: 'Please enter a pick up date',
                   }}
-                  render={({ field: { ref, ...rest }, fieldState }) => (
+                  render={({ field: { ref, value, ...rest }, fieldState }) => (
                     <DatePicker
                       label="Start date"
-                      format="dd/MM/yyyy"
                       disablePast
+                      maxDate={watch('endDate')}
+                      value={value || null}
                       slotProps={{
                         textField: {
                           helperText: fieldState.error
@@ -200,16 +150,17 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
-                  name="end-date"
+                  name="endDate"
                   control={control}
                   rules={{
                     required: 'Please enter a return date',
                   }}
-                  render={({ field: { ref, ...rest }, fieldState }) => (
+                  render={({ field: { ref, value, ...rest }, fieldState }) => (
                     <DatePicker
                       label="End date"
-                      format="dd/MM/yyyy"
                       disablePast
+                      minDate={watch('startDate')}
+                      value={value || null}
                       slotProps={{
                         textField: {
                           helperText: fieldState.error
@@ -238,11 +189,10 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
                 <Button
                   sx={{
                     p: 2,
-                    m: 1,
                   }}
                   variant="contained"
                   fullWidth
-                  // disabled={allErrorsFalse}
+                  disabled={!isValid}
                   type="submit"
                   value="Submit"
                 >
@@ -256,21 +206,22 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
           <Button
             sx={{
               p: 2,
-              m: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
-            variant="contained"
-            fullWidth
-            // disabled={allErrorsFalse}
+            size="small"
+            disabled={!isDirty}
             type="reset"
             value="Reset"
             onClick={() => {
               reset()
             }}
           >
-            נקה
+            <Typography>נקה</Typography>
           </Button>
         </Box>
-      </SpringModal>
+      )}
     </LocalizationProvider>
   )
 }

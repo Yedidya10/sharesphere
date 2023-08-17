@@ -58,7 +58,7 @@ const BorrowedItemsLabTabs: React.FC<IBorrowedItemsLabTabs> = ({
   React.useEffect(() => {
     const currentUserId = session?.user?.id
     currentUserId ? setIsOwner(true) : setIsOwner(false)
-  }, [])
+  }, [session?.user?.id])
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue)

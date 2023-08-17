@@ -2,10 +2,9 @@ import { IItemRequestForm } from './ItemRequestForm'
 
 const base: IItemRequestForm = {
   label: '',
-  openModal: false,
-  handleClose: function (): void {
-    throw new Error('Function not implemented.')
-  },
+  open: false,
+  maxLoanPeriod: 0,
+  cardId: ''
 }
 
 export const mockItemRequestFormProps = {

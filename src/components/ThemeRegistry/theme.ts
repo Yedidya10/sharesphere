@@ -1,10 +1,37 @@
 import { outlinedInputClasses } from '@mui/material/OutlinedInput'
 import { createTheme } from '@mui/material/styles'
 
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    xxs: true; // add more `xs` breakpoint
+    xsm: true;
+    mds: true;
+    mdl: true;
+    // mobile: true; // adds the `mobile` breakpoint
+    // tablet: true;
+    // laptop: true;
+    // desktop: true;
+  }
+}
+
+
 const defaultTheme = createTheme({
   direction: 'rtl',
   palette: {
     mode: 'light',
+  },
+  breakpoints: {
+    values: {
+      xxs: 0,
+      xs: 360,
+      xsm: 480,
+      sm: 600,
+      mds: 720,
+      md: 960,
+      mdl: 1024,
+      lg: 1200,
+      xl: 1600,
+    },
   },
   components: {
     // MuiAlert: {

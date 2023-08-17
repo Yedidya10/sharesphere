@@ -1,8 +1,9 @@
 import { IPublishedItemsLabTabs } from './PublishedItemsLabTabs'
 
 const base: IPublishedItemsLabTabs = {
-  sampleTextProp: 'Hello world!',
   label: '',
+  currentUserCards: null,
+  isOwner: false
 }
 
 export const mockPublishedItemsLabTabsProps = {

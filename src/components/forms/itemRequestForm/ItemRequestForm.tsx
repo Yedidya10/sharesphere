@@ -1,28 +1,28 @@
 'use client'
 
+import { ItemRequestFormValues } from '@/utils/types/FormValues'
+import RotateLeftIcon from '@mui/icons-material/RotateLeft'
+import SendIcon from '@mui/icons-material/Send'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { useSession } from 'next-auth/react'
-import React, { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import SpringModal from '../../springModal/SpringModal'
-
 import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-
-interface FormValues {
-  'start-date': object
-  'end-date': object
-}
+import { addDays, differenceInDays } from 'date-fns'
+import he from 'date-fns/locale/he'
+import { useSession } from 'next-auth/react'
+import React from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 export interface IItemRequestForm {
-  openModal: boolean
-  handleClose: () => void
+  open: boolean
+  maxLoanPeriod: number
+  cardId: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -57,121 +57,143 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
+function calculateMaxDate(startDate: Date, maxLoanPeriod: number): Date {
+  const maxDate = addDays(startDate, maxLoanPeriod)
+  return maxDate
+}
+
 const ItemRequestForm: React.FC<IItemRequestForm> = ({
   primary = false,
   label,
-  openModal,
-  handleClose,
+  maxLoanPeriod,
+  cardId,
+  open,
 }) => {
   const { data: session, status } = useSession()
 
-  // State to store the selected start date and end date
-  const [startDate, setStartDate] = useState<object | null>(null)
-  const [endDate, setEndDate] = useState<object | null>(null)
+  // const [endDateError, setEndDateError] =
+  //   React.useState<DateValidationError | null>(null)
+  // const [startDateError, setStartDateError] =
+  //   React.useState<DateValidationError | null>(null)
 
-  const [endDateError, setEndDateError] =
-    React.useState<DateValidationError | null>(null)
-  const [startDateError, setStartDateError] =
-    React.useState<DateValidationError | null>(null)
+  // const startDateErrorMessage = React.useMemo(() => {
+  //   switch (startDateError) {
+  //     case 'maxDate':
+  //     case 'minDate': {
+  //       return 'Please select a date in the first quarter of 2022'
+  //     }
 
-  const startDateErrorMessage = React.useMemo(() => {
-    switch (startDateError) {
-      case 'maxDate':
-      case 'minDate': {
-        return 'Please select a date in the first quarter of 2022'
-      }
+  //     case 'invalidDate': {
+  //       return 'Your date is not valid'
+  //     }
 
-      case 'invalidDate': {
-        return 'Your date is not valid'
-      }
+  //     default: {
+  //       return ''
+  //     }
+  //   }
+  // }, [startDateError])
 
-      default: {
-        return ''
-      }
-    }
-  }, [startDateError])
+  // const endDateErrorMessage = React.useMemo(() => {
+  //   switch (endDateError) {
+  //     case 'maxDate':
+  //     case 'minDate': {
+  //       return 'Please select a date in the first quarter of 2022'
+  //     }
 
-  const endDateErrorMessage = React.useMemo(() => {
-    switch (endDateError) {
-      case 'maxDate':
-      case 'minDate': {
-        return 'Please select a date in the first quarter of 2022'
-      }
+  //     case 'invalidDate': {
+  //       return 'Your date is not valid'
+  //     }
 
-      case 'invalidDate': {
-        return 'Your date is not valid'
-      }
-
-      default: {
-        return ''
-      }
-    }
-  }, [endDateError])
-
-  const [user, setUser] = useState({
-    streetName: 'David Hameleh',
-    streetNumber: '1',
-    city: 'Jerusalem',
-    zipCode: '1234567',
-  })
+  //     default: {
+  //       return ''
+  //     }
+  //   }
+  // }, [endDateError])
 
   const {
     watch,
     control,
+    setFocus,
     reset,
     handleSubmit,
     setValue,
-    formState: { errors },
-  } = useForm<FormValues>({
+    formState: { errors, isDirty, isValid },
+  } = useForm<ItemRequestFormValues>({
     defaultValues: {
-      'start-date': {},
-      'end-date': {},
+      message: '',
+      startDate: '',
+      endDate: '',
     },
   })
 
-  const onSubmit = async (data: FormValues) => {
-    console.log(data)
+  const onSubmit = async (data: ItemRequestFormValues) => {
     try {
-      const itemLoanRequest = {}
+      const startDate = new Date(data.startDate)
+      const endDate = new Date(data.endDate)
+
+      const itemLoanRequest = {
+        borrowerId: session?.user?.id,
+        requestStartDate: data.startDate,
+        requestEndDate: data.endDate,
+        loanPeriod: differenceInDays(endDate, startDate),
+        message: data.message,
+      }
+
+      const res = await fetch(`/api/cards/cardId/${cardId}/itemRequest`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemLoanRequest,
+        }),
+      })
+
+      const json = await res.json()
+      console.log(json)
     } catch (error) {
       console.log(error)
     }
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <SpringModal handleClose={handleClose} openModal={openModal} label={''}>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={he}>
+      {open && status === 'authenticated' && (
         <Box
           component="form"
           sx={{
-            '& .MuiTextField-root': { m: 1, maxWidth: '100%' },
+            '& .MuiTextField-root': { maxWidth: '100%' },
+            // border: '1px solid rgba(0, 0, 0, 0.12)',
+            // borderRadius: '5px',
+            // p: 2,
           }}
           noValidate
           autoComplete="off"
           onSubmit={handleSubmit(onSubmit)}
         >
           <Box>
-            <Typography>בחירת תקופת השאלה</Typography>
-
+            <Typography>Request an item</Typography>
             <Grid
               container
-              columnSpacing={2}
+              columnSpacing={1}
+              columns={{ xs: 100, sm: 100, md: 100 }}
               sx={{
-                paddingBlockStart: 3,
+                paddingBlockStart: 1,
               }}
             >
-              <Grid item xs={12} sm={6}>
+              <Grid xs={100} sm={50}>
                 <Controller
-                  name="start-date"
+                  name="startDate"
                   control={control}
                   rules={{
                     required: 'Please enter a pick up date',
                   }}
-                  render={({ field: { ref, ...rest }, fieldState }) => (
+                  render={({ field: { ref, value, ...rest }, fieldState }) => (
                     <DatePicker
                       label="Start date"
-                      format="dd/MM/yyyy"
                       disablePast
+                      maxDate={watch('endDate')}
+                      value={value || null}
                       slotProps={{
                         textField: {
                           helperText: fieldState.error
@@ -185,18 +207,23 @@ const ItemRequestForm: React.FC<IItemRequestForm> = ({
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={100} sm={50}>
                 <Controller
-                  name="end-date"
+                  name="endDate"
                   control={control}
                   rules={{
                     required: 'Please enter a return date',
                   }}
-                  render={({ field: { ref, ...rest }, fieldState }) => (
+                  render={({ field: { ref, value, ...rest }, fieldState }) => (
                     <DatePicker
                       label="End date"
-                      format="dd/MM/yyyy"
                       disablePast
+                      minDate={watch('startDate')}
+                      maxDate={calculateMaxDate(
+                        new Date(watch('startDate')),
+                        maxLoanPeriod
+                      )}
+                      value={value || null}
                       slotProps={{
                         textField: {
                           helperText: fieldState.error
@@ -210,54 +237,95 @@ const ItemRequestForm: React.FC<IItemRequestForm> = ({
                   )}
                 />
               </Grid>
+              <Grid xs={100} sm={100}>
+                <Controller
+                  name="message"
+                  control={control}
+                  rules={{
+                    validate: (value) => {
+                      return value.length < 500 || 'Message is too long'
+                    },
+                  }}
+                  render={({ field: { ref, value, ...rest }, fieldState }) => (
+                    <TextField
+                      label="Message"
+                      multiline
+                      rows={3}
+                      value={value || ''}
+                      helperText={
+                        fieldState.error
+                          ? fieldState.error.message
+                          : 'Is recommended to add a message'
+                      }
+                      sx={{
+                        paddingBlockEnd: 1,
+                      }}
+                      fullWidth
+                      {...rest}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid xs={100} sm={80} sx={{}}>
+                <Tooltip
+                  title={
+                    true
+                      ? 'Please enter all required fields to submit the form'
+                      : 'Click to submit the form'
+                  }
+                >
+                  <Typography
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Button
+                      fullWidth
+                      size="large"
+                      sx={{
+                        display: 'flex',
+                        gap: 2,
+                      }}
+                      variant="contained"
+                      aria-label="submit"
+                      disabled={!isValid}
+                      type="submit"
+                      value="Submit"
+                    >
+                      <SendIcon />
+                      Submit
+                    </Button>
+                  </Typography>
+                </Tooltip>
+              </Grid>
+              <Grid xs={100} sm={20}>
+                <Tooltip title="Reset the form">
+                  <Typography sx={{ textAlign: 'center' }}>
+                    <Button
+                      fullWidth
+                      sx={{
+                        border: '1px solid rgba(0, 0, 0, 0.12)',
+                      }}
+                      aria-label="reset"
+                      size="large"
+                      disabled={!isDirty}
+                      type="reset"
+                      value="Reset"
+                      onClick={() => {
+                        reset()
+                      }}
+                    >
+                      <RotateLeftIcon />
+                    </Button>
+                  </Typography>
+                </Tooltip>
+              </Grid>
             </Grid>
           </Box>
-          {true ? (
-            <Tooltip
-              followCursor
-              title={
-                true
-                  ? 'Please enter all required fields to submit the form'
-                  : 'Click to submit the form'
-              }
-            >
-              <span>
-                <Button
-                  sx={{
-                    p: 2,
-                    m: 1,
-                  }}
-                  variant="contained"
-                  fullWidth
-                  // disabled={allErrorsFalse}
-                  type="submit"
-                  value="Submit"
-                >
-                  Submit
-                </Button>
-              </span>
-            </Tooltip>
-          ) : (
-            <></>
-          )}
-          <Button
-            sx={{
-              p: 2,
-              m: 1,
-            }}
-            variant="contained"
-            fullWidth
-            // disabled={allErrorsFalse}
-            type="reset"
-            value="Reset"
-            onClick={() => {
-              reset()
-            }}
-          >
-            נקה
-          </Button>
         </Box>
-      </SpringModal>
+      )}
     </LocalizationProvider>
   )
 }
