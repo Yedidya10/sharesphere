@@ -29,16 +29,6 @@ ShareSphere is a web application that allows users to share their belongings wit
 
 [ShareSphere](https://sharesphere.vercel.app/)
 
-## Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/en/)
-- [MongoDB](https://www.mongodb.com/)
-- [Google Cloud Platform](https://cloud.google.com/)
-- [Facebook for Developers](https://developers.facebook.com/)
-- [NextAuth.js Credentials](https://next-auth.js.org/getting-started/introduction)
-
 ## Technologies Included
 
 ### Next.js (TypeScript version)
@@ -82,63 +72,6 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 ### Husky
 
 [Husky](https://github.com/typicode/husky) is a Git hook manager that automates tasks before or after specific Git events. In this template, Husky is used to enforce code quality and standards by running linting and formatting checks before committing your code. It ensures a consistent codebase and prevents committing code that doesn't meet project guidelines. This template uses the most recent stable version of Husky.
-
-To get started with this template, you have two options:
-
-### Option 1: Create a Repo on GitHub
-
-1. Go to the GitHub repository creation page.
-2. Click on the "Add Repo" button.
-3. In the repository creation form, click on "Select Template".
-4. Search for and select this template.
-5. Provide a name and description for your repository.
-6. Click on "Create repository" to create a new repository based on this template.
-
-### Option 2: Download the Repo
-
-1. Download this repository to your local machine by clicking on the "Download" button or using the Git clone command.
-2. Extract the downloaded zip file (if applicable) and navigate to the project's root directory in your terminal.
-
-After setting up the repository, follow these steps to initialize and run your Next.js application:
-
-1. Install the project dependencies by running the following command:
-
-```bash
-npm install
-```
-
-2. Prepare the project by running the following command:
-
-```bash
-npm run prepare
-```
-
-3. Create an environment file (.env) in the root of your project and populate it with the necessary configuration values:
-
-```bash
-NODE_ENV=development
-NEXTAUTH_URL=http://127.0.0.1:3000
-JWT_SECRET=<secret_token>
-
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster.code>.mongodb.net/
-
-GOOGLE_CLIENT_ID=<GOOGLE_CLIENT_ID>
-GOOGLE_CLIENT_SECRET=<GOOGLE_CLIENT_SECRET>
-FACEBOOK_CLIENT_ID=<FACEBOOK_CLIENT_ID>
-FACEBOOK_CLIENT_SECRET=<FACEBOOK_CLIENT_SECRET>
-```
-
-Make sure to keep this file secure and not commit it to version control.
-
-4. Start the development server by running the following command:
-
-```bash
-npm run dev
-```
-
-This will launch your Next.js application and make it accessible at http://localhost:3000 by default.
-
-You are now ready to start developing your full stack Next.js application! Customize and expand upon the provided template to suit your project's requirements. Happy coding!
 
 ## Learn More
 
