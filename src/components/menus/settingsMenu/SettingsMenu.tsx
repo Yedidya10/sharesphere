@@ -2,25 +2,13 @@
 
 import GeneralSettingsButton from '@/components/buttons/generalSettingsButton/GeneralSettingsButton'
 import ProfileSettingsButton from '@/components/buttons/profileSettingsButton/ProfileSettingsButton'
-import DarkModeIcon from '@mui/icons-material/DarkMode'
-import DashboardIcon from '@mui/icons-material/Dashboard'
-import LightModeIcon from '@mui/icons-material/LightMode'
-import LogoutIcon from '@mui/icons-material/Logout'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext'
-import { useTheme } from '@mui/material'
-import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Divider from '@mui/material/Divider'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import MenuList from '@mui/material/MenuList'
 import { signOut, useSession } from 'next-auth/react'
-import Link from 'next/link'
 import * as React from 'react'
+import LanguageMenuList from '../languageMenuList/LanguageMenuList'
 import SettingsMenuList from '../settingsMenuList/SettingsMenuList'
 import ThemeModeMenuList from '../themeModeMenuList/ThemeModeMenuList'
-import LanguageMenuList from '../languageMenuList/LanguageMenuList'
 
 export interface ISettingsMenu {
   buttonText: string

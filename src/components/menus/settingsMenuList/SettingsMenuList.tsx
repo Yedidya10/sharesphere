@@ -2,6 +2,7 @@
 
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import LanguageIcon from '@mui/icons-material/Language'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import LogoutIcon from '@mui/icons-material/Logout'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
@@ -12,10 +13,8 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 import { useSession } from 'next-auth/react'
-import Link from 'next/link'
+import Link from 'next-intl/link'
 import * as React from 'react'
-import LanguageIcon from '@mui/icons-material/Language'
-import useTranslation from 'next-translate/useTranslation'
 
 export interface ISettingsMenuList {
   handleCloseMenu: () => void
@@ -52,24 +51,27 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
   handleOpenLanguageMenuList,
   handleLogout,
 }) => {
-  const { lang } = useTranslation('common')
   const { data: session, status } = useSession()
 
   return (
     <MenuList disablePadding>
       {status === 'authenticated' && (
-        <MenuItem
-          component={Link}
-          href={'/dashboard'}
-          onClick={handleCloseMenu}
-        >
-          <ListItemIcon>
-            <DashboardIcon fontSize="small" />
-          </ListItemIcon>
-          Dashboard
-        </MenuItem>
+        <Box>
+          <MenuItem
+            component={Link}
+            href={
+              session.user.role === 'admin' ? '/adminDashboard' : '/dashboard'
+            }
+            onClick={handleCloseMenu}
+          >
+            <ListItemIcon>
+              <DashboardIcon fontSize="small" />
+            </ListItemIcon>
+            Dashboard
+          </MenuItem>
+          <Divider />
+        </Box>
       )}
-      <Divider />
       <MenuItem
         sx={{
           justifyContent: 'space-between',
@@ -102,7 +104,6 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
           }}
         />
       </MenuItem>
-
       <MenuItem
         sx={{
           justifyContent: 'space-between',
@@ -118,7 +119,7 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
           <ListItemIcon>
             <LanguageIcon fontSize="small" />
           </ListItemIcon>
-          Language: {lang === 'he' ? 'עברית' : 'English'}
+          {/* Language: {true === 'he' ? 'עברית' : 'English'} */}
         </Box>
         <NavigateNextIcon
           fontSize="small"
@@ -129,14 +130,16 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
           }}
         />
       </MenuItem>
-      <Divider />
       {status === 'authenticated' && (
-        <MenuItem component={Link} href={'/'} onClick={handleLogout}>
-          <ListItemIcon>
-            <LogoutIcon fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
+        <Box>
+          <Divider />
+          <MenuItem component={Link} href={'/'} onClick={handleLogout}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        </Box>
       )}
     </MenuList>
   )

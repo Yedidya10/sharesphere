@@ -10,6 +10,9 @@ const base: ISettingsMenuList = {
   },
   handleLogout: function (): void {
     throw new Error('Function not implemented.')
+  },
+  handleOpenLanguageMenuList: function (): void {
+    throw new Error('Function not implemented.')
   }
 }
 
