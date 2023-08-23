@@ -1,3 +1,5 @@
+import { useLocale } from 'next-intl'
+import { notFound } from 'next/navigation'
 // import 'rsuite/dist/rsuite.min.css'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import Header from '@/components/layouts/header/Header'
@@ -7,7 +9,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { Inter, Roboto } from 'next/font/google'
 import { headers } from 'next/headers'
 import * as React from 'react'
-import AuthProvider from '../components/AuthProvider'
+import AuthProvider from '@/components/AuthProvider'
 import './globals.scss'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -35,14 +37,25 @@ async function getSession(cookie: string): Promise<Session> {
 
 export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode
+  params: {
+    locale: string
+  }
 }) {
   const session = await getSession(headers().get('cookie') ?? '')
-  const { lang } = useTranslation('common')
+  const locale = useLocale()
+
+  // Show a 404 error if the user requests an unknown locale
+  if (params.locale !== locale) {
+    notFound()
+  }
+
+  // const { lang } = useTranslation('common')
 
   const dir = () => {
-    if (lang === 'he') {
+    if (locale === 'he') {
       return 'rtl'
     } else {
       return 'ltr'
@@ -50,7 +63,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={lang} dir={dir()}>
+    <html lang={locale} dir={dir()}>
       <body className={inter.className}>
         <AuthProvider session={session}>
           <ThemeRegistry>
@@ -72,3 +85,18 @@ export default async function RootLayout({
     </html>
   )
 }
+
+// export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
+//   const locale = useLocale()
+
+//   // Show a 404 error if the user requests an unknown locale
+//   if (params.locale !== locale) {
+//     notFound()
+//   }
+
+//   return (
+//     <html lang={locale}>
+//       <body>{children}</body>
+//     </html>
+//   )
+// }

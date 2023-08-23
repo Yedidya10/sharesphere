@@ -1,0 +1,56 @@
+// SettingsMenu.module.scss
+
+.headerProfile {
+  position: relative;
+}
+
+.logIn {
+  color: white;
+}
+
+.profileContainer {
+  position: relative;
+}
+
+.profileButton {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.profileButton img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.profileMenu {
+  position: absolute;
+  top: 40px; // Adjust this value as per your design
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    gap: 4px;
+
+    svg {
+      font-size: 16px;
+    }
+  }
+}

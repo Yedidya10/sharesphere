@@ -1,6 +1,8 @@
 'use client'
 
 import ItemPostButton from '@/components/buttons/itemPostButton/ItemPostButton'
+import ProfileNotificationsButton from '@/components/buttons/profileNotificationsButton/ProfileNotificationsButton'
+import SignInButton from '@/components/buttons/signInButton/SignInButton'
 import Logo from '@/components/logo/Logo'
 import AdbIcon from '@mui/icons-material/Adb'
 import DashboardIcon from '@mui/icons-material/Dashboard'
@@ -9,11 +11,10 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Toolbar from '@mui/material/Toolbar'
+import { useSession } from 'next-auth/react'
 import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
-import Account from '../account/Account'
-import BackgroundModeSwitch from '@/components/buttons/backgroundModeSwitch/BackgroundModeSwitch'
-import ProfileNotificationsButton from '@/components/buttons/profileNotificationsButton/ProfileNotificationsButton'
+import SettingsMenu from '../../menus/settingsMenu/SettingsMenu'
 
 export interface IHeader {
   sampleTextProp: string
@@ -39,36 +40,20 @@ export interface IHeader {
   onClick?: () => void
 }
 
-const pages = ['Products', 'Pricing', 'Blog']
-
 const Header: React.FC<IHeader> = ({
   primary = false,
   label,
   sampleTextProp,
   ...props
 }) => {
+  const { data: session, status } = useSession()
   const { t } = useTranslation('header')
   const logIn = t('log-in')
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
-  }
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
-  }
-
   return (
-    <AppBar
-      position="fixed"
-      color="default"
-      enableColorOnDark
-    >
+    <AppBar position="fixed" color="default" enableColorOnDark>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <DashboardIcon
             sx={{
               color: 'default',
@@ -77,22 +62,15 @@ const Header: React.FC<IHeader> = ({
             }}
           />
           <Logo sampleTextProp={''} label={''} />
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}></Box>
           <ItemPostButton label={''} />
-          <ProfileNotificationsButton label={''} />
-          <Account buttonText={logIn} label={''} />
-          <BackgroundModeSwitch label={'Mode'} />
+          {status === 'authenticated' && (
+            <ProfileNotificationsButton label={''} />
+          )}
+          <SettingsMenu buttonText={logIn} label={''} />
+          {status === 'unauthenticated' && (
+            <SignInButton label={''} buttonText={'כניסה'} />
+          )}
         </Toolbar>
       </Container>
     </AppBar>

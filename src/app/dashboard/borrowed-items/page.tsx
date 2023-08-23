@@ -8,7 +8,7 @@ import useTranslation from 'next-translate/useTranslation'
 
 import { useState } from 'react'
 
-export default function Home() {
+export default function BorrowedItemsPage() {
   const { t } = useTranslation('home')
   const example = t('variable-example', { count: 42 })
 

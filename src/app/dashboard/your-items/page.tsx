@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import useTranslation from 'next-translate/useTranslation'
 import { useState } from 'react'
 
-export default function Home() {
+export default function YourItemsPage() {
   const { t } = useTranslation('home')
   const [alert, setAlert] = useState<boolean>(true)
 
