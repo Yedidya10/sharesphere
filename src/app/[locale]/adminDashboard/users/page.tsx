@@ -1,19 +1,15 @@
 'use client'
 
-import PublishedItemsLabTabs from '@/components/cards/currentUserCards/CurrentUserCards'
-import Box from '@mui/material/Box'
-import useTranslation from 'next-translate/useTranslation'
-import Edit from '@mui/icons-material/Edit'
 import Delete from '@mui/icons-material/Delete'
+import Edit from '@mui/icons-material/Edit'
 import Info from '@mui/icons-material/Info'
 import IconButton from '@mui/material/IconButton'
-import * as React from 'react'
 import {
   DataGrid,
   GridColDef,
-  GridValueGetterParams,
   GridRenderCellParams,
   GridToolbar,
+  GridValueGetterParams,
 } from '@mui/x-data-grid'
 
 const handleOpenModal = (id: number) => {

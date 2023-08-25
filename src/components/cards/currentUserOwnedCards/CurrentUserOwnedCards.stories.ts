@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import BorrowedItemsLabTabs from './BorrowedItemsLabTabs'
+import CurrentUserOwnedCards from './CurrentUserOwnedCards'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
-const meta: Meta<typeof BorrowedItemsLabTabs> = {
-  title: 'Templates/BorrowedItemsLabTabs',
-  component: BorrowedItemsLabTabs,
+const meta: Meta<typeof CurrentUserOwnedCards> = {
+  title: 'Templates/CurrentUserOwnedCards',
+  component: CurrentUserOwnedCards,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: {
@@ -15,32 +15,32 @@ const meta: Meta<typeof BorrowedItemsLabTabs> = {
 }
 
 export default meta
-type Story = StoryObj<typeof BorrowedItemsLabTabs>
+type Story = StoryObj<typeof CurrentUserOwnedCards>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
     primary: true,
-    label: 'BorrowedItemsLabTabs',
+    label: 'CurrentUserOwnedCards',
   },
 }
 
 export const Secondary: Story = {
   args: {
-    label: 'BorrowedItemsLabTabs',
+    label: 'CurrentUserOwnedCards',
   },
 }
 
 export const Large: Story = {
   args: {
     size: 'large',
-    label: 'BorrowedItemsLabTabs',
+    label: 'CurrentUserOwnedCards',
   },
 }
 
 export const Small: Story = {
   args: {
     size: 'small',
-    label: 'BorrowedItemsLabTabs',
+    label: 'CurrentUserOwnedCards',
   },
 }

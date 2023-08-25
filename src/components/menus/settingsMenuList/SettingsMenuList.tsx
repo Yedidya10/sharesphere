@@ -15,6 +15,7 @@ import MenuList from '@mui/material/MenuList'
 import { useSession } from 'next-auth/react'
 import Link from 'next-intl/link'
 import * as React from 'react'
+import { useParams } from 'next/navigation'
 
 export interface ISettingsMenuList {
   handleCloseMenu: () => void
@@ -51,6 +52,7 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
   handleOpenLanguageMenuList,
   handleLogout,
 }) => {
+  const { locale } = useParams()
   const { data: session, status } = useSession()
 
   return (
@@ -119,7 +121,7 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
           <ListItemIcon>
             <LanguageIcon fontSize="small" />
           </ListItemIcon>
-          {/* Language: {true === 'he' ? 'עברית' : 'English'} */}
+          Language: {locale === 'en' ? 'English' : 'עברית'}
         </Box>
         <NavigateNextIcon
           fontSize="small"

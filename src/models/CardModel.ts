@@ -73,8 +73,9 @@ const cardSchema = new mongoose.Schema(
       {
         subscriberId: { type: mongoose.Schema.Types.ObjectId },
         alertsRequested: { type: Boolean, default: true },
+        createdAt: { type: Date },
+        updatedAt: { type: Date },
       },
-      { timestamps: true },
     ],
   },
   {

@@ -1,6 +1,6 @@
-import { IProfileCardInfo } from './ProfileCardInfo'
+import { IUserOwnedCardInfo } from './UserOwnedCardInfo'
 
-const base: IProfileCardInfo = {
+const base: IUserOwnedCardInfo = {
   isAvailable: false,
   isOwner: false,
   card: {
@@ -28,9 +28,9 @@ const base: IProfileCardInfo = {
   activeButton: false,
   deleteButton: false,
   editButton: false,
-  restoreButton: false
+  restoreButton: false,
 }
 
-export const mockProfileCardInfoProps = {
+export const mockUserOwnedCardInfoProps = {
   base,
 }

@@ -34,23 +34,23 @@ export const authOptions: AuthOptions = {
       clientId: getCredentials('FACEBOOK').clientId,
       clientSecret: getCredentials('FACEBOOK').clientSecret,
     }),
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        username: { type: 'text' },
-        password: { type: 'password' },
-      },
-      authorize(credentials) {
-        if (
-          credentials?.username === 'admin' &&
-          credentials.password === 'admin'
-        ) {
-          return { id: '1', name: 'admin' }
-        }
+    // CredentialsProvider({
+    //   name: 'Credentials',
+    //   credentials: {
+    //     username: { type: 'text' },
+    //     password: { type: 'password' },
+    //   },
+    //   authorize(credentials) {
+    //     if (
+    //       credentials?.username === 'admin' &&
+    //       credentials.password === 'admin'
+    //     ) {
+    //       return { id: '1', name: 'admin' }
+    //     }
 
-        return null
-      },
-    }),
+    //     return null
+    //   },
+    // }),
   ],
   secret: process.env.JWT_SECRET,
   pages: {
@@ -60,23 +60,23 @@ export const authOptions: AuthOptions = {
     // verifyRequest: '/auth/verify-request', // (used for check email message)
     newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
   },
-  events: {
-    signIn: async ({ user, account, profile, isNewUser }) => {
-      console.log('signIn', user, account, profile, isNewUser)
-    },
-    signOut: async ({ session }) => {
-      console.log('signOut', session)
-    },
-    createUser: async ({ user }) => {
-      console.log('createUser', user)
-    },
-    linkAccount: async ({ user, account, profile }) => {
-      console.log('linkAccount', user, account, profile)
-    },
-    session: async ({ session }) => {
-      console.log('session', session)
-    },
-  },
+  // events: {
+  //   signIn: async ({ user, account, profile, isNewUser }) => {
+  //     console.log('signIn', user, account, profile, isNewUser)
+  //   },
+  //   signOut: async ({ session }) => {
+  //     console.log('signOut', session)
+  //   },
+  //   createUser: async ({ user }) => {
+  //     console.log('createUser', user)
+  //   },
+  //   linkAccount: async ({ user, account, profile }) => {
+  //     console.log('linkAccount', user, account, profile)
+  //   },
+  //   session: async ({ session }) => {
+  //     console.log('session', session)
+  //   },
+  // },
   callbacks: {
     //  The `redirect` callback is called when a user is redirected from
     redirect: async ({ url, baseUrl }) => {

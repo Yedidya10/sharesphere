@@ -17,6 +17,8 @@ import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import { useRecoilState } from 'recoil'
 import CheckIcon from '@mui/icons-material/Check'
+import { usePathname, useRouter } from 'next-intl/client'
+import { useParams } from 'next/navigation'
 
 export interface ILanguageMenuList {
   handleCloseMenu: () => void
@@ -49,8 +51,13 @@ const LanguageMenuList: React.FC<ILanguageMenuList> = ({
   handleCloseMenu,
   handleBackToSettings,
 }) => {
-  const { lang } = useTranslation('common')
-  const [language, setLanguage] = React.useState<string>('he')
+  const router = useRouter()
+  const pathname = usePathname()
+  const { locale } = useParams()
+
+  React.useEffect(() => {
+    console.log('locale', locale)
+  }, [locale])
 
   const languageList = [
     {
@@ -63,14 +70,8 @@ const LanguageMenuList: React.FC<ILanguageMenuList> = ({
     },
   ]
 
-  const handleSelectedLanguage = (event: React.MouseEvent<HTMLElement>) => {
-    setLanguage('en')
-
-    console.log(event.currentTarget.textContent)
-    console.log(language)
-
-    document.documentElement.lang = language
-    console.log(document.documentElement.lang)
+  const handleLanguageChange = (lang: string) => {
+    router.replace(pathname, { locale: lang })
     handleCloseMenu()
   }
 
@@ -104,30 +105,21 @@ const LanguageMenuList: React.FC<ILanguageMenuList> = ({
       </Box>
       <Divider />
       <MenuList disablePadding>
-        <MenuItem
-          component={Button}
-          onClick={handleSelectedLanguage}
-          sx={{
-            width: '100%',
-          }}
-        >
-          <ListItemIcon>
-            {language === 'he' ? <CheckIcon /> : null}
-          </ListItemIcon>
-          Hebrew
-        </MenuItem>
-        <MenuItem
-          component={Button}
-          onClick={handleSelectedLanguage}
-          sx={{
-            width: '100%',
-          }}
-        >
-          <ListItemIcon>
-            {language === 'en' ? <CheckIcon /> : null}
-          </ListItemIcon>
-          English
-        </MenuItem>
+        {languageList.map((lang) => (
+          <MenuItem
+            component={Button}
+            key={lang.value}
+            onClick={() => handleLanguageChange(lang.value)}
+            sx={{
+              width: '100%',
+            }}
+          >
+            <ListItemIcon>
+              {lang.value === locale ? <CheckIcon fontSize="small" /> : null}
+            </ListItemIcon>
+            {lang.label}
+          </MenuItem>
+        ))}
       </MenuList>
     </>
   )

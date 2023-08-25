@@ -15,9 +15,9 @@ import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import ItemEditButton from '../../buttons/itemEditButton/ItemEditButton'
-import styles from './ProfileCardInfo.module.scss'
+import styles from './UserOwnedCardInfo.module.scss'
 
-export interface IProfileCardInfo {
+export interface IUserOwnedCardInfo {
   isAvailable: boolean
   isOwner: boolean
   card: ItemCoreWithLoanDetails
@@ -34,11 +34,11 @@ export interface IProfileCardInfo {
    */
   backgroundColor?: string
   /**
-   * How large should the ProfileCardInfo be?
+   * How large should the UserOwnedCardInfo be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * ProfileCardInfo contents
+   * UserOwnedCardInfo contents
    */
   label: string
   /**
@@ -65,7 +65,7 @@ function ControlledSwitches() {
   )
 }
 
-const ProfileCardInfo: React.FC<IProfileCardInfo> = ({
+const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
   primary = false,
   label,
   isAvailable,
@@ -102,7 +102,6 @@ const ProfileCardInfo: React.FC<IProfileCardInfo> = ({
       } else {
         console.log('error')
       }
-      
     } catch (error) {
       console.log(error)
     }
@@ -183,4 +182,4 @@ const ProfileCardInfo: React.FC<IProfileCardInfo> = ({
   )
 }
 
-export default ProfileCardInfo
+export default UserOwnedCardInfo

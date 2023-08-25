@@ -187,7 +187,7 @@ const AllCards: React.FC<IAllCards> = ({
   //       alignItems: 'center',
   //     }}
   //   >
-  //     <Typography variant="h3" color="text.secondary">
+  //     <Typography variant="h3" >
   //       No cards found
   //     </Typography>
   //   </Box>

@@ -20,6 +20,8 @@ import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import SpringModal from '../../springModal/SpringModal'
+import { useParams } from 'next/navigation'
+
 export interface IProfileUpdateForm {
   openModal: boolean
   handleClose: () => void
@@ -64,6 +66,7 @@ const ProfileUpdateForm: React.FC<IProfileUpdateForm> = ({
   handleClose,
 }) => {
   const { data: session, status } = useSession()
+  const { locale } = useParams() 
 
   const handleClickBarcodeReader = async (
     event: React.MouseEvent<HTMLButtonElement>

@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Grid from '@mui/material/Unstable_Grid2'
 import * as React from 'react'
-import ProfileCardInfo from '../cards/profileCardInfo/ProfileCardInfo'
+import ProfileCardInfo from '../cards/userOwnedCardInfo/UserOwnedCardInfo'
 
 export interface IPublishedItemsLabTabs {
   currentUserCards: ItemCoreWithLoanDetails[] | null

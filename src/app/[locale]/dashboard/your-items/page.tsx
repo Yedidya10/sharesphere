@@ -1,6 +1,6 @@
 'use client'
 
-import PublishedItemsLabTabs from '@/components/cards/currentUserCards/CurrentUserCards'
+import PublishedItemsLabTabs from '@/components/cards/currentUserOwnedCards/CurrentUserOwnedCards'
 import Box from '@mui/material/Box'
 
 export default function YourItemsPage() {

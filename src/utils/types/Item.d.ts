@@ -18,11 +18,6 @@ interface Location {
   country?: string
 }
 
-interface BorrowingDates {
-  startDate: Date
-  endDate: Date
-}
-
 interface CurrentBorrower {
   borrowerId: string
   startDate: Date | null
@@ -67,7 +62,8 @@ export interface ItemCore {
 export interface ItemCoreWithLoanDetails extends ItemCore {
   allBorrowers?: Array<{
     borrowerId: string
-    borrowingDates: BorrowingDates[]
+    startDate: Date
+    endDate: Date
     loanPeriod: number
   }>
   currentBorrower?: CurrentBorrower

@@ -1,22 +1,23 @@
 'use client'
 
-import styles from './DashboardDrawer.module.scss'
-import useTranslation from 'next-translate/useTranslation'
-import * as React from 'react'
-import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
+import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
+import isUserBorrowedItemsExistState from '@/recoils/isUserBorrowedItemsExistState/isUserBorrowedItemsExistState'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import ChatIcon from '@mui/icons-material/Chat'
+import ChecklistIcon from '@mui/icons-material/Checklist'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import SettingsIcon from '@mui/icons-material/Settings'
+import Collapse from '@mui/material/Collapse'
 import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import Collapse from '@mui/material/Collapse'
-import ExpandLess from '@mui/icons-material/ExpandLess'
-import ExpandMore from '@mui/icons-material/ExpandMore'
-import SettingsIcon from '@mui/icons-material/Settings'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import ChecklistIcon from '@mui/icons-material/Checklist'
-import ChatIcon from '@mui/icons-material/Chat'
+import useTranslation from 'next-translate/useTranslation'
+import * as React from 'react'
+import { useRecoilValue } from 'recoil'
 
 export interface IDashboardDrawer {
   sampleTextProp: string
@@ -51,6 +52,8 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
   ...props
 }) => {
   const { lang } = useTranslation('common')
+  const isUserOwnedItemsExist = useRecoilValue(isUserOwnedItemsExistState)
+  const isUserBorrowedItemsExist = useRecoilValue(isUserBorrowedItemsExistState)
 
   const dir = () => {
     if (lang === 'he') {
@@ -112,14 +115,21 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
         </ListItemButton>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4 }} href="/dashboard/borrowed-items">
+            <ListItemButton
+              sx={{ pl: 4 }}
+              href="/dashboard/borrowed-items"
+              disabled={!isUserBorrowedItemsExist}
+            >
               <ListItemIcon>
                 <ChecklistIcon />
               </ListItemIcon>
               <ListItemText primary="Borrowed items" />
             </ListItemButton>
-
-            <ListItemButton sx={{ pl: 4 }} href="/dashboard/your-items">
+            <ListItemButton
+              sx={{ pl: 4 }}
+              href="/dashboard/your-items"
+              disabled={!isUserOwnedItemsExist}
+            >
               <ListItemIcon>
                 <ChecklistIcon />
               </ListItemIcon>

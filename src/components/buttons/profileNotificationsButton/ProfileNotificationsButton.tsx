@@ -95,7 +95,6 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
               <Typography
                 variant="body2"
                 sx={{
-                  color: 'text.secondary',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'normal',
                 }}
@@ -131,7 +130,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
               <Typography
                 variant="body2"
                 sx={{
-                  color: 'text.secondary',
+                
                   textOverflow: 'ellipsis',
                   whiteSpace: 'normal',
                 }}

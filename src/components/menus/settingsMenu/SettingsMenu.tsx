@@ -46,6 +46,10 @@ const SettingsMenu: React.FC<ISettingsMenu> = ({
   const openSettingsMenu = Boolean(anchorSettingsMenuEl)
 
   const handleOpenSettingsMenu = (event: React.MouseEvent<HTMLElement>) => {
+    if (themeModeMenuOpen || languageMenuListOpen) {
+      setThemeModeMenuOpen(false)
+      setLanguageMenuListOpen(false)
+    }
     setAnchorSettingsMenuEl(event.currentTarget)
   }
 
@@ -62,8 +66,6 @@ const SettingsMenu: React.FC<ISettingsMenu> = ({
 
   const handleCloseMenu = () => {
     setAnchorSettingsMenuEl(null)
-    setThemeModeMenuOpen(false)
-    setLanguageMenuListOpen(false)
   }
 
   const handleLogout = () => {

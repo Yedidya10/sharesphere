@@ -1,5 +1,6 @@
 'use client'
 
+import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
@@ -9,10 +10,11 @@ import Tab from '@mui/material/Tab'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
 import * as React from 'react'
+import { useRecoilState } from 'recoil'
 import PublishedItemsLabTabs from '../../publishedItemsLabTabs/PublishedItemsLabTabs'
-import ProfileCardInfo from '../profileCardInfo/ProfileCardInfo'
+import UserOwnedCardInfo from '../userOwnedCardInfo/UserOwnedCardInfo'
 
-export interface ICurrentUserCards {
+export interface ICurrentUserOwnedCards {
   sampleTextProp: string
   /**
    * Is this the principal call to action on the page?
@@ -23,11 +25,11 @@ export interface ICurrentUserCards {
    */
   backgroundColor?: string
   /**
-   * How large should the CurrentUserCards be?
+   * How large should the CurrentUserOwnedCards be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * CurrentUserCards contents
+   * CurrentUserOwnedCards contents
    */
   label: string
   /**
@@ -36,7 +38,7 @@ export interface ICurrentUserCards {
   onClick?: () => void
 }
 
-const CurrentUserCards: React.FC<ICurrentUserCards> = ({
+const CurrentUserOwnedCards: React.FC<ICurrentUserOwnedCards> = ({
   primary = false,
   label,
   sampleTextProp,
@@ -46,26 +48,38 @@ const CurrentUserCards: React.FC<ICurrentUserCards> = ({
   const { data: session, status } = useSession()
 
   const [isOwner, setIsOwner] = React.useState<boolean | null>(null)
-  const [currentUserCards, setCurrentUserCards] = React.useState<
+  const [currentUserCards, setCurrentUserOwnedCards] = React.useState<
     ItemCoreWithLoanDetails[] | null
   >(null)
+  const [isCurrentUserOwnedCardsExist, setIsCurrentUserOwnedCardsExist] =
+    useRecoilState(isUserOwnedItemsExistState)
 
-  async function getCurrentUserCards() {
+  async function getCurrentUserOwnedCards() {
     try {
-      const response = await fetch(`/api/cards/userId/${session?.user?.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const response = await fetch(
+        `/api/cards/userId/${session?.user?.id}/ownedCards`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
 
       const data = await response.json()
       const cards = data.cards
 
+      console.log('data', data)
+      console.log('cards', cards)
+
       if (response.ok) {
-        return setCurrentUserCards(cards)
-      } else {
-        throw new Error(cards.error || 'Failed to fetch cards')
+        setIsCurrentUserOwnedCardsExist(true)
+        return setCurrentUserOwnedCards(cards)
+      }
+
+      if (response.status === 404) {
+        setIsCurrentUserOwnedCardsExist(false)
+        return setCurrentUserOwnedCards(null)
       }
     } catch (error: any) {
       throw new Error(error.message)
@@ -74,7 +88,7 @@ const CurrentUserCards: React.FC<ICurrentUserCards> = ({
 
   React.useEffect(() => {
     if (session?.user?.id !== undefined && session?.user?.id !== null) {
-      getCurrentUserCards()
+      getCurrentUserOwnedCards()
     }
   }, [session?.user?.id])
 
@@ -119,7 +133,7 @@ const CurrentUserCards: React.FC<ICurrentUserCards> = ({
                       height: 'max-content',
                     }}
                   >
-                    <ProfileCardInfo
+                    <UserOwnedCardInfo
                       card={card}
                       isOwner={isOwner!}
                       isAvailable={true}
@@ -166,7 +180,7 @@ const CurrentUserCards: React.FC<ICurrentUserCards> = ({
                       height: 'max-content',
                     }}
                   >
-                    <ProfileCardInfo
+                    <UserOwnedCardInfo
                       card={card}
                       isOwner={isOwner!}
                       isAvailable={true}
@@ -200,7 +214,7 @@ const CurrentUserCards: React.FC<ICurrentUserCards> = ({
                     }}
                   >
                     <Box>
-                      <ProfileCardInfo
+                      <UserOwnedCardInfo
                         card={card}
                         isOwner={isOwner!}
                         isAvailable={true}
@@ -221,4 +235,4 @@ const CurrentUserCards: React.FC<ICurrentUserCards> = ({
   )
 }
 
-export default CurrentUserCards
+export default CurrentUserOwnedCards

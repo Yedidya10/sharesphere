@@ -90,12 +90,12 @@ const ItemCard: React.FC<IItemCard> = ({
             <Typography gutterBottom variant="h5" component="div">
               {name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" >
               {author}
             </Typography>
             <Typography
               variant="body2"
-              color="text.secondary"
+           
               sx={{
                 maxHeight: '100px',
                 overflow: 'hidden',

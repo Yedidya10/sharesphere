@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import ProfileCardInfo from './ProfileCardInfo'
+import CurrentUserBorrowedCards from './CurrentUserBorrowedCards'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
-const meta: Meta<typeof ProfileCardInfo> = {
-  title: 'Templates/ProfileCardInfo',
-  component: ProfileCardInfo,
+const meta: Meta<typeof CurrentUserBorrowedCards> = {
+  title: 'Templates/CurrentUserBorrowedCards',
+  component: CurrentUserBorrowedCards,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: {
@@ -15,32 +15,32 @@ const meta: Meta<typeof ProfileCardInfo> = {
 }
 
 export default meta
-type Story = StoryObj<typeof ProfileCardInfo>
+type Story = StoryObj<typeof CurrentUserBorrowedCards>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
     primary: true,
-    label: 'ProfileCardInfo',
+    label: 'CurrentUserBorrowedCards',
   },
 }
 
 export const Secondary: Story = {
   args: {
-    label: 'ProfileCardInfo',
+    label: 'CurrentUserBorrowedCards',
   },
 }
 
 export const Large: Story = {
   args: {
     size: 'large',
-    label: 'ProfileCardInfo',
+    label: 'CurrentUserBorrowedCards',
   },
 }
 
 export const Small: Story = {
   args: {
     size: 'small',
-    label: 'ProfileCardInfo',
+    label: 'CurrentUserBorrowedCards',
   },
 }

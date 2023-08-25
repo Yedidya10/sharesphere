@@ -7,9 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function PATCH(req: NextRequest) {
   try {
     // Get the card ID from the URL
-    const cardId = req.nextUrl.pathname.split('/')[-2]
-
-    console.log('cardId:', cardId)
+    const cardId = req.nextUrl.pathname.split('/')[4]
 
     // Get the data from the request body
     const data = await req.json()
@@ -22,8 +20,6 @@ export async function PATCH(req: NextRequest) {
       },
     })
 
-    console.log('Card:', card)
-
     if (card) {
       // User is already subscribed
       return NextResponse.json(
@@ -34,10 +30,15 @@ export async function PATCH(req: NextRequest) {
       // Update the card in the database
       await Card.updateOne(
         { _id: cardId },
-        { $push: { alertSubscribers: data.itemAlert } }
+        {
+          $push: {
+            alertSubscribers: {
+              ...data.itemAlert,
+              updatedAt: new Date(), // Set updatedAt timestamp
+            },
+          },
+        }
       )
-
-      console.log('Card updated:', data)
 
       // Return a success response
       return NextResponse.json(
