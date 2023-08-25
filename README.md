@@ -37,6 +37,10 @@ ShareSphere is a web application that allows users to share their belongings wit
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+
+### Material-UI (v5)
+[Material-UI](https://github.com/mui/material-ui) is a popular React UI framework that provides a wide collection of customizable components and themes. This template incorporates the latest stable version of Material-UI, allowing you to easily build beautiful and responsive user interfaces.
+
 ### Storybook
 
 [Storybook](https://github.com/storybookjs/storybook) is a powerful tool for developing UI components in isolation. It enables you to build and test React components independently, providing a visual representation of your components. This template incorporates the latest stable version of Storybook, allowing you to iterate and maintain your UI components with ease.
@@ -49,17 +53,20 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 [NextAuth.js](https://github.com/nextauthjs/next-auth) is a popular authentication library for Next.js applications. It simplifies the implementation of authentication mechanisms, including various providers such as Google, Facebook, and GitHub. This template integrates the most up-to-date stable version of NextAuth.js, allowing you to easily add authentication to your application.
 
-### Next-Translate
+### next-intl
 
-[next-translate](https://github.com/aralroca/next-translate) is a localization and internationalization library for Next.js applications. It provides a seamless way to add multilingual support to your application, enabling you to easily translate your content into different languages. This template includes the latest stable version of Next-Translation, facilitating the development of localized applications.
+[next-intl](https://github.com/amannn/next-intl) is a library that provides internationalization support for Next.js applications. It offers a simple API for defining and managing translations, enabling you to easily localize your application. This template utilizes the latest stable version of next-intl, allowing you to easily add internationalization to your Next.js application.
 
 ### Recoil (State Management)
 
 [Recoil](https://github.com/facebookexperimental/Recoil) is a state management library for managing application state in React applications. It provides an intuitive API and a set of powerful features for managing complex state requirements. This template incorporates the most up-to-date stable version of Recoil, enabling you to efficiently handle and synchronize state across your Next.js components.
 
-### Framer Motion
+### React Hook Form
+[React-Hook-Form](https://github.com/react-hook-form/react-hook-form) is a library that provides a simple and flexible API for building forms in React applications. It offers a wide range of features, including form validation, form state management, and input formatting. This template utilizes the most recent stable version of React-Hook-Form, allowing you to easily build forms in your Next.js application.
 
-[Framer Motion](https://github.com/framer/motion) is a library that allows you to create smooth and interactive animations in your React applications. It offers a simple API for defining and controlling animations, enhancing the user experience. This template utilizes the latest stable version of React Motion, enabling you to easily incorporate fluid animations into your Next.js application.
+### React Spring
+
+[React-Spring](https://github.com/pmndrs/react-spring) is a library that provides a set of simple, yet powerful animation primitives for React applications. It offers a wide range of animation effects and features, allowing you to easily add animations to your application. This template utilizes the most recent stable version of React-Spring, enabling you to easily add animations to your Next.js application.
 
 ### React Icons
 
