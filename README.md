@@ -62,6 +62,7 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 [Recoil](https://github.com/facebookexperimental/Recoil) is a state management library for managing application state in React applications. It provides an intuitive API and a set of powerful features for managing complex state requirements. This template incorporates the most up-to-date stable version of Recoil, enabling you to efficiently handle and synchronize state across your Next.js components.
 
 ### React Hook Form
+
 [React-Hook-Form](https://github.com/react-hook-form/react-hook-form) is a library that provides a simple and flexible API for building forms in React applications. It offers a wide range of features, including form validation, form state management, and input formatting. This template utilizes the most recent stable version of React-Hook-Form, allowing you to easily build forms in your Next.js application.
 
 ### React Spring
