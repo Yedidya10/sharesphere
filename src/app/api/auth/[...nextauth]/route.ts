@@ -30,10 +30,10 @@ export const authOptions: AuthOptions = {
       clientId: getCredentials('GOOGLE').clientId,
       clientSecret: getCredentials('GOOGLE').clientSecret,
     }),
-    FacebookProvider({
-      clientId: getCredentials('FACEBOOK').clientId,
-      clientSecret: getCredentials('FACEBOOK').clientSecret,
-    }),
+    // FacebookProvider({
+    //   clientId: getCredentials('FACEBOOK').clientId,
+    //   clientSecret: getCredentials('FACEBOOK').clientSecret,
+    // }),
     // CredentialsProvider({
     //   name: 'Credentials',
     //   credentials: {
