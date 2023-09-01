@@ -11,7 +11,10 @@ if (!process.env.MONGODB_URI_LOCAL && process.env.NODE_ENV === 'development') {
 const uri =
   process.env.NODE_ENV === 'production'
     ? process.env.MONGODB_URI
-    : process.env.MONGODB_URI_LOCAL || ''
+    : process.env.NODE_ENV === 'development'
+    ? process.env.MONGODB_URI_LOCAL
+    : ''
+
 const options = {}
 
 let client
