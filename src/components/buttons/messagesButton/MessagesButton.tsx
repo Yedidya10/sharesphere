@@ -1,4 +1,5 @@
-import NotificationsIcon from '@mui/icons-material/Notifications'
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
@@ -8,8 +9,9 @@ import MenuList from '@mui/material/MenuList'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 
-export interface IProfileNotificationsButton {
+export interface IMessagesButton {
   /**
    * Is this the principal call to action on the page?
    */
@@ -32,10 +34,11 @@ export interface IProfileNotificationsButton {
   onClick?: () => void
 }
 
-const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
+const MessagesButton: React.FC<IMessagesButton> = ({
   primary = false,
   label,
 }) => {
+  const router = useRouter()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -43,29 +46,30 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
   }
   const handleClose = () => {
     setAnchorEl(null)
+    console.log(router)
   }
 
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title="Notifications">
+        <Tooltip title="Messages">
           <IconButton
             onClick={handleClick}
             size="small"
             sx={{
               padding: 1.5,
             }}
-            aria-controls={open ? 'notifications-menu' : undefined}
+            aria-controls={open ? 'messages-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <NotificationsIcon />
+            <ChatBubbleOutlineIcon />
           </IconButton>
         </Tooltip>
       </Box>
       <Menu
         anchorEl={anchorEl}
-        id="notifications-menu"
+        id="messages-menu"
         open={open}
         onClose={handleClose}
         onClick={handleClose}
@@ -74,14 +78,18 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
       >
         <MenuList sx={{ width: '100%', maxWidth: 460 }}>
           <MenuItem
-            onClick={handleClose}
+            onClick={() => {
+              handleClose()
+              router.push('/messages')
+            }}
             sx={{
               display: 'flex',
               alignItems: 'flex-start',
               gap: 2,
             }}
           >
-            <NotificationsIcon sx={{ mt: 0.5 }} />
+            <Avatar src="/broken-image.jpg" />
+
             <Box
               sx={{
                 maxWidth: 460,
@@ -92,7 +100,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
                   fontWeight: '500',
                 }}
               >
-                Notification 1
+                John Doe
               </Typography>
               <Typography
                 variant="body2"
@@ -102,21 +110,23 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
                 }}
               >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-                ipsum purus, bibendum sit amet vulputate eget, porta semper
-                ligula.
+                ipsum purus, bibendum sit amet
               </Typography>
             </Box>
           </MenuItem>
           <Divider />
           <MenuItem
-            onClick={handleClose}
+            onClick={() => {
+              handleClose()
+              router.push('/messages')
+            }}
             sx={{
               display: 'flex',
               alignItems: 'flex-start',
               gap: 2,
             }}
           >
-            <NotificationsIcon sx={{ mt: 0.5 }} />
+            <Avatar src="/broken-image.jpg" />
             <Box
               sx={{
                 maxWidth: 460,
@@ -127,7 +137,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
                   fontWeight: '500',
                 }}
               >
-                Notification 2
+                Sarah Andrews
               </Typography>
               <Typography
                 variant="body2"
@@ -137,8 +147,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
                 }}
               >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-                ipsum purus, bibendum sit amet vulputate eget, porta semper
-                ligula.
+                ipsum purus
               </Typography>
             </Box>
           </MenuItem>
@@ -148,4 +157,4 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
   )
 }
 
-export default ProfileNotificationsButton
+export default MessagesButton

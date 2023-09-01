@@ -4,8 +4,10 @@ import { AdapterUser } from 'next-auth/adapters'
 
 // Define the structure of a User document using TypeScript interfaces
 interface User extends AdapterUser {
+  email: string
   firstName: string
   lastName: string
+  password: string
   role: string
   phone: string
   address: {
@@ -19,8 +21,10 @@ interface User extends AdapterUser {
 
 // Define the Mongoose schema for the User model
 const userSchema = new mongoose.Schema<User>({
+  email: { type: String, unique: true },
   firstName: { type: String },
   lastName: { type: String },
+  password: { type: String },
   role: { type: String },
   phone: { type: String },
   address: {

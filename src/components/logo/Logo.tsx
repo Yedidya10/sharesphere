@@ -1,5 +1,7 @@
 import Typography from '@mui/material/Typography'
 import styles from './Logo.module.scss'
+import { GiStoneSphere } from 'react-icons/gi'
+import Link from '@/components/mui/Link'
 
 export interface ILogo {
   sampleTextProp: string
@@ -31,25 +33,35 @@ const Logo: React.FC<ILogo> = ({
   sampleTextProp,
   ...props
 }) => {
-  
   return (
-    <Typography
-      variant="h6"
-      noWrap
-      component="a"
+    <Link
       href="/"
+      underline="none"
       sx={{
-        mr: 2,
-        display: { xs: 'none', md: 'flex' },
-        fontFamily: 'monospace',
-        fontWeight: 700,
-        letterSpacing: '.3rem',
-        color: 'inherit',
-        textDecoration: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
+        gap: '1rem',
       }}
     >
-      Share Sphere
-    </Typography>
+      <GiStoneSphere size={40} />
+      <Typography
+        variant="h6"
+        noWrap
+        component="a"
+        sx={{
+          mr: 2,
+          display: { xs: 'none', md: 'flex' },
+          fontFamily: 'Roboto',
+          fontWeight: 700,
+          letterSpacing: '.15rem',
+          color: 'inherit',
+          textDecoration: 'none',
+        }}
+      >
+        Share Sphere
+      </Typography>
+    </Link>
   )
 }
 

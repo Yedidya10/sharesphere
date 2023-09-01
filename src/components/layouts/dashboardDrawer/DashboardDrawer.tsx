@@ -99,13 +99,6 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
           <ListItemText primary="Profile" />
         </ListItemButton>
 
-        <ListItemButton href="/dashboard/chats">
-          <ListItemIcon>
-            <ChatIcon />
-          </ListItemIcon>
-          <ListItemText primary="Chats" />
-        </ListItemButton>
-
         <ListItemButton onClick={handleClick}>
           <ListItemIcon>
             <ChecklistIcon />

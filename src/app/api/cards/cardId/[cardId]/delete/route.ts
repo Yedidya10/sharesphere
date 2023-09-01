@@ -8,7 +8,6 @@ export async function PATCH(req: NextRequest) {
   try {
     // Get the card ID from the url query parameters
     const cardId = req.nextUrl.pathname.split('/')[4]
-    console.log(cardId)
 
     // Update the card in the database
     await Card.updateOne({ _id: cardId }, { $set: { status: 'deleted' } })

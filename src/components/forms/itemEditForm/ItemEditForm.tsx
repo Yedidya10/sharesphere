@@ -35,6 +35,7 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
+import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IItemEditForm {
   openModal: boolean
@@ -1171,7 +1172,8 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
             sx={{
               mt: 2,
             }}
-            href="/auth/login?callbackUrl=http://127.0.0.1:3000"
+            component={NextLinkComposed}
+            to="/login"
           >
             Go to login screen
           </Button>

@@ -3,17 +3,16 @@ import { createTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface BreakpointOverrides {
-    xxs: true; // add more `xs` breakpoint
-    xsm: true;
-    mds: true;
-    mdl: true;
+    xxs: true // add more `xs` breakpoint
+    xsm: true
+    mds: true
+    mdl: true
     // mobile: true; // adds the `mobile` breakpoint
     // tablet: true;
     // laptop: true;
     // desktop: true;
   }
 }
-
 
 const defaultTheme = createTheme({
   direction: 'rtl',
@@ -52,6 +51,125 @@ const defaultTheme = createTheme({
           '& label.Mui-focused': {
             color: 'var(--TextField-brandBorderFocusedColor)',
           },
+        },
+      },
+    },
+    // MuiButton: {
+    //   styleOverrides: {
+    //     root: {
+    //       borderRadius: '8px',
+    //       textTransform: 'none',
+    //       fontWeight: 'normal',
+    //       fontSize: '14px',
+    //       lineHeight: '20px',
+    //       padding: '8px 16px',
+    //       '&.MuiButton-containedPrimary': {
+    //         backgroundColor: '#1E40AF',
+    //         color: '#FFFFFF',
+    //         '&:hover': {
+    //           backgroundColor: '#1E40AF',
+    //         },
+    //       },
+    //       '&.MuiButton-containedSecondary': {
+    //         backgroundColor: '#FFFFFF',
+    //         color: '#1E40AF',
+    //         '&:hover': {
+    //           backgroundColor: '#FFFFFF',
+    //         },
+    //       },
+    //       '&.MuiButton-outlinedPrimary': {
+    //         color: '#1E40AF',
+    //         borderColor: '#1E40AF',
+    //         '&:hover': {
+    //           backgroundColor: '#1E40AF',
+    //           color: '#FFFFFF',
+    //         },
+    //       },
+    //       '&.MuiButton-outlinedSecondary': {
+    //         color: '#FFFFFF',
+    //         borderColor: '#FFFFFF',
+    //         '&:hover': {
+    //           backgroundColor: '#FFFFFF',
+    //           color: '#1E40AF',
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    // MuiTypography: {
+    //   styleOverrides: {
+    //     root: {
+    //       '&.MuiTypography-h1': {
+    //         fontSize: '48px',
+    //         lineHeight: '56px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-h2': {
+    //         fontSize: '40px',
+    //         lineHeight: '48px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-h3': {
+    //         fontSize: '32px',
+    //         lineHeight: '40px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-h4': {
+    //         fontSize: '24px',
+    //         lineHeight: '32px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-h5': {
+    //         fontSize: '20px',
+    //         lineHeight: '28px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-h6': {
+    //         fontSize: '16px',
+    //         lineHeight: '24px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-subtitle1': {
+    //         fontSize: '14px',
+    //         lineHeight: '20px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-subtitle2': {
+    //         fontSize: '12px',
+    //         lineHeight: '16px',
+    //         fontWeight: 'bold',
+    //       },
+    //       '&.MuiTypography-body1': {
+    //         fontSize: '14px',
+    //         lineHeight: '20px',
+    //         fontWeight: 'normal',
+    //         color: 'text.primary',
+    //       },
+    //       '&.MuiTypography-body2': {
+    //         fontSize: '12px',
+    //         lineHeight: '16px',
+    //         fontWeight: 'normal',
+    //         color: 'text.primary',
+    //       },
+    //       '&.MuiTypography-caption': {
+    //         fontSize: '10px',
+    //         lineHeight: '16px',
+    //         fontWeight: 'normal',
+    //         color: 'text.primary',
+    //       },
+    //       '&.MuiTypography-overline': {
+    //         fontSize: '10px',
+    //         lineHeight: '16px',
+    //         fontWeight: 'bold',
+    //         color: 'text.primary',
+    //       },
+    //     },
+    //   },
+    // },
+    MuiListItemText: {
+      styleOverrides: {
+        root: {
+          color: 'text.primary',
         },
       },
     },

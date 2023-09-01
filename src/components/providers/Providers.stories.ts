@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import SignIn from './SignIn'
+import Providers from './Providers'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
-const meta: Meta<typeof SignIn> = {
-  title: 'Components/Auth/SignIn',
-  component: SignIn,
+const meta: Meta<typeof Providers> = {
+  title: 'Components/Auth/Providers',
+  component: Providers,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: {
@@ -15,32 +15,32 @@ const meta: Meta<typeof SignIn> = {
 }
 
 export default meta
-type Story = StoryObj<typeof SignIn>
+type Story = StoryObj<typeof Providers>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
     primary: true,
-    label: 'SignIn',
+    label: 'Providers',
   },
 }
 
 export const Secondary: Story = {
   args: {
-    label: 'SignIn',
+    label: 'Providers',
   },
 }
 
 export const Large: Story = {
   args: {
     size: 'large',
-    label: 'SignIn',
+    label: 'Providers',
   },
 }
 
 export const Small: Story = {
   args: {
     size: 'small',
-    label: 'SignIn',
+    label: 'Providers',
   },
 }

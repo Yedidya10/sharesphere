@@ -1,8 +1,9 @@
-import { getProviders } from 'next-auth/react'
-import { NextRequest, NextResponse } from "next/server"
-import styles from './page.module.scss'
+import Providers from '@/components/providers/Providers'
+import SignInForm from '@/components/signInForm/SignInForm'
+import SignUp from '@/components/signUp/SignUp'
+import Box from '@mui/material/Box'
 import { Metadata } from 'next'
-import SignIn from '@/components/signIn/SignIn'
+import { getProviders } from 'next-auth/react'
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -17,17 +18,26 @@ export interface ILogin {
 
 const Login: React.FC<ILogin> = async () => {
   const providers = await getProviders()
-  const providersLoginText = ('login-with')
+  const providersLoginText = 'Continue with'
 
   return (
-    
-    <div>
-      <SignIn
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2,
+        maxWidth: '400px',
+        margin: '0 auto',
+      }}
+    >
+      <SignInForm label={''} />
+      <Providers
         providers={providers}
         providersLoginText={providersLoginText}
         label={''}
       />
-    </div>
+    </Box>
   )
 }
 

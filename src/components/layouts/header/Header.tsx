@@ -15,6 +15,7 @@ import { useSession } from 'next-auth/react'
 import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import SettingsMenu from '../../menus/settingsMenu/SettingsMenu'
+import MessagesButton from '@/components/buttons/messagesButton/MessagesButton'
 
 export interface IHeader {
   sampleTextProp: string
@@ -53,24 +54,27 @@ const Header: React.FC<IHeader> = ({
   return (
     <AppBar position="fixed" color="default" enableColorOnDark>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <DashboardIcon
-            sx={{
-              color: 'default',
-              mr: 2,
-              transform: 'translateY(-2px)',
-            }}
-          />
-          <Logo sampleTextProp={''} label={''} />
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}></Box>
-          <ItemPostButton label={''} />
-          {status === 'authenticated' && (
-            <ProfileNotificationsButton label={''} />
-          )}
-          <SettingsMenu buttonText={logIn} label={''} />
-          {status === 'unauthenticated' && (
-            <SignInButton label={''} buttonText={'כניסה'} />
-          )}
+        <Toolbar
+          disableGutters
+          sx={{ display: 'flex', justifyContent: 'space-between' }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Logo sampleTextProp={''} label={''} />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <ItemPostButton label={''} />
+            {status === 'authenticated' && (
+              <>
+              <ProfileNotificationsButton label={''} 
+               />
+               <MessagesButton  label={''} />
+               </>
+            )}
+            <SettingsMenu buttonText={logIn} label={''} />
+            {status === 'unauthenticated' && (
+              <SignInButton label={''} buttonText={'כניסה'} />
+            )}
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>

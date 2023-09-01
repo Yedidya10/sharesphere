@@ -1,49 +1,41 @@
-import { useState } from 'react'
-import { getProviders, signIn } from 'next-auth/react'
-import styles from './page.module.scss'
 import { Metadata } from 'next'
+import styles from './page.module.scss'
+import SignUp from '@/components/signUp/SignUp'
+import Providers from '@/components/providers/Providers'
+import { getProviders } from 'next-auth/react'
+import  Box  from '@mui/material/Box'
 
 export const metadata: Metadata = {
   title: 'Register',
 }
 
-// Define the interface for the Register component
 export interface IRegister {
-
+  providersLoginText: string
+  providers: any
+  Register: any
 }
 
-// export async function getServerSideProps({}: {}) {
-//   try {
-//     const providers = await getProviders()
+const Register: React.FC<IRegister> = async () => {
+  const providers = await getProviders()
+  const providersLoginText = 'Continue with'
 
-//     return {
-//       props: {
-//         providers,
-//       },
-//     }
-//   } catch (error) {
-//     console.error('Error fetching providers:', error)
-//   }
-// }
-
-const Register: React.FC<IRegister> = ({
-
-}) => {
-  // const [loadingProvider, setLoadingProvider] = useState<string | null>(null)
-
-  // async function handleRegister(provider: any) {
-  //   setLoadingProvider(provider.id)
-
-  //   try {
-  //     await Register(provider.id, { callbackUrl: '/' })
-  //   } catch (error) {
-  //     console.error('Error signing in:', error)
-  //   } finally {
-  //     setLoadingProvider(null)
-  //   }
-  // }
-
-  return <ul className={styles.ul}></ul>
+  return (
+    <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      margin: 'auto',
+      gap: '1rem',
+      maxWidth: '440px',
+    }}>
+      <SignUp label={''} />
+      <Providers
+        providers={providers}
+        providersLoginText={providersLoginText}
+        label={''}
+      />
+    </Box>
+  )
 }
 
 export default Register

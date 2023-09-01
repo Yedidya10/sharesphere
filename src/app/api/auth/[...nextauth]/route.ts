@@ -4,8 +4,8 @@ import { MongoDBAdapter } from '@auth/mongodb-adapter'
 import NextAuth, { AuthOptions } from 'next-auth'
 import { Adapter } from 'next-auth/adapters'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import FacebookProvider from 'next-auth/providers/facebook'
 import GoogleProvider from 'next-auth/providers/google'
+const bcrypt = require('bcryptjs')
 
 // Check if the environment variables are set
 function getCredentials(providerName: string) {
@@ -34,23 +34,35 @@ export const authOptions: AuthOptions = {
     //   clientId: getCredentials('FACEBOOK').clientId,
     //   clientSecret: getCredentials('FACEBOOK').clientSecret,
     // }),
-    // CredentialsProvider({
-    //   name: 'Credentials',
-    //   credentials: {
-    //     username: { type: 'text' },
-    //     password: { type: 'password' },
-    //   },
-    //   authorize(credentials) {
-    //     if (
-    //       credentials?.username === 'admin' &&
-    //       credentials.password === 'admin'
-    //     ) {
-    //       return { id: '1', name: 'admin' }
-    //     }
+    CredentialsProvider({
+      name: 'credentials',
+      credentials: {},
+      async authorize(credentials, req) {
+        const { email, password } = credentials as {
+          email: string
+          password: string
+        }
 
-    //     return null
-    //   },
-    // }),
+        try {
+          const user = await User.findOne({ email })
+          console.log(user)
+
+          if (!user) {
+            throw new Error('No user found with this email')
+          }
+
+          const isValid = await bcrypt.compare(password, user.password)
+
+          if (!isValid) {
+            throw new Error('Could not log you in')
+          }
+
+          return user
+        } catch (error: any) {
+          throw new Error(error.message)
+        }
+      },
+    }),
   ],
   secret: process.env.JWT_SECRET,
   pages: {
@@ -58,38 +70,19 @@ export const authOptions: AuthOptions = {
     // signOut: '/auth/signout',
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // (used for check email message)
-    newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
+    // newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
   },
-  // events: {
-  //   signIn: async ({ user, account, profile, isNewUser }) => {
-  //     console.log('signIn', user, account, profile, isNewUser)
-  //   },
-  //   signOut: async ({ session }) => {
-  //     console.log('signOut', session)
-  //   },
-  //   createUser: async ({ user }) => {
-  //     console.log('createUser', user)
-  //   },
-  //   linkAccount: async ({ user, account, profile }) => {
-  //     console.log('linkAccount', user, account, profile)
-  //   },
-  //   session: async ({ session }) => {
-  //     console.log('session', session)
-  //   },
-  // },
   callbacks: {
-    //  The `redirect` callback is called when a user is redirected from
     redirect: async ({ url, baseUrl }) => {
-      return url.startsWith(baseUrl)
-        ? Promise.resolve(url)
-        : Promise.resolve(baseUrl)
+      return Promise.resolve(url)
     },
+
     // The `session` callback is called when a new session is created or updated
     session: async ({ session, user }) => {
       const dbUser = await User.findOneAndUpdate(
         { email: user.email },
         { role: 'user' }, // Set the user's role to 'user'
-        { new: true }
+        { new: true } // Return the updated user
       )
       return {
         ...session,

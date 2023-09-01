@@ -16,6 +16,8 @@ import { AddItemFormValues } from '@/utils/types/FormValues'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
+import { StepButton } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -27,6 +29,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import OutlinedInput from '@mui/material/OutlinedInput'
+import Step from '@mui/material/Step'
+import Stepper from '@mui/material/Stepper'
 import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
@@ -37,11 +41,7 @@ import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
-import Stepper from '@mui/material/Stepper'
-import Step from '@mui/material/Step'
-import StepLabel from '@mui/material/StepLabel'
-import { StepButton } from '@mui/material'
-import RestartAltIcon from '@mui/icons-material/RestartAlt'
+import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IItemPostForm {
   openModal: boolean
@@ -1539,7 +1539,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
             sx={{
               mt: 2,
             }}
-            href="/auth/login?callbackUrl=http://127.0.0.1:3000"
+            component={NextLinkComposed}
+            to="/login"
           >
             Go to login screen
           </Button>

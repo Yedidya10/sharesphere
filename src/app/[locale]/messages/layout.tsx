@@ -1,4 +1,4 @@
-import DashboardDrawer from '@/components/layouts/dashboardDrawer/DashboardDrawer'
+import MessagesDrawer from '@/components/layouts/messagesDrawer/MessagesDrawer'
 import Box from '@mui/material/Box'
 import * as React from 'react'
 import { getServerSession } from 'next-auth'
@@ -10,9 +10,9 @@ export const metadata = {
   description: 'Dashboard',
 }
 
-const DRAWER_WIDTH = 240
+const DRAWER_WIDTH = 400
 
-export default async function DashboardLayout({
+export default async function MessagesLayout({
   children,
 }: {
   children: React.ReactNode
@@ -26,7 +26,6 @@ export default async function DashboardLayout({
     <Box
       sx={{
         flexGrow: 1,
-        bgcolor: 'background.default',
         ml: `${DRAWER_WIDTH}px`,
         overflowY: 'scroll',
         overflowX: 'hidden',
@@ -35,7 +34,7 @@ export default async function DashboardLayout({
         height: 'calc(100vh - 70px)',
       }}
     >
-      <DashboardDrawer
+      <MessagesDrawer
         drawerWidth={DRAWER_WIDTH}
         sampleTextProp={''}
         label={''}
