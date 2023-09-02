@@ -111,7 +111,7 @@ export default function AboutPage() {
               <Typography variant="body1" gutterBottom>
                 Our journey began with the seedling of an idea - to create a
                 online lending community where individuals could lend and borrow
-                items without the burden of ownership. Inspired by Fresco's
+                items without the burden of ownership. Inspired by Fresco`&lsquo;`s
                 vision, we envisioned a online platform where neighbors could
                 share, connect, and build a more sustainable future together.
               </Typography>
@@ -296,7 +296,7 @@ export default function AboutPage() {
               Contribution within the Local Community
             </Typography>
             <Typography variant="body1" gutterBottom>
-              Through the lens of our community, we've witnessed extraordinary
+              Through the lens of our community, we`&lsquo;`ve witnessed extraordinary
               connections form. Neighbors have met neighbors, friendships have
               blossomed, and resources have found new life. Each item lent
               represents a connection forged, a moment of trust, and a step
