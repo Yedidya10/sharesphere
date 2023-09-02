@@ -8,7 +8,7 @@ const withNextIntl = require('next-intl/plugin')(
 
 module.exports = withNextIntl({
     images: {
-        domains: ['source.unsplash.com'],
+        domains: ['source.unsplash.com', 'images.unsplash.com', 'plus.unsplash.com'],
         remotePatterns: [
             {
                 protocol: 'https',

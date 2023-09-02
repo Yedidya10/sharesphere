@@ -176,7 +176,9 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
   } = useForm<AddItemFormValues>({
     mode: 'onChange',
     defaultValues: {
-      category: '',
+      mainCategory: '',
+      secondaryCategory: '',
+      tertiaryCategory: '',
       isbn: '',
       danacode: '',
       barcode: '',
@@ -203,7 +205,9 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           barcode: data.barcode,
         },
         details: {
-          category: data.category,
+          mainCategory: data.mainCategory,
+          secondaryCategory: data.secondaryCategory,
+          tertiaryCategory: data.tertiaryCategory,
           name: data.itemName,
           author: data.author,
           brand: data.brand,
@@ -329,57 +333,119 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         )
       case 1:
         return (
-          <>
-            <Typography
-              sx={{
-                fontSize: '.8rem',
-                fontWeight: 500,
-                paddingBlockEnd: 2,
-              }}
-            >
-              Please select your item category:
-            </Typography>
-            <Controller
-              control={control}
-              name="category"
-              rules={{
-                required: 'Category is required',
-              }}
-              render={({
-                field: { onChange, onBlur, value, name, ref },
-                fieldState,
-              }) => (
-                <TextField
-                  fullWidth
-                  id={name}
-                  inputRef={ref}
-                  value={value}
-                  required
-                  select
-                  label="Category"
-                  helperText={
-                    fieldState.isDirty ? '' : 'Please select your category'
-                  }
-                  error={!!fieldState.error}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                >
-                  {categories.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
-          </>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              paddingBlockStart: 2,
+            }}
+          >
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: '.8rem',
+                  fontWeight: 500,
+                  paddingBlockEnd: 2,
+                }}
+              >
+                Please select your item category:
+              </Typography>
+              <Controller
+                control={control}
+                name="mainCategory"
+                rules={{
+                  required: 'Category is required',
+                }}
+                render={({
+                  field: { onChange, onBlur, value, name, ref },
+                  fieldState,
+                }) => (
+                  <TextField
+                    
+                    fullWidth
+                    id={name}
+                    inputRef={ref}
+                    value={value}
+                    required
+                    select
+                    label="Category"
+                    helperText={
+                      fieldState.isDirty ? '' : 'Please select your category'
+                    }
+                    error={!!fieldState.error}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                  >
+                    {categories.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+            </Box>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: '.8rem',
+                  fontWeight: 500,
+                  paddingBlockEnd: 2,
+                }}
+              >
+                Please select your item sub-category:
+              </Typography>
+              <Controller
+                control={control}
+                name="secondaryCategory"
+                rules={{
+                  required: 'Sub-category is required',
+                }}
+                render={({
+                  field: { onChange, onBlur, value, name, ref },
+                  fieldState,
+                }) => (
+                  <TextField
+                    
+                    fullWidth
+                    id={name}
+                    inputRef={ref}
+                    value={value}
+                    required
+                    select
+                    label="Sub-category"
+                    helperText={
+                      fieldState.isDirty
+                        ? ''
+                        : 'Please select your sub-category'
+                    }
+                    error={!!fieldState.error}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                  >
+                    {watch('mainCategory') &&
+                      categories
+                        .find(
+                          (category) => category.value === watch('mainCategory')
+                        )
+                        ?.subCategories?.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                  </TextField>
+                )}
+              />
+            </Box>
+          </Box>
         )
       case 2:
         return (
           <>
-            {watch('category') && (
+            {watch('mainCategory') && (
               <>
-                {watch('category') === 'book' && (
+                {watch('mainCategory') === 'book' && (
                   <Box
                     sx={{
                       paddingBlockStart: 4,
@@ -389,11 +455,12 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        fontSize: '.8rem',
+                        fontSize: '.9rem',
                         fontWeight: 500,
-                        paddingBlockEnd: 2,
+                        paddingBlockEnd: 0.5,
                         gap: 1,
                       }}
+                      component={'p'}
                     >
                       Please enter either the book&apos;s ISBN or Danacode
                       number:
@@ -418,6 +485,14 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                           }}
                         />
                       </HtmlTooltip>
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: '.8rem',
+                        paddingBlockEnd: 2,
+                      }}
+                    >
+                      It is recommended to enter both numbers.
                     </Typography>
                     <Grid container columnSpacing={2}>
                       <Grid xs={12} sm={6}>
@@ -566,7 +641,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     </Grid>
                   </Box>
                 )}
-                {watch('category') !== 'book' && (
+                {watch('mainCategory') !== 'book' && (
                   <Box
                     sx={{
                       paddingBlockStart: 4,
@@ -662,7 +737,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                         control={control}
                         name={'itemName'}
                         rules={{
-                          required: `${watch('category'!)
+                          required: `${watch('mainCategory'!)
                             .split(' ')
                             .map(
                               (word) =>
@@ -672,7 +747,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                           pattern: {
                             value: regexTextPattern,
                             message: `Please enter a valid ${watch(
-                              'category'
+                              'mainCategory'
                             )} name with only Hebrew or English letters`,
                           },
                         }}
@@ -692,7 +767,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                                 required
                                 name={name}
                                 value={value}
-                                label={`${watch('category'!)
+                                label={`${watch('mainCategory'!)
                                   .split(' ')
                                   .map(
                                     (word) =>
@@ -710,7 +785,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                                   }
                                   if (!fieldState.isDirty) {
                                     return `Please enter the
-                                   ${watch('category')} name`
+                                   ${watch('mainCategory')} name`
                                   }
                                   if (!fieldState.invalid) {
                                     return getValidText()
@@ -722,7 +797,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                         }}
                       />
                     </Grid>
-                    {watch('category') === 'book' ? (
+                    {watch('mainCategory') === 'book' ? (
                       <Grid xs={12} sm={6}>
                         <Controller
                           control={control}
@@ -774,7 +849,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     ) : (
                       <></>
                     )}
-                    {watch('category') === 'board-game' ? (
+                    {watch('mainCategory') === 'board-game' ? (
                       <Grid xs={12} sm={6}>
                         <Controller
                           control={control}
@@ -933,7 +1008,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       control={control}
                       name="itemCondition"
                       rules={{
-                        required: `${watch('category')
+                        required: `${watch('mainCategory')
                           .split(' ')
                           .map(
                             (word) =>
@@ -951,7 +1026,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                           required
                           fullWidth
                           select
-                          label={`${watch('category')
+                          label={`${watch('mainCategory')
                             .split(' ')
                             .map(
                               (word) =>
@@ -961,14 +1036,16 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                           helperText={
                             fieldState.error
                               ? fieldState.error.message
-                              : `Please select ${watch('category')} condition`
+                              : `Please select ${watch(
+                                  'mainCategory'
+                                )} condition`
                           }
                           onChange={onChange}
                           onBlur={onBlur}
                         >
-                          {watch('category') &&
+                          {watch('mainCategory') &&
                             categories.map((option) =>
-                              option.value === watch('category')
+                              option.value === watch('mainCategory')
                                 ? Object.entries(option.conditionTextValue)
                                     .reverse()
                                     .map(([key, value]) => (
@@ -1041,7 +1118,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       case 4:
         return (
           <>
-            {watch('category') && (
+            {watch('mainCategory') && (
               <Box
                 sx={{
                   paddingBlockStart: 4,
@@ -1055,7 +1132,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     fontWeight: 500,
                   }}
                 >
-                  {`${watch('category')
+                  {`${watch('mainCategory')
                     .split(' ')
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ')} Location:`}
@@ -1072,7 +1149,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                         </Typography>
                         {`We require the full address to calculate the distance
                   between the ${watch(
-                    'category'
+                    'mainCategory'
                   )}'s location and the borrower. Rest
                   assured, the full address will not be made public, and it
                   will only be shared with the borrower after your
@@ -1300,7 +1377,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       case 5:
         return (
           <>
-            {watch('category') && (
+            {watch('mainCategory') && (
               <>
                 <Tooltip
                   followCursor
@@ -1336,7 +1413,9 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
 
   const isNextDisabled = () => {
     type FormFieldName =
-      | 'category'
+      | 'mainCategory'
+      | 'secondaryCategory'
+      | 'tertiaryCategory'
       | 'isbn'
       | 'danacode'
       | 'barcode'
@@ -1354,7 +1433,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
 
     if (activeStep === 1) {
       // Define an array of field names that are required for the current step.
-      const requiredFields: FormFieldName[] = ['category'] // Modify this based on your actual form.
+      const requiredFields: FormFieldName[] = ['mainCategory'] // Modify this based on your actual form.
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {
@@ -1369,7 +1448,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       // Define an array of field names that are required for the current step.
       const requiredFields: FormFieldName[] = [] // Modify this based on your actual form.
 
-      if (watch('category') === 'book') {
+      if (watch('mainCategory') === 'book') {
         requiredFields.push('isbn', 'danacode')
       } else {
         requiredFields.push('barcode')

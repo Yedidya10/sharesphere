@@ -1,14 +1,14 @@
-import book from './book'
-import puzzle from './puzzle'
-import gardeningTool from './gardeningTool'
-import sportingGood from './sportingGood'
-import kitchenTool from './kitchenTool'
 import boardGame from './boardGame'
-import musicalInstrument from './musicalInstrument'
+import book from './book'
 import campingGear from './campingGear'
 import diyTool from './diyTool'
-import officeSupplies from './officeSupplies'
+import gardeningTool from './gardeningTool'
 import kitchenAppliances from './kitchenAppliances'
+import kitchenTool from './kitchenTool'
+import musicalInstrument from './musicalInstrument'
+import officeSupplies from './officeSupplies'
+import puzzle from './puzzle'
+import sportingGood from './sportingGood'
 import trainingEquipment from './trainingEquipment'
 
 export default [
@@ -23,5 +23,5 @@ export default [
   diyTool,
   officeSupplies,
   kitchenAppliances,
-  trainingEquipment
+  trainingEquipment,
 ]

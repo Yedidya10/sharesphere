@@ -43,7 +43,9 @@ interface AlertSubscriber {
 export interface ItemCore {
   cardIds: CardIds
   details: {
-    category: string
+    mainCategory: string
+    secondaryCategory: string
+    tertiaryCategory: string
     name: string
     author: string
     brand: string

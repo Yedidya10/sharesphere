@@ -17,6 +17,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import ChatIcon from '@mui/icons-material/Chat'
+import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IAdminDashboardDrawer {
   sampleTextProp: string
@@ -89,35 +90,38 @@ const AdminDashboardDrawer: React.FC<IAdminDashboardDrawer> = ({
         component="nav"
         aria-labelledby="dashboard-list-nav"
       >
-        <ListItemButton href="/adminDashboard/profile">
+        <ListItemButton component={NextLinkComposed} to="/adminDashboard">
           <ListItemIcon>
             <AccountCircleIcon />
           </ListItemIcon>
           <ListItemText primary="Profile" />
         </ListItemButton>
 
-        <ListItemButton href="/adminDashboard/chats">
+        <ListItemButton component={NextLinkComposed} to="/adminDashboard/chats">
           <ListItemIcon>
             <ChatIcon />
           </ListItemIcon>
           <ListItemText primary="Chats" />
         </ListItemButton>
 
-        <ListItemButton  href="/adminDashboard/users">
+        <ListItemButton component={NextLinkComposed} to="/adminDashboard/users">
           <ListItemIcon>
             <ChecklistIcon />
           </ListItemIcon>
           <ListItemText primary="Users" />
         </ListItemButton>
 
-        <ListItemButton  href="/adminDashboard/cards">
+        <ListItemButton component={NextLinkComposed} to="/adminDashboard/cards">
           <ListItemIcon>
             <ChecklistIcon />
           </ListItemIcon>
           <ListItemText primary="Cards" />
         </ListItemButton>
 
-        <ListItemButton href="/adminDashboard/settings">
+        <ListItemButton
+          component={NextLinkComposed}
+          to="/adminDashboard/settings"
+        >
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

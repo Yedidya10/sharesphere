@@ -3,14 +3,7 @@ import { IUserBorrowedCardInfo } from './UserBorrowedCardInfo'
 const base: IUserBorrowedCardInfo = {
   card: {
     cardIds: {},
-    details: {
-      category: '',
-      name: '',
-      author: '',
-      brand: '',
-      description: '',
-      imageUrl: '',
-    },
+
     condition: 0,
     maxLoanPeriod: 0,
     location: {
@@ -21,6 +14,16 @@ const base: IUserBorrowedCardInfo = {
     },
     owner: '',
     status: '',
+    details: {
+      mainCategory: '',
+      secondaryCategory: '',
+      tertiaryCategory: '',
+      name: '',
+      author: '',
+      brand: '',
+      description: '',
+      imageUrl: ''
+    }
   },
   label: '',
 }

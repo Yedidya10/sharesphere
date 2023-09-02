@@ -75,7 +75,16 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
   const { cardIds, details, owner, condition, location, maxLoanPeriod } =
     formProps
 
-  const { category, name, author, brand, description, imageUrl } = details
+  const {
+    mainCategory,
+    secondaryCategory,
+    tertiaryCategory,
+    name,
+    author,
+    brand,
+    description,
+    imageUrl,
+  } = details
   const { city, streetName, streetNumber, zipCode } = location
   const { isbn, danacode, barcode } = cardIds
   const [cardId, setCardId] = React.useState<string>('')
@@ -107,7 +116,9 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
   } = useForm<ItemEditFormValues>({
     mode: 'onChange',
     defaultValues: {
-      category: category,
+      mainCategory: mainCategory,
+      secondaryCategory: secondaryCategory,
+      tertiaryCategory: tertiaryCategory,
       isbn: isbn,
       danacode: danacode,
       barcode: barcode,
@@ -184,7 +195,9 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
           barcode: data.barcode,
         },
         details: {
-          category: data.category,
+          mainCategory: data.mainCategory,
+          secondaryCategory: data.secondaryCategory,
+          tertiaryCategory: data.tertiaryCategory,
           name: data.itemName,
           author: data.author,
           brand: data.brand,
@@ -278,7 +291,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
         >
           <Controller
             control={control}
-            name="category"
+            name="mainCategory"
             rules={{
               required: 'Category is required',
             }}
@@ -309,9 +322,9 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
               </TextField>
             )}
           />
-          {watch('category') && (
+          {watch('mainCategory') && (
             <>
-              {watch('category') === 'book' && (
+              {watch('mainCategory') === 'book' && (
                 <Box
                   sx={{
                     paddingBlockStart: 4,
@@ -474,7 +487,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                   </Grid>
                 </Box>
               )}
-              {watch('category') !== 'book' && (
+              {watch('mainCategory') !== 'book' && (
                 <Box
                   sx={{
                     paddingBlockStart: 4,
@@ -563,7 +576,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                           control={control}
                           name={'itemName'}
                           rules={{
-                            required: `${watch('category'!)
+                            required: `${watch('mainCategory'!)
                               .split(' ')
                               .map(
                                 (word) =>
@@ -573,7 +586,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                             pattern: {
                               value: regexTextPattern,
                               message: `Please enter a valid ${watch(
-                                'category'
+                                'mainCategory'
                               )} name with only Hebrew or English letters`,
                             },
                           }}
@@ -593,7 +606,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                                   required
                                   name={name}
                                   value={value}
-                                  label={`${watch('category'!)
+                                  label={`${watch('mainCategory'!)
                                     .split(' ')
                                     .map(
                                       (word) =>
@@ -611,7 +624,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                                     }
                                     if (!fieldState.isDirty) {
                                       return `Please enter the
-                                       ${watch('category')} name`
+                                       ${watch('mainCategory')} name`
                                     }
                                     if (!fieldState.invalid) {
                                       return getValidText()
@@ -623,7 +636,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                           }}
                         />
                       </Grid>
-                      {watch('category') === 'book' ? (
+                      {watch('mainCategory') === 'book' ? (
                         <Grid xs={12} sm={6}>
                           <Controller
                             control={control}
@@ -675,7 +688,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                       ) : (
                         <></>
                       )}
-                      {watch('category') === 'board-game' ? (
+                      {watch('mainCategory') === 'board-game' ? (
                         <Grid xs={12} sm={6}>
                           <Controller
                             control={control}
@@ -892,7 +905,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                         fontWeight: 500,
                       }}
                     >
-                      {`${watch('category')
+                      {`${watch('mainCategory')
                         .split(' ')
                         .map(
                           (word) => word.charAt(0).toUpperCase() + word.slice(1)

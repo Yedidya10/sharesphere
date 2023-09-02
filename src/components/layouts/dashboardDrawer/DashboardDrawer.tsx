@@ -18,6 +18,7 @@ import ListItemText from '@mui/material/ListItemText'
 import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import { useRecoilValue } from 'recoil'
+import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IDashboardDrawer {
   sampleTextProp: string
@@ -92,7 +93,7 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
         component="nav"
         aria-labelledby="dashboard-list-nav"
       >
-        <ListItemButton href="/dashboard/profile">
+        <ListItemButton  component={NextLinkComposed} to="/dashboard/profile">
           <ListItemIcon>
             <AccountCircleIcon />
           </ListItemIcon>
@@ -110,7 +111,7 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
           <List component="div" disablePadding>
             <ListItemButton
               sx={{ pl: 4 }}
-              href="/dashboard/borrowed-items"
+              component={NextLinkComposed} to="/dashboard/borrowed-items"
               disabled={!isUserBorrowedItemsExist}
             >
               <ListItemIcon>
@@ -120,7 +121,7 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
             </ListItemButton>
             <ListItemButton
               sx={{ pl: 4 }}
-              href="/dashboard/your-items"
+              component={NextLinkComposed} to="/dashboard/your-items"
               disabled={!isUserOwnedItemsExist}
             >
               <ListItemIcon>
@@ -131,7 +132,7 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
           </List>
         </Collapse>
 
-        <ListItemButton href="/dashboard/settings">
+        <ListItemButton  component={NextLinkComposed} to="/dashboard/settings">
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

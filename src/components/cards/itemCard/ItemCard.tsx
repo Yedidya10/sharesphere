@@ -81,7 +81,7 @@ const ItemCard: React.FC<IItemCard> = ({
           <CardContent>
             <Stack direction="row" spacing={1}>
               <Chip
-                label={card.details.category}
+                label={card.details.mainCategory}
                 size="small"
                 variant="outlined"
                 onClick={handleChipClick}

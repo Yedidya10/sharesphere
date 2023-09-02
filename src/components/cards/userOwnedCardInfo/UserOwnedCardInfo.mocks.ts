@@ -5,14 +5,6 @@ const base: IUserOwnedCardInfo = {
   isOwner: false,
   card: {
     cardIds: {},
-    details: {
-      category: '',
-      name: '',
-      author: '',
-      brand: '',
-      description: '',
-      imageUrl: '',
-    },
     condition: 0,
     maxLoanPeriod: 0,
     location: {
@@ -23,6 +15,16 @@ const base: IUserOwnedCardInfo = {
     },
     owner: '',
     status: '',
+    details: {
+      mainCategory: '',
+      secondaryCategory: '',
+      tertiaryCategory: '',
+      name: '',
+      author: '',
+      brand: '',
+      description: '',
+      imageUrl: ''
+    }
   },
   label: '',
   activeButton: false,
