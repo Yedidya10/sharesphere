@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { useSession } from 'next-auth/react'
 import * as React from 'react'
 
 export interface IProfileNotificationsButton {
@@ -36,6 +37,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
   primary = false,
   label,
 }) => {
+  const { data: session, status } = useSession()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -46,7 +48,9 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
   }
 
   return (
-    <React.Fragment>
+    <>
+      {status === 'authenticated' && (
+    
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Notifications">
           <IconButton
@@ -63,6 +67,8 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
           </IconButton>
         </Tooltip>
       </Box>
+        
+      )}
       <Menu
         anchorEl={anchorEl}
         id="notifications-menu"
@@ -144,7 +150,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
           </MenuItem>
         </MenuList>
       </Menu>
-    </React.Fragment>
+    </>
   )
 }
 

@@ -1,13 +1,13 @@
 'use client'
 
 import LoginIcon from '@mui/icons-material/Login'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import * as React from 'react'
 
 export interface ISignInButton {
-  buttonText: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -30,18 +30,35 @@ export interface ISignInButton {
   onClick?: () => void
 }
 
-const SignInButton: React.FC<ISignInButton> = ({
-  primary = false,
-  label,
-  buttonText,
-}) => {
+const SignInButton: React.FC<ISignInButton> = ({ primary = false, label }) => {
+  const { data: session, status } = useSession()
   return (
-    <Button onClick={() => signIn()} sx={{
-      gap: 1,
-    }}>
-      <LoginIcon fontSize="small" />
-      {buttonText}
-    </Button>
+    <>
+      {status === 'unauthenticated' && (
+        <>
+          <Tooltip
+            title="Log In/Sign Up"
+            sx={{
+              display: { xxs: 'block', md: 'none' },
+            }}
+          >
+            <IconButton onClick={() => signIn()}>
+              <LoginIcon />
+            </IconButton>
+          </Tooltip>
+          <Button
+            onClick={() => signIn()}
+            sx={{
+              gap: 1,
+              display: { xxs: 'none', md: 'flex' },
+            }}
+          >
+            <LoginIcon fontSize="small" />
+            Log In/Sign Up
+          </Button>
+        </>
+      )}
+    </>
   )
 }
 

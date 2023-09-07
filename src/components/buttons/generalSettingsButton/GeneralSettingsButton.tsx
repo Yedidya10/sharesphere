@@ -39,10 +39,9 @@ const GeneralSettingsButton: React.FC<IGeneralSettingsButton> = ({
   open,
 }) => {
   return (
-    <Tooltip title="Settings">
+    <Tooltip title="Settings" >
       <IconButton
         onClick={handleClick}
-        size="small"
         aria-controls={open ? 'settings-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}

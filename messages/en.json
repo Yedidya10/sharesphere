@@ -1,5 +1,11 @@
 {
-    "Home": {
-        "title": "Hello world!"
+  "auth": {
+    "SignUp": {
+      "title": "Sign up",
+      "form": {
+        "placeholder": "Please enter your name",
+        "submit": "Submit"
+      }
     }
+  }
 }

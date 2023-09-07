@@ -1,8 +1,11 @@
 'use client'
 
 import ItemPostForm from '@/components/forms/itemPostForm/ItemPostForm'
-import { Button } from '@mui/material'
+import Button from '@mui/material/Button'
 import { useState } from 'react'
+import PostAddIcon from '@mui/icons-material/PostAdd'
+import Box from '@mui/material/Box'
+import { IconButton, Tooltip } from '@mui/material'
 
 export interface IItemPostButton {
   /**
@@ -37,8 +40,30 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
 
   return (
     <>
-      <Button onClick={handleOpen}>פרסם פריט להשאלה</Button>
-      <ItemPostForm label={''} openModal={openModal} handleClose={handleClose} />
+      <Button
+        sx={{
+          display: { xs: 'none', xsm: 'flex' },
+          gap: 1,
+
+        }}
+        onClick={handleOpen}
+      >
+        <PostAddIcon />
+        Add Item
+      </Button>
+      <Tooltip
+        sx={{ display: { xs: 'block', xsm: 'none' } }}
+        title="פרסם פריט להשאלה"
+      >
+        <IconButton onClick={handleOpen}>
+          <PostAddIcon />
+        </IconButton>
+      </Tooltip>
+      <ItemPostForm
+        label={''}
+        openModal={openModal}
+        handleClose={handleClose}
+      />
     </>
   )
 }

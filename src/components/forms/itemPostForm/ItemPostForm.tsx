@@ -42,6 +42,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
 import { NextLinkComposed } from '@/components/mui/Link'
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
 
 export interface IItemPostForm {
   openModal: boolean
@@ -75,7 +76,7 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
     maxWidth: 500,
-    fontSize: theme.typography.pxToRem(12),
+    fontSize: theme.typography.pxToRem(13),
     border: '1px solid #dadde9',
   },
 }))
@@ -344,25 +345,23 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
             <Box>
               <Typography
                 sx={{
-                  fontSize: '.8rem',
-                  fontWeight: 500,
+                  fontSize: '.9rem',
                   paddingBlockEnd: 2,
                 }}
               >
-                Please select your item category:
+                Please select category:
               </Typography>
               <Controller
                 control={control}
                 name="mainCategory"
                 rules={{
-                  required: 'Category is required',
+                  required: 'Main category is required',
                 }}
                 render={({
                   field: { onChange, onBlur, value, name, ref },
                   fieldState,
                 }) => (
                   <TextField
-                    
                     fullWidth
                     id={name}
                     inputRef={ref}
@@ -371,7 +370,9 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     select
                     label="Category"
                     helperText={
-                      fieldState.isDirty ? '' : 'Please select your category'
+                      fieldState.isDirty
+                        ? ''
+                        : 'Please select item main category'
                     }
                     error={!!fieldState.error}
                     onChange={onChange}
@@ -387,15 +388,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
               />
             </Box>
             <Box>
-              <Typography
-                sx={{
-                  fontSize: '.8rem',
-                  fontWeight: 500,
-                  paddingBlockEnd: 2,
-                }}
-              >
-                Please select your item sub-category:
-              </Typography>
               <Controller
                 control={control}
                 name="secondaryCategory"
@@ -407,7 +399,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                   fieldState,
                 }) => (
                   <TextField
-                    
                     fullWidth
                     id={name}
                     inputRef={ref}
@@ -418,7 +409,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     helperText={
                       fieldState.isDirty
                         ? ''
-                        : 'Please select your sub-category'
+                        : 'Please select item sub-category'
                     }
                     error={!!fieldState.error}
                     onChange={onChange}
@@ -647,6 +638,76 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       paddingBlockStart: 4,
                     }}
                   >
+                    {watch('mainCategory') !== 'board-game' || watch('mainCategory') !== 'puzzle' ? (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: '.9rem',
+                            paddingBlockEnd: 1,
+                          }}
+                          component={'p'}
+                        >
+                          It&apos;s recommended to enter the item&apos;s barcode
+                        </Typography>
+                        <HtmlTooltip
+                          title={
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 1,
+                              }}
+                            >
+                              {`Why is it highly advisable to input a barcode
+                                for an item?`}
+                              <Typography
+                                sx={{
+                                  fontSize: '.8rem',
+                                }}
+                              >
+                                1. If multiple items share the same barcode, the
+                                system can identify this and will suggest
+                                available items to the borrower when they search
+                                for that specific item.
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontSize: '.8rem',
+                                }}
+                              >
+                                2. When a lender lists an item, using a barcode
+                                saves time and avoids the hassle of re-entering
+                                information that has already been provided for a
+                                similar item with the same barcode.
+                              </Typography>
+                            </Box>
+                          }
+                        >
+                          <HelpOutlineRoundedIcon
+                            sx={{
+                              fontSize: 16,
+                              marginBlockEnd: 1,
+                            }}
+                          />
+                        </HtmlTooltip>
+                      </Box>
+                    ) : (
+                      <Typography
+                        sx={{
+                          fontSize: '.9rem',
+                          paddingBlockEnd: 1,
+                        }}
+                        component={'p'}
+                      >
+                        Please enter item&apos;s barcode number
+                      </Typography>
+                    )}
                     <Controller
                       control={control}
                       name="barcode"
@@ -1433,7 +1494,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
 
     if (activeStep === 1) {
       // Define an array of field names that are required for the current step.
-      const requiredFields: FormFieldName[] = ['mainCategory'] // Modify this based on your actual form.
+      const requiredFields: FormFieldName[] = [
+        'mainCategory',
+        'secondaryCategory',
+      ] // Modify this based on your actual form.
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {

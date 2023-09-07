@@ -2,6 +2,7 @@
 
 import GeneralSettingsButton from '@/components/buttons/generalSettingsButton/GeneralSettingsButton'
 import ProfileSettingsButton from '@/components/buttons/profileSettingsButton/ProfileSettingsButton'
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Menu from '@mui/material/Menu'
 import { signOut, useSession } from 'next-auth/react'
@@ -79,7 +80,9 @@ const SettingsMenu: React.FC<ISettingsMenu> = ({
   }
 
   return (
-    <>
+    <Box
+      
+    >
       {status === 'loading' && <CircularProgress />}
       {status === 'authenticated' && (
         <ProfileSettingsButton
@@ -138,7 +141,7 @@ const SettingsMenu: React.FC<ISettingsMenu> = ({
           />
         )}
       </Menu>
-    </>
+    </Box>
   )
 }
 

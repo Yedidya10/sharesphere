@@ -10,6 +10,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 export interface IMessagesButton {
   /**
@@ -38,6 +39,7 @@ const MessagesButton: React.FC<IMessagesButton> = ({
   primary = false,
   label,
 }) => {
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -50,7 +52,8 @@ const MessagesButton: React.FC<IMessagesButton> = ({
   }
 
   return (
-    <React.Fragment>
+    <>
+       {status === 'authenticated' && (
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Messages">
           <IconButton
@@ -67,6 +70,7 @@ const MessagesButton: React.FC<IMessagesButton> = ({
           </IconButton>
         </Tooltip>
       </Box>
+      )}
       <Menu
         anchorEl={anchorEl}
         id="messages-menu"
@@ -153,7 +157,7 @@ const MessagesButton: React.FC<IMessagesButton> = ({
           </MenuItem>
         </MenuList>
       </Menu>
-    </React.Fragment>
+    </>
   )
 }
 

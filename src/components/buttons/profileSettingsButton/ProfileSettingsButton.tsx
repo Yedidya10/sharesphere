@@ -46,7 +46,6 @@ const ProfileSettingsButton: React.FC<IProfileSettingsButton> = ({
       <IconButton
         onClick={handleClick}
         size="small"
-        sx={{ ml: 2 }}
         aria-controls={open ? 'profile-settings-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
