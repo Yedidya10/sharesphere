@@ -1,11 +1,7 @@
 {
-  "auth": {
-    "SignUp": {
-      "title": "Sign up",
-      "form": {
-        "placeholder": "Please enter your name",
-        "submit": "Submit"
-      }
+  "AllItems": {
+    "Cards": {
+      "noItemsFound": "No items found"
     }
   }
 }

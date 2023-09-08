@@ -1,5 +1,6 @@
 import { useLocale } from 'next-intl'
 import { notFound } from 'next/navigation'
+import { NextIntlClientProvider } from 'next-intl'
 // import 'rsuite/dist/rsuite.min.css'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import Header from '@/components/layouts/header/Header'
@@ -51,8 +52,6 @@ export default async function RootLayout({
   if (params.locale !== locale) {
     notFound()
   }
-
-  // const { lang } = useTranslation('common')
 
   const dir = () => {
     if (locale === 'he') {
