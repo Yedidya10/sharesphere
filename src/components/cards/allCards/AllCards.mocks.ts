@@ -2,7 +2,9 @@ import { IAllCards } from './AllCards'
 
 const base: IAllCards = {
   label: '',
-  searchQuery: '',
+  t: {
+    noItemsFound: 'No items found',
+  }
 }
 
 export const mockAllCardsProps = {

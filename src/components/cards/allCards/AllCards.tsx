@@ -8,9 +8,12 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useEffect, useState } from 'react'
 import ItemCard from '../itemCard/ItemCard'
+import SearchBar from '@/components/forms/searchBar/SearchBar'
 
 export interface IAllCards {
-  searchQuery: string
+    t: {
+      noItemsFound: string
+    }
   /**
    * Is this the principal call to action on the page?
    */
@@ -36,11 +39,12 @@ export interface IAllCards {
 const AllCards: React.FC<IAllCards> = ({
   primary = false,
   label,
-  searchQuery,
+  t,
   ...props
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [allCards, setAllCards] = useState<ItemCoreWithLoanDetails[]>([])
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   const filteredAllCards = allCards.filter((card) => {
     const isbnMatch = card.cardIds
@@ -76,7 +80,6 @@ const AllCards: React.FC<IAllCards> = ({
 
         const data = await response.json()
         const cards = data.cards
-        console.log(cards)
 
         if (response.ok) {
           return setAllCards(cards)
@@ -96,6 +99,7 @@ const AllCards: React.FC<IAllCards> = ({
 
   return (
     <>
+      <SearchBar setSearchQuery={setSearchQuery} />
       {isLoading ? (
         <Grid container rowSpacing={0} columnSpacing={2} columns={30}>
           {skeletonArray.slice(0, 10).map((_, index) => (
@@ -146,7 +150,7 @@ const AllCards: React.FC<IAllCards> = ({
           }}
         >
           <Typography variant="h3" color="text.secondary">
-            No cards found
+            {t.noItemsFound}
           </Typography>
         </Box>
       )}

@@ -1,14 +1,13 @@
-'use client'
-
 import Cards from '@/components/cards/allCards/AllCards'
-import SearchBar from '@/components/forms/searchBar/SearchBar'
 import Box from '@mui/material/Box'
-import useTranslation from 'next-translate/useTranslation'
-import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function AllItems() {
-  // const { t } = useTranslation('home')
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const t = useTranslations('AllItems')
+
+  const cardsTranslations = {
+    noItemsFound: t('Cards.noItemsFound'),
+  }
 
   return (
     <Box
@@ -17,8 +16,30 @@ export default function AllItems() {
         m: 'auto',
       }}
     >
-      <SearchBar setSearchQuery={setSearchQuery} />
-      <Cards searchQuery={searchQuery} label={''} />
+      <Cards label={''} t={cardsTranslations} />
     </Box>
   )
 }
+
+// import Cards from '@/components/cards/allCards/AllCards'
+// import Box from '@mui/material/Box'
+// import { useTranslations } from 'next-intl'
+
+// export default  function AllItems() {
+//   const t = useTranslations('AllItems')
+
+//   const translations = {
+//     noItemsFound: t('noItemsFound'),
+//   }
+
+//   return (
+//     <Box
+//       sx={{
+//         width: '100%',
+//         m: 'auto',
+//       }}
+//     >
+//       <Cards label={''} t={translations} />
+//     </Box>
+//   )
+// }
