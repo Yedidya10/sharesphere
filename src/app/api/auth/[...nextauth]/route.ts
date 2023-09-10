@@ -3,8 +3,9 @@ import { User } from '@/models/dbModels'
 import { MongoDBAdapter } from '@auth/mongodb-adapter'
 import NextAuth, { AuthOptions } from 'next-auth'
 import { Adapter } from 'next-auth/adapters'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
+// import { createTransport } from 'nodemailer'
 const bcrypt = require('bcryptjs')
 
 // Check if the environment variables are set
@@ -34,34 +35,19 @@ export const authOptions: AuthOptions = {
     //   clientId: getCredentials('FACEBOOK').clientId,
     //   clientSecret: getCredentials('FACEBOOK').clientSecret,
     // }),
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {},
-      async authorize(credentials, req) {
-        const { email, password } = credentials as {
-          email: string
-          password: string
-        }
-
-        try {
-          const user = await User.findOne({ email })
-          console.log(user)
-
-          if (!user) {
-            throw new Error('No user found with this email')
-          }
-
-          const isValid = await bcrypt.compare(password, user.password)
-
-          if (!isValid) {
-            throw new Error('Could not log you in')
-          }
-
-          return user
-        } catch (error: any) {
-          throw new Error(error.message)
-        }
+    /* Once there is a domain, it will be possible to define this provider.
+      https://authjs.dev/guides/providers/email
+      https://nodemailer.com/about/#example */
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: Number(process.env.EMAIL_SERVER_PORT),
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
       },
+      from: process.env.EMAIL_FROM,
     }),
   ],
   secret: process.env.JWT_SECRET,

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from '@/components/mui/Link'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
@@ -14,7 +15,6 @@ import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
-import Link from '@/components/mui/Link'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
@@ -22,7 +22,7 @@ import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
-export interface ISignUp {
+export interface ISignUpForm {
   /**
    * Is this the principal call to action on the page?
    */
@@ -32,11 +32,11 @@ export interface ISignUp {
    */
   backgroundColor?: string
   /**
-   * How large should the SignUp be?
+   * How large should the SignUpForm be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * SignUp contents
+   * SignUpForm contents
    */
   label: string
   /**
@@ -52,7 +52,7 @@ interface RegistrationFormData {
   password: string
 }
 
-const SignUp: React.FC<ISignUp> = () => {
+const SignUpForm: React.FC<ISignUpForm> = () => {
   const [showPassword, setShowPassword] = React.useState(false)
 
   const handleClickShowPassword = () => setShowPassword((show) => !show)
@@ -436,4 +436,4 @@ const SignUp: React.FC<ISignUp> = () => {
   )
 }
 
-export default SignUp
+export default SignUpForm

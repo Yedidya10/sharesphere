@@ -15,7 +15,6 @@ declare module '@mui/material/styles' {
 }
 
 const defaultTheme = createTheme({
-  direction: 'rtl',
   palette: {
     mode: 'light',
   },
@@ -33,6 +32,52 @@ const defaultTheme = createTheme({
     },
   },
   components: {
+    MuiListItemText : {
+      styleOverrides: {
+        root: {
+          color: 'text.primary',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: 'text.primary',
+        },
+        h1: {
+          fontSize: '2.6rem',
+          fontWeight: 400,
+        },
+        h2: {
+          fontSize: '1.6rem',
+          fontWeight: 500,
+       
+        },
+        subtitle1: {
+          fontSize: '1.2rem',
+          fontWeight: 400,
+        },
+        body1: {
+          fontSize: '1rem',
+          fontWeight: 400,
+        },
+      },
+      defaultProps: {
+        variantMapping: {
+          h1: 'h1',
+          h2: 'h2',
+          h3: 'h3',
+          h4: 'h4',
+          h5: 'h5',
+          h6: 'h6',
+          subtitle1: 'h6',
+          subtitle2: 'h6',
+          body1: 'p',
+          body2: 'p',
+        },
+      },
+    },
+
     // MuiAlert: {
     //   styleOverrides: {
     //     root: ({ ownerState }) => ({
@@ -166,13 +211,6 @@ const defaultTheme = createTheme({
     //     },
     //   },
     // },
-    MuiListItemText: {
-      styleOverrides: {
-        root: {
-          color: 'text.primary',
-        },
-      },
-    },
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
