@@ -11,6 +11,7 @@ import {
   GridToolbar,
   GridValueGetterParams,
 } from '@mui/x-data-grid'
+import Image from 'next/image'
 
 const handleOpenModal = (id: number) => {
   console.log(id)
@@ -31,7 +32,7 @@ const columns: GridColDef[] = [
     headerName: 'Image',
     width: 70,
     renderCell: (params: GridRenderCellParams) => (
-      <img
+      <Image
         src={params.row.thumbnailUrl || '/default-thumbnail.png'} // Provide a default thumbnail URL
         alt={`Thumbnail for ${params.row.firstName} ${params.row.lastName}`}
         style={{
