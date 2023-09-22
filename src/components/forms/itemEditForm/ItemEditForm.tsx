@@ -202,8 +202,8 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
           author: data.author,
           brand: data.brand,
           description: data.description,
-          imageUrl: data.imageUrl,
         },
+        imagesUrl: [data.imageUrl],
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
           city: data.city,
