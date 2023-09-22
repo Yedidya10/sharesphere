@@ -1,6 +1,5 @@
 'use client'
 
-import categories from '@/utils/categories/categories'
 import {
   regexAddressNamePattern,
   regexAddressNumberPattern,
@@ -12,6 +11,7 @@ import {
   regexTextPattern,
   regexZipCodePattern,
 } from '@/utils/regexPatterns'
+import categories from '@/utils/categories/categories'
 import { AddItemFormValues } from '@/utils/types/FormValues'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -37,12 +37,27 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
 import { useSession } from 'next-auth/react'
-import React, { useState } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
 import { NextLinkComposed } from '@/components/mui/Link'
 import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
+import Input from '@mui/material/Input'
+import Image from 'next/image'
+import { useDropzone } from 'react-dropzone'
+import { RiDragDropLine } from 'react-icons/ri'
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import ImageInput from '../imageInput/ImageInput'
+import LocationInput from '../locationInput/LocationInput'
+import DescriptionInput from '../descriptionInput/DescriptionInput'
+import ConditionInput from '../conditionInput/ConditionInput'
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
+import SaveIcon from '@mui/icons-material/Save'
+import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
+import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
 
 export interface IItemPostForm {
   openModal: boolean
@@ -83,9 +98,9 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
 
 const steps = [
   'Instructions',
-  'Category',
-  'Item ID',
+  'Category - Item ID',
   'Details',
+  'Images',
   'Location',
   'Review',
 ]
@@ -98,16 +113,17 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
 }) => {
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set<number>())
+  const [draftSaved, setDraftSaved] = useState<boolean>(false)
   const { data: session, status } = useSession()
   const [ownerId, setOwnerId] = useState<string>('')
 
   const isStepOptional = (step: number) => {
     return (
-      step !== 0 &&
-      step !== 1 &&
-      step !== 2 &&
-      step !== 3 &&
-      step !== 4 &&
+      // step !== 0 &&
+      // step !== 1 &&
+      // step !== 2 &&
+      // step !== 3 &&
+      // step !== 4 &&
       step !== 5
     )
   }
@@ -146,6 +162,11 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     })
   }
 
+  // Not implemented yet
+  const handleSaveDraft = () => {
+    console.log('Save for later - Not implemented yet')
+  }
+
   React.useEffect(() => {
     if (session) {
       setOwnerId(session.user!.id)
@@ -164,8 +185,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       console.log(error)
     }
   }
-
-  const [address, setAddress] = useState({})
 
   const {
     watch,
@@ -186,7 +205,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       itemName: '',
       author: '',
       brand: '',
-      imageUrl: '',
+      imagesFile: [],
       description: '',
       itemCondition: '',
       maxLoanPeriod: '',
@@ -213,8 +232,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           author: data.author,
           brand: data.brand,
           description: data.description,
-          imageUrl: data.imageUrl,
         },
+        imagesUrl: data.imagesFile,
         condition: parseFloat(data.itemCondition),
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
@@ -303,6 +322,22 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
             <Typography
               sx={{
                 paddingBlockEnd: 2,
+                fontWeight: 500,
+              }}
+            >
+              Welcome to the item posting form!
+            </Typography>
+            <Typography
+              sx={{
+                paddingBlockEnd: 2,
+              }}
+            >
+              Please follow the instructions below to post your item. If you
+              have any questions, please see our FAQ page or contact us.
+            </Typography>
+            <Typography
+              sx={{
+                paddingBlockEnd: 2,
               }}
             >
               If you have multiple items to share with the community, please
@@ -321,119 +356,50 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
               <Typography
                 sx={{
                   display: 'inline',
-                  fontSize: '.85rem',
                   fontWeight: 500,
                 }}
               >
-                Add copy
+                Duplicate
               </Typography>
-              &nbsp; button and then select its condition status and maximum
-              loan days.
+              &nbsp; icon and then select its condition status and maximum loan
+              days for each copy.
             </Typography>
           </Box>
         )
       case 1:
         return (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              paddingBlockStart: 2,
-            }}
-          >
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: '.9rem',
-                  paddingBlockEnd: 2,
-                }}
-              >
-                Please select category:
-              </Typography>
-              <Controller
-                control={control}
-                name="mainCategory"
-                rules={{
-                  required: 'Main category is required',
-                }}
-                render={({
-                  field: { onChange, onBlur, value, name, ref },
-                  fieldState,
-                }) => (
-                  <TextField
-                    fullWidth
-                    id={name}
-                    inputRef={ref}
-                    value={value}
-                    required
-                    select
-                    label="Category"
-                    helperText={
-                      fieldState.isDirty
-                        ? ''
-                        : 'Please select item main category'
-                    }
-                    error={!!fieldState.error}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  >
-                    {categories.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                )}
-              />
-            </Box>
-            <Box>
-              <Controller
-                control={control}
-                name="secondaryCategory"
-                rules={{
-                  required: 'Sub-category is required',
-                }}
-                render={({
-                  field: { onChange, onBlur, value, name, ref },
-                  fieldState,
-                }) => (
-                  <TextField
-                    fullWidth
-                    id={name}
-                    inputRef={ref}
-                    value={value}
-                    required
-                    select
-                    label="Sub-category"
-                    helperText={
-                      fieldState.isDirty
-                        ? ''
-                        : 'Please select item sub-category'
-                    }
-                    error={!!fieldState.error}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  >
-                    {watch('mainCategory') &&
-                      categories
-                        .find(
-                          (category) => category.value === watch('mainCategory')
-                        )
-                        ?.subCategories?.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                  </TextField>
-                )}
-              />
-            </Box>
-          </Box>
-        )
-      case 2:
-        return (
           <>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                paddingBlockStart: 2,
+              }}
+            >
+              <Box>
+                <Typography
+                  sx={{
+                    fontSize: '.9rem',
+                    paddingBlockEnd: 2,
+                  }}
+                >
+                  Please select category:
+                </Typography>
+                <MainCategoryInput
+                  control={control}
+                  watch={watch}
+                  label="MainCategoryInput"
+                />
+              </Box>
+              <Box>
+               <SecondaryCategoryInput
+                  control={control}
+                  watch={watch}
+                  label="SecondaryCategoryInput"
+                />
+              </Box>
+            </Box>
             {watch('mainCategory') && (
               <>
                 {watch('mainCategory') === 'book' && (
@@ -638,7 +604,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       paddingBlockStart: 4,
                     }}
                   >
-                    {watch('mainCategory') !== 'board-game' || watch('mainCategory') !== 'puzzle' ? (
+                    {watch('mainCategory') !== 'board-game' ||
+                    watch('mainCategory') !== 'puzzle' ? (
                       <Box
                         sx={{
                           display: 'flex',
@@ -777,7 +744,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
             )}
           </>
         )
-      case 3:
+      case 2:
         return (
           <>
             {(watch('danacode') && !getFieldState('danacode').invalid) ||
@@ -798,10 +765,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                         control={control}
                         name={'itemName'}
                         rules={{
-                          required: `${watch('mainCategory'!)
+                          required: `${(watch('mainCategory') as string)
                             .split(' ')
                             .map(
-                              (word) =>
+                              (word: string) =>
                                 word.charAt(0).toUpperCase() + word.slice(1)
                             )
                             .join(' ')} name is required`,
@@ -828,10 +795,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                                 required
                                 name={name}
                                 value={value}
-                                label={`${watch('mainCategory'!)
+                                label={`${(watch('mainCategory') as string)
                                   .split(' ')
                                   .map(
-                                    (word) =>
+                                    (word: string) =>
                                       word.charAt(0).toUpperCase() +
                                       word.slice(1)
                                   )
@@ -963,98 +930,9 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       <></>
                     )}
                   </Grid>
-                  <Controller
+                  <DescriptionInput
                     control={control}
-                    name="imageUrl"
-                    rules={{
-                      required: 'Image link is required',
-                      pattern: {
-                        value: regexImageUrlPattern,
-                        message:
-                          'Please enter a valid image link (with image extension at the end)',
-                      },
-                    }}
-                    render={({
-                      field: { onChange, onBlur, value, name, ref },
-                      fieldState,
-                    }) => (
-                      <FormControl
-                        fullWidth
-                        required
-                        error={!!fieldState.error}
-                      >
-                        <TextField
-                          id={name}
-                          inputRef={ref}
-                          value={value}
-                          required
-                          label="Image Link"
-                          onChange={onChange} // send value to hook form
-                          onBlur={onBlur} // notify when input is touched/blur
-                        />
-                        <FormHelperText>
-                          {(function () {
-                            if (fieldState.error) {
-                              return fieldState.error.message
-                            }
-                            if (!fieldState.isDirty) {
-                              return 'Please enter image link'
-                            }
-                            if (!fieldState.invalid) {
-                              return getValidText()
-                            }
-                          })()}
-                        </FormHelperText>
-                      </FormControl>
-                    )}
-                  />
-                  <Controller
-                    control={control}
-                    name="description"
-                    rules={{
-                      required: 'Description is required',
-                      // pattern: {
-                      //   value: regexTextPattern,
-                      //   message:
-                      //     'Please enter a valid description with only Hebrew or English letters',
-                      // },
-                    }}
-                    render={({
-                      field: { onChange, onBlur, value, name, ref },
-                      fieldState,
-                    }) => (
-                      <FormControl
-                        fullWidth
-                        required
-                        error={!!fieldState.error}
-                      >
-                        <TextField
-                          id={name}
-                          required
-                          inputRef={ref}
-                          value={value}
-                          label="Description"
-                          fullWidth
-                          multiline
-                          rows={3}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                        />
-                        <FormHelperText>
-                          {(function () {
-                            if (fieldState.error) {
-                              return fieldState.error.message
-                            }
-                            if (!fieldState.isDirty) {
-                              return 'Please enter description'
-                            }
-                            if (!fieldState.invalid) {
-                              return getValidText()
-                            }
-                          })()}
-                        </FormHelperText>
-                      </FormControl>
-                    )}
+                    label="DescriptionInput"
                   />
                 </Box>
                 <Grid
@@ -1065,59 +943,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                   }}
                 >
                   <Grid xs={12} sm={7}>
-                    <Controller
+                    <ConditionInput
                       control={control}
-                      name="itemCondition"
-                      rules={{
-                        required: `${watch('mainCategory')
-                          .split(' ')
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )} condition is required`,
-                      }}
-                      render={({
-                        field: { onChange, onBlur, value, name, ref },
-                        fieldState,
-                      }) => (
-                        <TextField
-                          id={name}
-                          inputRef={ref}
-                          value={value}
-                          required
-                          fullWidth
-                          select
-                          label={`${watch('mainCategory')
-                            .split(' ')
-                            .map(
-                              (word) =>
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                            )
-                            .join(' ')} condition`}
-                          helperText={
-                            fieldState.error
-                              ? fieldState.error.message
-                              : `Please select ${watch(
-                                  'mainCategory'
-                                )} condition`
-                          }
-                          onChange={onChange}
-                          onBlur={onBlur}
-                        >
-                          {watch('mainCategory') &&
-                            categories.map((option) =>
-                              option.value === watch('mainCategory')
-                                ? Object.entries(option.conditionTextValue)
-                                    .reverse()
-                                    .map(([key, value]) => (
-                                      <MenuItem key={key} value={key}>
-                                        {value}
-                                      </MenuItem>
-                                    ))
-                                : null
-                            )}
-                        </TextField>
-                      )}
+                      label="ConditionInput"
+                      watch={watch}
                     />
                   </Grid>
                   <Grid xs={12} sm={5}>
@@ -1176,265 +1005,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
             )}
           </>
         )
+      case 3:
+        return <ImageInput control={control} name="images" label="" />
       case 4:
-        return (
-          <>
-            {watch('mainCategory') && (
-              <Box
-                sx={{
-                  paddingBlockStart: 4,
-                }}
-              >
-                <Typography
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    fontWeight: 500,
-                  }}
-                >
-                  {`${watch('mainCategory')
-                    .split(' ')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ')} Location:`}
-                  <HtmlTooltip
-                    title={
-                      <React.Fragment>
-                        <Typography
-                          color="inherit"
-                          sx={{
-                            fontSize: '.8rem',
-                          }}
-                        >
-                          What is the reason for requesting this information?
-                        </Typography>
-                        {`We require the full address to calculate the distance
-                  between the ${watch(
-                    'mainCategory'
-                  )}'s location and the borrower. Rest
-                  assured, the full address will not be made public, and it
-                  will only be shared with the borrower after your
-                  approval.`}
-                      </React.Fragment>
-                    }
-                  >
-                    <InfoOutlinedIcon
-                      sx={{
-                        fontSize: '20px',
-                      }}
-                    />
-                  </HtmlTooltip>
-                </Typography>
-
-                <FormControlLabel
-                  control={<Checkbox />}
-                  label="Use my current address"
-                />
-                <Grid container columnSpacing={1} columns={20}>
-                  <Grid xs={20} sm={10} md={5}>
-                    <Controller
-                      control={control}
-                      name="city"
-                      rules={{
-                        required: 'City is required',
-                        pattern: {
-                          value: regexAddressNamePattern,
-                          message:
-                            'Please enter a valid city name with only Hebrew letters',
-                        },
-                      }}
-                      render={({
-                        field: { onChange, onBlur, value, name, ref },
-                        fieldState,
-                      }) => (
-                        <FormControl
-                          fullWidth
-                          required
-                          error={!!fieldState.error}
-                        >
-                          <TextField
-                            id={name}
-                            inputRef={ref}
-                            value={value}
-                            label="City"
-                            required
-                            error={!!fieldState.error}
-                            onChange={onChange} // send value to hook form
-                            onBlur={onBlur} // notify when input is touched/blur
-                          />
-                          <FormHelperText>
-                            {(function () {
-                              if (fieldState.error) {
-                                return fieldState.error.message
-                              }
-                              if (!fieldState.isDirty) {
-                                return ''
-                              }
-                              if (!fieldState.invalid) {
-                                return getValidText()
-                              }
-                            })()}
-                          </FormHelperText>
-                        </FormControl>
-                      )}
-                    />
-                  </Grid>
-                  <Grid xs={20} sm={10} md={6}>
-                    <Controller
-                      control={control}
-                      name="streetName"
-                      rules={{
-                        required: 'Street name is required',
-                        pattern: {
-                          value: regexAddressNamePattern,
-                          message:
-                            'Please enter a valid street name with only Hebrew letters',
-                        },
-                      }}
-                      render={({
-                        field: { onChange, onBlur, value, name, ref },
-                        fieldState,
-                      }) => (
-                        <FormControl
-                          fullWidth
-                          required
-                          error={!!fieldState.error}
-                        >
-                          <TextField
-                            id={name}
-                            inputRef={ref}
-                            value={value}
-                            required
-                            label="Street Name"
-                            type="text"
-                            error={!!fieldState.error}
-                            onChange={onChange} // send value to hook form
-                            onBlur={onBlur} // notify when input is touched/blur
-                          />
-                          <FormHelperText>
-                            {(function () {
-                              if (fieldState.error) {
-                                return fieldState.error.message
-                              }
-                              if (!fieldState.isDirty) {
-                                return ''
-                              }
-                              if (!fieldState.invalid) {
-                                return getValidText()
-                              }
-                            })()}
-                          </FormHelperText>
-                        </FormControl>
-                      )}
-                    />
-                  </Grid>
-                  <Grid xs={20} sm={10} md={4}>
-                    <Controller
-                      control={control}
-                      name="streetNumber"
-                      rules={{
-                        required: 'Street number is required',
-                        pattern: {
-                          value: regexAddressNumberPattern,
-                          message:
-                            'Please enter a valid street number with 1-3 digits',
-                        },
-                        // @ts-ignore
-                        valueAsNumber: true,
-                      }}
-                      render={({
-                        field: { onChange, onBlur, value, name, ref },
-                        fieldState,
-                      }) => (
-                        <FormControl
-                          fullWidth
-                          required
-                          error={!!fieldState.error}
-                        >
-                          <TextField
-                            id={name}
-                            inputRef={ref}
-                            value={value}
-                            required
-                            inputProps={{ inputMode: 'numeric' }}
-                            label="St. Number"
-                            error={!!fieldState.error}
-                            onChange={onChange} // send value to hook form
-                            onBlur={onBlur} // notify when input is touched/blur
-                          />
-                          <FormHelperText>
-                            {(function () {
-                              if (fieldState.error) {
-                                return fieldState.error.message
-                              }
-                              if (!fieldState.isDirty) {
-                                return ''
-                              }
-                              if (!fieldState.invalid) {
-                                return getValidText()
-                              }
-                            })()}
-                          </FormHelperText>
-                        </FormControl>
-                      )}
-                    />
-                  </Grid>
-                  <Grid xs={20} sm={10} md={5}>
-                    <Controller
-                      control={control}
-                      name="zipCode"
-                      rules={{
-                        required: 'Zip code is required',
-                        pattern: {
-                          value: regexZipCodePattern,
-                          message:
-                            'Please enter a valid zip code with 7 digits',
-                        },
-                      }}
-                      render={({
-                        field: { onChange, onBlur, value, name, ref },
-                        fieldState,
-                      }) => (
-                        <FormControl
-                          fullWidth
-                          required
-                          error={!!fieldState.error}
-                        >
-                          <TextField
-                            id={name}
-                            inputRef={ref}
-                            required
-                            value={value}
-                            label="Zip Code"
-                            inputProps={{
-                              inputMode: 'numeric',
-                            }}
-                            error={!!fieldState.error}
-                            onChange={onChange} // send value to hook form
-                            onBlur={onBlur} // notify when input is touched/blur
-                          />
-                          <FormHelperText>
-                            {(function () {
-                              if (fieldState.error) {
-                                return fieldState.error.message
-                              }
-                              if (!fieldState.isDirty) {
-                                return ''
-                              }
-                              if (!fieldState.invalid) {
-                                return getValidText()
-                              }
-                            })()}
-                          </FormHelperText>
-                        </FormControl>
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            )}
-          </>
-        )
+        return <LocationInput control={control} watch={watch} label={''} />
       case 5:
         return (
           <>
@@ -1483,7 +1057,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       | 'itemName'
       | 'author'
       | 'brand'
-      | 'imageUrl'
+      | 'images'
       | 'description'
       | 'itemCondition'
       | 'maxLoanPeriod'
@@ -1498,19 +1072,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         'mainCategory',
         'secondaryCategory',
       ] // Modify this based on your actual form.
-
-      // Check if any of the required fields are empty or invalid.
-      for (const fieldName of requiredFields) {
-        const fieldState = getFieldState(fieldName)
-        if (!fieldState.isDirty || fieldState.invalid) {
-          return true // Disable "Next" if a required field is not filled or invalid.
-        }
-      }
-    }
-
-    if (activeStep === 2) {
-      // Define an array of field names that are required for the current step.
-      const requiredFields: FormFieldName[] = [] // Modify this based on your actual form.
 
       if (watch('mainCategory') === 'book') {
         requiredFields.push('isbn', 'danacode')
@@ -1527,15 +1088,27 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       }
     }
 
-    if (activeStep === 3) {
+    if (activeStep === 2) {
       // Define an array of field names that are required for the current step.
       const requiredFields: FormFieldName[] = [
         'itemName',
-        'imageUrl',
         'description',
         'itemCondition',
         'maxLoanPeriod',
       ] // Modify this based on your actual form.
+
+      // Check if any of the required fields are empty or invalid.
+      for (const fieldName of requiredFields) {
+        const fieldState = getFieldState(fieldName)
+        if (!fieldState.isDirty || fieldState.invalid) {
+          return true // Disable "Next" if a required field is not filled or invalid.
+        }
+      }
+    }
+
+    if (activeStep === 3) {
+      // Define an array of field names that are required for the current step.
+      const requiredFields: FormFieldName[] = ['images'] // Modify this based on your actual form.
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {
@@ -1578,6 +1151,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         <Box
           component="form"
           sx={{
+            paddingBlockStart: '2rem',
+            paddingInline: '2rem',
             '& .MuiTextField-root': { maxWidth: '100%' },
           }}
           noValidate
@@ -1585,7 +1160,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           onSubmit={handleSubmit(onSubmit)}
         >
           <Typography variant="h5" sx={{ fontWeight: 500 }}>
-            Add New Item
+            Add New Item Form
           </Typography>
           <Stepper
             activeStep={activeStep}
@@ -1628,7 +1203,17 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           ) : (
             <React.Fragment>
               {getStepContent(activeStep)}
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+              <Box
+                sx={{
+                  position: 'sticky',
+                  bottom: 0,
+                  zIndex: 1,
+                  backgroundColor: 'background.paper',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  paddingBlock: 2,
+                }}
+              >
                 <IconButton
                   onClick={handleResetForm}
                   type="reset"
@@ -1646,13 +1231,46 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                 >
                   Back
                 </Button>
-
                 <Box sx={{ flex: '1 1 auto' }} />
                 {isStepOptional(activeStep) && (
                   <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
                     Skip
                   </Button>
                 )}
+                {activeStep !== 0 && (
+                  <Tooltip title="Will be implemented soon">
+                    {draftSaved ? (
+                      <Box
+                        sx={{
+                          mr: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                        }}
+                      >
+                        <SaveIcon />
+                        <Typography sx={{ mr: 1 }}>Draft saved</Typography>
+                      </Box>
+                    ) : (
+                      <span>
+                        <Button
+                          onClick={handleSaveDraft}
+                          sx={{
+                            mr: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                          }}
+                          disabled={draftSaved || !isDirty}
+                        >
+                          <SaveOutlinedIcon />
+                          <Typography>Save draft</Typography>
+                        </Button>
+                      </span>
+                    )}
+                  </Tooltip>
+                )}
+
                 <Button onClick={handleNext} disabled={isNextDisabled()}>
                   {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                 </Button>
