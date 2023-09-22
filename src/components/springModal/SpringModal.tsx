@@ -1,7 +1,6 @@
 import { IconButton } from '@mui/material'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Modal from '@mui/material/Modal'
 import { animated, useSpring } from '@react-spring/web'
 import * as React from 'react'
@@ -58,7 +57,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
   minWidth: 320,
   width: '95%',
-  maxWidth: '800px',
+  maxWidth: '1000px',
 }
 
 const iconButtonStyle = {
@@ -80,10 +79,9 @@ const childrenStyle = {
   maxHeight: 'calc(80vh - 70px)', // Add max-height property
   boxShadow: 24,
   overflow: 'auto',
-  p: 3,
-  zIndex: 2,
+  zIndex: 1,
   bgcolor: 'background.paper',
-  color: 'text.primary',
+  // color: 'text.primary',
 }
 
 export interface ISpringModal {
