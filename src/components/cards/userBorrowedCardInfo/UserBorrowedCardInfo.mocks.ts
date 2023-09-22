@@ -14,6 +14,7 @@ const base: IUserBorrowedCardInfo = {
     },
     owner: '',
     status: '',
+    imagesUrl: [],
     details: {
       mainCategory: '',
       secondaryCategory: '',
@@ -22,7 +23,6 @@ const base: IUserBorrowedCardInfo = {
       author: '',
       brand: '',
       description: '',
-      imageUrl: ''
     }
   },
   label: '',

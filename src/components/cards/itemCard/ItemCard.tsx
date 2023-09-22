@@ -42,7 +42,8 @@ const ItemCard: React.FC<IItemCard> = ({
   imageWidth,
   card,
   card: {
-    details: { name, description, author, imageUrl },
+    details: { name, description, author },
+    imagesUrl,
   },
 }) => {
   const [openModal, setOpenModal] = useState(false)
@@ -74,7 +75,7 @@ const ItemCard: React.FC<IItemCard> = ({
               alt={`${name} by ${author}`}
               width={imageWidth}
               height={imageHeight}
-              src={imageUrl}
+              src={imagesUrl[0]}
               onClick={handleOpen}
             />
           </Box>

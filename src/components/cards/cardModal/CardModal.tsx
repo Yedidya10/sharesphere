@@ -46,9 +46,10 @@ const CardModal: React.FC<ICardModal> = ({
   openModal,
   handleClose,
   card: {
-    details: { name, description, author, imageUrl },
+    details: { name, description, author },
     maxLoanPeriod,
     condition,
+    imagesUrl,
     location: { city, streetName, streetNumber },
     currentBorrower,
   },
@@ -92,7 +93,7 @@ const CardModal: React.FC<ICardModal> = ({
               alt={`Image of ${name}`}
               objectFit="contain"
               objectPosition="top"
-              src={imageUrl}
+              src={imagesUrl[0]}
             />
           </Grid>
           <Grid xs={58}>
