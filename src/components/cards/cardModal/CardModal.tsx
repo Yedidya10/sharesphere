@@ -1,7 +1,7 @@
 'use client'
 
+import ItemAlertForm from '@/components/forms/itemAlertForm/ItemAlertForm'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
-import StarRateIcon from '@mui/icons-material/StarRate'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
@@ -12,7 +12,6 @@ import ItemRequestButton from '../../buttons/itemRequestButton/ItemRequestButton
 import ItemRequestForm from '../../forms/itemRequestForm/ItemRequestForm'
 import SpringModal from '../../springModal/SpringModal'
 import styles from './CardModal.module.scss'
-import ItemAlertForm from '@/components/forms/itemAlertForm/ItemAlertForm'
 
 export interface ICardModal {
   openModal: boolean
