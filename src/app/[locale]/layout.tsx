@@ -1,17 +1,16 @@
 import { useLocale } from 'next-intl'
 import { notFound } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
 // import 'rsuite/dist/rsuite.min.css'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import Header from '@/components/layouts/header/Header'
 import Box from '@mui/material/Box'
 import { Session } from 'next-auth'
-import useTranslation from 'next-translate/useTranslation'
 import { Inter, Roboto } from 'next/font/google'
 import { headers } from 'next/headers'
 import * as React from 'react'
 import AuthProvider from '@/components/AuthProvider'
 import './globals.scss'
+import CookiesConsentBanner from '@/components/cookiesConsentBanner/CookiesConsentBanner'
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -77,6 +76,7 @@ export default async function RootLayout({
               }}
             >
               {children}
+              <CookiesConsentBanner label="I understand" />
             </Box>
           </ThemeRegistry>
         </AuthProvider>
