@@ -12,6 +12,8 @@ import AuthProvider from '@/components/AuthProvider'
 import './globals.scss'
 import CookiesConsentBanner from '@/components/cookiesConsentBanner/CookiesConsentBanner'
 
+const locales = ['en', 'he']
+
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -47,10 +49,9 @@ export default async function RootLayout({
   const session = await getSession(headers().get('cookie') ?? '')
   const locale = useLocale()
 
-  // Show a 404 error if the user requests an unknown locale
-  if (params.locale !== locale) {
-    notFound()
-  }
+  // Validate that the incoming `locale` parameter is valid
+  const isValidLocale = locales.some((cur) => cur === locale)
+  if (!isValidLocale) notFound()
 
   const dir = () => {
     if (locale === 'he') {
@@ -84,18 +85,3 @@ export default async function RootLayout({
     </html>
   )
 }
-
-// export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
-//   const locale = useLocale()
-
-//   // Show a 404 error if the user requests an unknown locale
-//   if (params.locale !== locale) {
-//     notFound()
-//   }
-
-//   return (
-//     <html lang={locale}>
-//       <body>{children}</body>
-//     </html>
-//   )
-// }
