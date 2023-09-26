@@ -50,8 +50,8 @@ export interface ItemCore {
     author: string
     brand: string
     description: string
-    imageUrl: string
   }
+  imagesUrl: string[]
   condition: number
   maxLoanPeriod: number
   location: Location

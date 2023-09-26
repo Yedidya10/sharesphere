@@ -73,11 +73,12 @@ const UserBorrowedCardInfo: React.FC<IUserBorrowedCardInfo> = ({
   const [itemMaxLoanPeriod, setItemMaxLoanPeriod] = useState<string>('')
   const [itemCondition, setItemCondition] = useState<string>('')
 
-  const { cardIds, details, owner, condition, location, maxLoanPeriod } = card
+  const { cardIds, details, owner, condition, location, imagesUrl, maxLoanPeriod } = card
 
-  const { name, author, description, imageUrl } = details
+  const { name, author, description } = details
   const { city, streetName, streetNumber, zipCode } = location
   const { isbn, danacode, barcode } = cardIds
+
 
   const handleDelete = async () => {
     try {
@@ -121,7 +122,7 @@ const UserBorrowedCardInfo: React.FC<IUserBorrowedCardInfo> = ({
             alt={`${name} by ${author}`}
             objectFit="contain"
             objectPosition="center"
-            src={imageUrl}
+            src={imagesUrl[0]}
           />
         </Grid>
         <Grid xs={58}>
