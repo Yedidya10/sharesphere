@@ -1,8 +1,13 @@
 import PublishedItemsLabTabs from '@/components/cards/currentUserOwnedCards/CurrentUserOwnedCards'
 import Box from '@mui/material/Box'
-import { useTranslations } from 'next-intl'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
-export default function YourItemsPage() {
+export default function YourItemsPage({
+  params: { locale },
+}: {
+  params: { locale: string }
+}) {
+  unstable_setRequestLocale(locale)
   return (
     <Box
       sx={{

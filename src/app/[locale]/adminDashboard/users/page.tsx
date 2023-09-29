@@ -12,6 +12,7 @@ import {
   GridValueGetterParams,
 } from '@mui/x-data-grid'
 import Image from 'next/image'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
 const handleOpenModal = (id: number) => {
   console.log(id)
@@ -209,7 +210,12 @@ const rows = [
   },
 ]
 
-export default function UsersPage() {
+export default function UsersPage({
+  params: { locale },
+}: {
+  params: { locale: string }
+}) {
+  unstable_setRequestLocale(locale)
   return (
     <div style={{ height: 620, width: '100%' }}>
       <DataGrid

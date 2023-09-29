@@ -13,7 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 import { useSession } from 'next-auth/react'
-import Link from 'next-intl/link'
+import Link from '@/components/mui/Link'
 import * as React from 'react'
 import { useParams } from 'next/navigation'
 

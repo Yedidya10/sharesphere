@@ -3,6 +3,7 @@ import SignUp from '@/components/forms/signUpForm/SignUpForm'
 import Box from '@mui/material/Box'
 import { Metadata } from 'next'
 import { getProviders } from 'next-auth/react'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: 'Register',
@@ -12,9 +13,14 @@ export interface IRegister {
   providersLoginText: string
   providers: any
   Register: any
+  label: string
+  locale: string
 }
 
-const Register: React.FC<IRegister> = async () => {
+const Register: React.FC<IRegister> = async (
+  { locale } : IRegister
+) => {
+  unstable_setRequestLocale(locale)
   const providers = await getProviders()
   const providersLoginText = 'Continue with'
 

@@ -1,10 +1,9 @@
 import { Inter } from 'next/font/google'
-import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import { Roboto } from 'next/font/google'
 import Box from '@mui/material/Box'
-import DashboardDrawer from '@/components/layouts/dashboardDrawer/DashboardDrawer'
 import AdminDashboardDrawer from '@/components/layouts/adminDashboardDrawer/AdminDashboardDrawer'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -21,19 +20,12 @@ const DRAWER_WIDTH = 240
 
 export default async function DashboardLayout({
   children,
+  params: { locale },
 }: {
-  children: React.ReactNode
+  children: React.ReactNode,
+  params: { locale: string }
 }) {
-  const { lang } = useTranslation('common')
-
-  const dir = () => {
-    if (lang === 'he') {
-      return 'rtl'
-    } else {
-      return 'ltr'
-    }
-  }
-
+  unstable_setRequestLocale(locale)
   return (
     <Box
       sx={{

@@ -163,36 +163,6 @@ const CookiesConsentBanner: React.FC<ICookiesConsentBanner> = ({
     setOpen(false)
   }
 
-  React.useEffect(() => {
-    const preferencesCookiesAccepted = localStorage.getItem(
-      'preferencesCookiesAccepted'
-    )
-    const statisticsCookiesAccepted = localStorage.getItem(
-      'statisticsCookiesAccepted'
-    )
-    const marketingCookiesAccepted = localStorage.getItem(
-      'marketingCookiesAccepted'
-    )
-    if (preferencesCookiesAccepted) {
-      setCookiesAccepted({
-        ...cookiesAccepted,
-        preferences: JSON.parse(preferencesCookiesAccepted),
-      })
-    }
-    if (statisticsCookiesAccepted) {
-      setCookiesAccepted({
-        ...cookiesAccepted,
-        statistics: JSON.parse(statisticsCookiesAccepted),
-      })
-    }
-    if (marketingCookiesAccepted) {
-      setCookiesAccepted({
-        ...cookiesAccepted,
-        marketing: JSON.parse(marketingCookiesAccepted),
-      })
-    }
-  }, [cookiesAccepted])
-
   return (
     <>
       {open && (
@@ -213,6 +183,7 @@ const CookiesConsentBanner: React.FC<ICookiesConsentBanner> = ({
             p: 2,
             borderWidth: 0,
             borderTopWidth: 1,
+            zIndex: 9999,
           }}
         >
           <Grid container spacing={2}>

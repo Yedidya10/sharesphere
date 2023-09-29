@@ -4,6 +4,7 @@ import SignInForm from '@/components/forms/signInForm/SignInForm'
 import Box from '@mui/material/Box'
 import { Metadata } from 'next'
 import { getProviders } from 'next-auth/react'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -14,9 +15,11 @@ export interface ILogin {
   providersLoginText: string
   providers: any
   Login: any
+  locale: string
 }
 
-const Login: React.FC<ILogin> = async () => {
+const Login: React.FC<ILogin> = async ({ locale }: ILogin) => {
+  unstable_setRequestLocale(locale)
   const providers = await getProviders()
   const providersLoginText = 'Continue with'
 

@@ -1,6 +1,6 @@
 import { useLocale } from 'next-intl'
+import { unstable_setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-// import 'rsuite/dist/rsuite.min.css'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import Header from '@/components/layouts/header/Header'
 import Box from '@mui/material/Box'
@@ -11,8 +11,11 @@ import * as React from 'react'
 import AuthProvider from '@/components/AuthProvider'
 import './globals.scss'
 import CookiesConsentBanner from '@/components/cookiesConsentBanner/CookiesConsentBanner'
+import { locales } from '@/navigation'
 
-const locales = ['en', 'he']
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -39,19 +42,18 @@ async function getSession(cookie: string): Promise<Session> {
 
 export default async function RootLayout({
   children,
-  params,
+  params: { locale },
 }: {
   children: React.ReactNode
-  params: {
-    locale: string
-  }
+  params: { locale: string }
 }) {
   const session = await getSession(headers().get('cookie') ?? '')
-  const locale = useLocale()
 
   // Validate that the incoming `locale` parameter is valid
   const isValidLocale = locales.some((cur) => cur === locale)
   if (!isValidLocale) notFound()
+
+  unstable_setRequestLocale(locale)
 
   const dir = () => {
     if (locale === 'he') {

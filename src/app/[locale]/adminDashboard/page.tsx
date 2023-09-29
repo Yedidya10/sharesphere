@@ -3,12 +3,18 @@
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
-import useTranslation from 'next-translate/useTranslation'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
-export default function AdminDashboardPage() {
-  const { t } = useTranslation('profile')
+export default function AdminDashboardPage(
+  {
+    params: { locale },
+  }: {
+    params: { locale: string }
+  }
+) {
+  unstable_setRequestLocale(locale)
   const { data: session, status } = useSession()
 
   return (

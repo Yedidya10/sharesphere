@@ -3,8 +3,17 @@ import Box from '@mui/material/Box'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import ListItemText from '@mui/material/ListItemText'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
-export default function PrivacyPolicyPage() {
+export default function PrivacyPolicyPage(
+  {
+    params: { locale },
+  }: {
+    params: { locale: string }
+  }
+
+) {
+  unstable_setRequestLocale(locale)
   return (
     <Box sx={{ paddingInline: '6rem', paddingBlock: '2rem' }}>
       <Box sx={{
