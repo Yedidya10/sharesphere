@@ -1,6 +1,7 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
+    // The following .eslintrc configuration will highlight problematic imports from @mui packages:
     "no-restricted-imports": [
       "error",
       {
