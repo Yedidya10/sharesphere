@@ -1,33 +1,29 @@
 'use client'
 
+import { NextLinkComposed } from '@/components/mui/Link'
 import {
-  regexAddressNamePattern,
-  regexAddressNumberPattern,
   regexBarcodePattern,
   regexDanacodePattern,
-  regexImageUrlPattern,
   regexIsbnPattern,
   regexMaxLoanPeriodPattern,
   regexTextPattern,
-  regexZipCodePattern,
 } from '@/utils/regexPatterns'
-import categories from '@/utils/categories/categories'
 import { AddItemFormValues } from '@/utils/types/FormValues'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
-import { StepButton } from '@mui/material'
+import SaveIcon from '@mui/icons-material/Save'
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
+import StepButton from '@mui/material/StepButton'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Step from '@mui/material/Step'
 import Stepper from '@mui/material/Stepper'
@@ -37,31 +33,21 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
 import { useSession } from 'next-auth/react'
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
-import { NextLinkComposed } from '@/components/mui/Link'
-import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
-import Input from '@mui/material/Input'
-import Image from 'next/image'
-import { useDropzone } from 'react-dropzone'
-import { RiDragDropLine } from 'react-icons/ri'
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import ImageInput from '../imageInput/ImageInput'
-import LocationInput from '../locationInput/LocationInput'
-import DescriptionInput from '../descriptionInput/DescriptionInput'
 import ConditionInput from '../conditionInput/ConditionInput'
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
-import SaveIcon from '@mui/icons-material/Save'
+import DescriptionInput from '../descriptionInput/DescriptionInput'
+import LocationInput from '../locationInput/LocationInput'
 import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
 import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
+import UppyDashboard from '../uppyDashboard/UppyDashboard'
 
-export interface IItemPostForm {
-  openModal: boolean
-  handleClose: () => void
+export interface IAddItemForm {
+  authKey: string
+  authSecret: string
+  templateId: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -71,11 +57,11 @@ export interface IItemPostForm {
    */
   backgroundColor?: string
   /**
-   * How large should the ItemPostForm be?
+   * How large should the AddItemForm be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * ItemPostForm contents
+   * AddItemForm contents
    */
   label: string
   /**
@@ -105,11 +91,11 @@ const steps = [
   'Review',
 ]
 
-const ItemPostForm: React.FC<IItemPostForm> = ({
-  primary = false,
-  label,
-  openModal,
-  handleClose,
+const AddItemForm: React.FC<IAddItemForm> = ({
+  authKey,
+  authSecret,
+  templateId,
+  ...props
 }) => {
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set<number>())
@@ -190,6 +176,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     watch,
     reset,
     control,
+    setValue,
+    getValues,
     getFieldState,
     formState: { isValid, isDirty, errors },
     handleSubmit,
@@ -233,7 +221,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           brand: data.brand,
           description: data.description,
         },
-        imagesUrl: data.imagesFile,
+        // next line is a temporary solution until we implement the images upload
+        imagesUrl: [],
         condition: parseFloat(data.itemCondition),
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
@@ -393,7 +382,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                 />
               </Box>
               <Box>
-               <SecondaryCategoryInput
+                <SecondaryCategoryInput
                   control={control}
                   watch={watch}
                   label="SecondaryCategoryInput"
@@ -1006,7 +995,17 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           </>
         )
       case 3:
-        return <ImageInput control={control} name="images" label="" />
+        return (
+          <UppyDashboard
+            control={control}
+            setValue={setValue}
+            getValues={getValues}
+            authKey={authKey}
+            authSecret={authSecret}
+            templateId={templateId}
+            label=""
+          />
+        )
       case 4:
         return <LocationInput control={control} watch={watch} label={''} />
       case 5:
@@ -1057,7 +1056,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       | 'itemName'
       | 'author'
       | 'brand'
-      | 'images'
+      | 'imagesFile'
       | 'description'
       | 'itemCondition'
       | 'maxLoanPeriod'
@@ -1108,7 +1107,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
 
     if (activeStep === 3) {
       // Define an array of field names that are required for the current step.
-      const requiredFields: FormFieldName[] = ['images'] // Modify this based on your actual form.
+      const requiredFields: FormFieldName[] = ['imagesFile'] // Modify this based on your actual form.
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {
@@ -1141,12 +1140,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
   }
 
   return (
-    <SpringModal
-      handleClose={handleClose}
-      openModal={openModal}
-      label={''}
-      keepMounted={true}
-    >
+    <>
       {status === 'authenticated' ? (
         <Box
           component="form"
@@ -1197,7 +1191,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                 <Box sx={{ flex: '1 1 auto' }} />
-                <Button onClick={handleClose}>Close</Button>
               </Box>
             </React.Fragment>
           ) : (
@@ -1307,8 +1300,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           </Button>
         </Box>
       )}
-    </SpringModal>
+    </>
   )
 }
 
-export default ItemPostForm
+export default AddItemForm
