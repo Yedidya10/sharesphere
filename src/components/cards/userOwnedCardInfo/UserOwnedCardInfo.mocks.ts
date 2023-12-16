@@ -13,7 +13,7 @@ const base: IUserOwnedCardInfo = {
       streetNumber: '',
       zipCode: '',
     },
-    imagesUrl: [],
+    imageUrl: '',
     owner: '',
     status: '',
     details: {

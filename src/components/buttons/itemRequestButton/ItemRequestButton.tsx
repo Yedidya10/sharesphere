@@ -2,9 +2,11 @@
 
 import EmailIcon from '@mui/icons-material/Email'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
-import { Box, Button, Tooltip, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
 
 export interface IItemRequestButton {
   handleClick?: () => void

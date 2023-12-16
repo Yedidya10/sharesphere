@@ -14,7 +14,7 @@ const base: IUserBorrowedCardInfo = {
     },
     owner: '',
     status: '',
-    imagesUrl: [],
+    imageUrl: '',
     details: {
       mainCategory: '',
       secondaryCategory: '',

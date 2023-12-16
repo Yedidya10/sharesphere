@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import ImageInput from './ImageInput'
+import AddItemForm from './AddItemForm'
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
-const meta: Meta<typeof ImageInput> = {
-  title: 'Templates/ImageInput',
-  component: ImageInput,
+const meta: Meta<typeof AddItemForm> = {
+  title: 'Templates/AddItemForm',
+  component: AddItemForm,
   tags: ['autodocs'],
   argTypes: {
     backgroundColor: {
@@ -15,32 +15,32 @@ const meta: Meta<typeof ImageInput> = {
 }
 
 export default meta
-type Story = StoryObj<typeof ImageInput>
+type Story = StoryObj<typeof AddItemForm>
 
 // More on writing stories with args: https://storybook.js.org/docs/react/writing-stories/args
 export const Primary: Story = {
   args: {
     primary: true,
-    label: 'ImageInput',
+    label: 'AddItemForm',
   },
 }
 
 export const Secondary: Story = {
   args: {
-    label: 'ImageInput',
+    label: 'AddItemForm',
   },
 }
 
 export const Large: Story = {
   args: {
     size: 'large',
-    label: 'ImageInput',
+    label: 'AddItemForm',
   },
 }
 
 export const Small: Story = {
   args: {
     size: 'small',
-    label: 'ImageInput',
+    label: 'AddItemForm',
   },
 }

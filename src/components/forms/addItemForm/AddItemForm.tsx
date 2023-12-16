@@ -1,33 +1,29 @@
 'use client'
 
+import { NextLinkComposed } from '@/components/mui/Link'
 import {
-  regexAddressNamePattern,
-  regexAddressNumberPattern,
   regexBarcodePattern,
   regexDanacodePattern,
-  regexImageUrlPattern,
   regexIsbnPattern,
   regexMaxLoanPeriodPattern,
   regexTextPattern,
-  regexZipCodePattern,
 } from '@/utils/regexPatterns'
-import categories from '@/utils/categories/categories'
 import { AddItemFormValues } from '@/utils/types/FormValues'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
-import { StepButton } from '@mui/material'
+import SaveIcon from '@mui/icons-material/Save'
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
+import StepButton from '@mui/material/StepButton'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Step from '@mui/material/Step'
 import Stepper from '@mui/material/Stepper'
@@ -37,31 +33,22 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
 import { useSession } from 'next-auth/react'
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
-import { NextLinkComposed } from '@/components/mui/Link'
-import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
-import Input from '@mui/material/Input'
-import Image from 'next/image'
-import { useDropzone } from 'react-dropzone'
-import { RiDragDropLine } from 'react-icons/ri'
-import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import ImageInput from '../imageInput/ImageInput'
-import LocationInput from '../locationInput/LocationInput'
-import DescriptionInput from '../descriptionInput/DescriptionInput'
 import ConditionInput from '../conditionInput/ConditionInput'
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
-import SaveIcon from '@mui/icons-material/Save'
+import DescriptionInput from '../descriptionInput/DescriptionInput'
+import LocationInput from '../locationInput/LocationInput'
 import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
 import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
+import UppyDashboard from '../uppyDashboard/UppyDashboard'
+import ImageUrlInput from '../imageUrlInput/ImageUrlInput'
 
-export interface IItemPostForm {
-  openModal: boolean
-  handleClose: () => void
+export interface IAddItemForm {
+  authKey: string
+  authSecret: string
+  templateId: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -71,11 +58,11 @@ export interface IItemPostForm {
    */
   backgroundColor?: string
   /**
-   * How large should the ItemPostForm be?
+   * How large should the AddItemForm be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * ItemPostForm contents
+   * AddItemForm contents
    */
   label: string
   /**
@@ -105,11 +92,11 @@ const steps = [
   'Review',
 ]
 
-const ItemPostForm: React.FC<IItemPostForm> = ({
-  primary = false,
-  label,
-  openModal,
-  handleClose,
+const AddItemForm: React.FC<IAddItemForm> = ({
+  authKey,
+  authSecret,
+  templateId,
+  ...props
 }) => {
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set<number>())
@@ -190,6 +177,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
     watch,
     reset,
     control,
+    setError,
+    clearErrors,
+    setValue,
+    getValues,
     getFieldState,
     formState: { isValid, isDirty, errors },
     handleSubmit,
@@ -205,7 +196,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       itemName: '',
       author: '',
       brand: '',
-      imagesFile: [],
+      imageUrl: '',
       description: '',
       itemCondition: '',
       maxLoanPeriod: '',
@@ -233,7 +224,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           brand: data.brand,
           description: data.description,
         },
-        imagesUrl: data.imagesFile,
+        // next line is a temporary solution until we implement the images upload
+        imageUrl: data.imageUrl,
         condition: parseFloat(data.itemCondition),
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
@@ -246,7 +238,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         status: 'active',
         allBorrowers: [],
         currentBorrower: {
-          borrowerId: '',
+          borrowerId: null,
           startDate: null,
           endDate: null,
           loanPeriod: 0,
@@ -257,7 +249,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
         alertSubscribers: [],
       }
 
-      const response = await fetch('/api/card', {
+      const response = await fetch('/api/cards/addCard', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -393,7 +385,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                 />
               </Box>
               <Box>
-               <SecondaryCategoryInput
+                <SecondaryCategoryInput
                   control={control}
                   watch={watch}
                   label="SecondaryCategoryInput"
@@ -477,7 +469,12 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                           }) => (
                             <FormControl
                               fullWidth
-                              required
+                              required={
+                                !watch('danacode') ||
+                                getFieldState('danacode').invalid
+                                  ? true
+                                  : false
+                              }
                               error={!!fieldState?.error}
                             >
                               <InputLabel htmlFor="isbn">
@@ -548,7 +545,11 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                           }) => (
                             <FormControl
                               fullWidth
-                              required
+                              required={
+                                !watch('isbn') || getFieldState('isbn').invalid
+                                  ? true
+                                  : false
+                              }
                               error={!!fieldState.error}
                             >
                               <InputLabel htmlFor="danacode">
@@ -679,7 +680,14 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       control={control}
                       name="barcode"
                       rules={{
-                        required: 'Barcode number is required',
+                        required: {
+                          value:
+                            watch('mainCategory') == 'board-game' ||
+                            watch('mainCategory') == 'puzzle'
+                              ? true
+                              : false,
+                          message: 'Barcode number is required',
+                        },
                         pattern: {
                           value: regexBarcodePattern,
                           message:
@@ -692,7 +700,12 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       }) => (
                         <FormControl
                           fullWidth
-                          required
+                          required={
+                            watch('mainCategory') == 'board-game' ||
+                            watch('mainCategory') == 'puzzle'
+                              ? true
+                              : false
+                          }
                           error={!!fieldState.error}
                         >
                           <InputLabel htmlFor="barcode">
@@ -747,220 +760,143 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       case 2:
         return (
           <>
-            {(watch('danacode') && !getFieldState('danacode').invalid) ||
-            (watch('barcode') && !getFieldState('barcode').invalid) ||
-            (watch('isbn') && !getFieldState('isbn').invalid) ? (
-              <>
-                <Box
-                  sx={{
-                    paddingBlockStart: 4,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '.6rem',
-                  }}
-                >
-                  <Grid container columnSpacing={2}>
-                    <Grid xs={12} sm={6}>
-                      <Controller
-                        control={control}
-                        name={'itemName'}
-                        rules={{
-                          required: `${(watch('mainCategory') as string)
-                            .split(' ')
-                            .map(
-                              (word: string) =>
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                            )
-                            .join(' ')} name is required`,
-                          pattern: {
-                            value: regexTextPattern,
-                            message: `Please enter a valid ${watch(
-                              'mainCategory'
-                            )} name with only Hebrew or English letters`,
-                          },
-                        }}
-                        render={({
-                          field: { onChange, onBlur, value, name, ref },
-                          fieldState,
-                        }) => {
-                          return (
-                            <FormControl
-                              fullWidth
-                              required
-                              error={!!fieldState.error}
-                            >
-                              <TextField
-                                id={name}
-                                inputRef={ref}
-                                required
-                                name={name}
-                                value={value}
-                                label={`${(watch('mainCategory') as string)
-                                  .split(' ')
-                                  .map(
-                                    (word: string) =>
-                                      word.charAt(0).toUpperCase() +
-                                      word.slice(1)
-                                  )
-                                  .join(' ')} Name`}
-                                onChange={onChange} // send value to hook form
-                                onBlur={onBlur} // notify when input is touched/blur
-                              />
-                              <FormHelperText>
-                                {(function () {
-                                  if (fieldState.error) {
-                                    return fieldState.error.message
-                                  }
-                                  if (!fieldState.isDirty) {
-                                    return `Please enter the
-                                   ${watch('mainCategory')} name`
-                                  }
-                                  if (!fieldState.invalid) {
-                                    return getValidText()
-                                  }
-                                })()}
-                              </FormHelperText>
-                            </FormControl>
-                          )
-                        }}
-                      />
-                    </Grid>
-                    {watch('mainCategory') === 'book' ? (
-                      <Grid xs={12} sm={6}>
-                        <Controller
-                          control={control}
-                          name="author"
-                          rules={{
-                            required: 'Author name is required',
-                            pattern: {
-                              value: regexTextPattern,
-                              message:
-                                'Please enter a valid author name with only Hebrew or English letters',
-                            },
-                          }}
-                          render={({
-                            field: { onChange, onBlur, value, name, ref },
-                            fieldState,
-                          }) => (
-                            <FormControl
-                              fullWidth
-                              required
-                              error={!!fieldState.error}
-                            >
-                              <TextField
-                                fullWidth
-                                id={name}
-                                inputRef={ref}
-                                required
-                                value={value}
-                                label="Author"
-                                onChange={onChange} // send value to hook form
-                                onBlur={onBlur} // notify when input is touched/blur
-                              />
-                              <FormHelperText>
-                                {(function () {
-                                  if (fieldState.error) {
-                                    return fieldState.error.message
-                                  }
-                                  if (!fieldState.isDirty) {
-                                    return 'Please enter author name'
-                                  }
-                                  if (!fieldState.invalid) {
-                                    return getValidText()
-                                  }
-                                })()}
-                              </FormHelperText>
-                            </FormControl>
-                          )}
-                        />
-                      </Grid>
-                    ) : (
-                      <></>
-                    )}
-                    {watch('mainCategory') === 'board-game' ? (
-                      <Grid xs={12} sm={6}>
-                        <Controller
-                          control={control}
-                          name="brand"
-                          rules={{
-                            required: 'Brand name is required',
-                            pattern: {
-                              value: regexTextPattern,
-                              message:
-                                'Please enter a valid brand name with only Hebrew or English letters',
-                            },
-                          }}
-                          render={({
-                            field: { onChange, onBlur, value, name, ref },
-                            fieldState,
-                          }) => (
-                            <FormControl
-                              fullWidth
-                              required
-                              error={!!fieldState.error}
-                            >
-                              <TextField
-                                id={name}
-                                inputRef={ref}
-                                value={value}
-                                required
-                                fullWidth
-                                label="Brand"
-                                onChange={onChange} // send value to hook form
-                                onBlur={onBlur} // notify when input is touched/blur
-                              />
-                              <FormHelperText>
-                                {(function () {
-                                  if (fieldState.error) {
-                                    return fieldState.error.message
-                                  }
-                                  if (!fieldState.isDirty) {
-                                    return 'Please enter brand name'
-                                  }
-                                  if (!fieldState.invalid) {
-                                    return getValidText()
-                                  }
-                                })()}
-                              </FormHelperText>
-                            </FormControl>
-                          )}
-                        />
-                      </Grid>
-                    ) : (
-                      <></>
-                    )}
-                  </Grid>
-                  <DescriptionInput
+            <Box
+              sx={{
+                paddingBlockStart: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '.6rem',
+              }}
+            >
+              <Grid container columnSpacing={2}>
+                <Grid xs={12} sm={6}>
+                  <Controller
                     control={control}
-                    label="DescriptionInput"
+                    name={'itemName'}
+                    rules={{
+                      required: `${(watch('mainCategory') as string)
+                        .split(' ')
+                        .map(
+                          (word: string) =>
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(' ')} name is required`,
+                      pattern: {
+                        value: regexTextPattern,
+                        message: `Please enter a valid ${watch(
+                          'mainCategory'
+                        )} name with only Hebrew or English letters`,
+                      },
+                    }}
+                    render={({
+                      field: { onChange, onBlur, value, name, ref },
+                      fieldState,
+                    }) => {
+                      return (
+                        <FormControl
+                          fullWidth
+                          required
+                          error={!!fieldState.error}
+                        >
+                          <TextField
+                            id={name}
+                            inputRef={ref}
+                            required
+                            name={name}
+                            value={value}
+                            label={`${(watch('mainCategory') as string)
+                              .split(' ')
+                              .map(
+                                (word: string) =>
+                                  word.charAt(0).toUpperCase() + word.slice(1)
+                              )
+                              .join(' ')} Name`}
+                            onChange={onChange} // send value to hook form
+                            onBlur={onBlur} // notify when input is touched/blur
+                          />
+                          <FormHelperText>
+                            {(function () {
+                              if (fieldState.error) {
+                                return fieldState.error.message
+                              }
+                              if (!fieldState.isDirty) {
+                                return `Please enter the
+                                   ${watch('mainCategory')} name`
+                              }
+                              if (!fieldState.invalid) {
+                                return getValidText()
+                              }
+                            })()}
+                          </FormHelperText>
+                        </FormControl>
+                      )
+                    }}
                   />
-                </Box>
-                <Grid
-                  container
-                  columnSpacing={2}
-                  sx={{
-                    paddingBlockStart: 4,
-                  }}
-                >
-                  <Grid xs={12} sm={7}>
-                    <ConditionInput
-                      control={control}
-                      label="ConditionInput"
-                      watch={watch}
-                    />
-                  </Grid>
-                  <Grid xs={12} sm={5}>
+                </Grid>
+                {watch('mainCategory') === 'book' ? (
+                  <Grid xs={12} sm={6}>
                     <Controller
                       control={control}
-                      name="maxLoanPeriod"
+                      name="author"
                       rules={{
-                        required: 'Max loan period is required',
+                        required: 'Author name is required',
                         pattern: {
-                          value: regexMaxLoanPeriodPattern,
-                          message: 'Please enter a valid number between 3-14',
+                          value: regexTextPattern,
+                          message:
+                            'Please enter a valid author name with only Hebrew or English letters',
                         },
-                        // @ts-ignore
-                        valueAsNumber: true,
+                      }}
+                      render={({
+                        field: { onChange, onBlur, value, name, ref },
+                        fieldState,
+                      }) => (
+                        <FormControl
+                          fullWidth
+                          required
+                          error={!!fieldState.error}
+                        >
+                          <TextField
+                            fullWidth
+                            id={name}
+                            inputRef={ref}
+                            required
+                            value={value}
+                            label="Author"
+                            onChange={onChange} // send value to hook form
+                            onBlur={onBlur} // notify when input is touched/blur
+                          />
+                          <FormHelperText>
+                            {(function () {
+                              if (fieldState.error) {
+                                return fieldState.error.message
+                              }
+                              if (!fieldState.isDirty) {
+                                return 'Please enter author name'
+                              }
+                              if (!fieldState.invalid) {
+                                return getValidText()
+                              }
+                            })()}
+                          </FormHelperText>
+                        </FormControl>
+                      )}
+                    />
+                  </Grid>
+                ) : (
+                  <></>
+                )}
+                {watch('mainCategory') === 'board-game' ? (
+                  <Grid xs={12} sm={6}>
+                    <Controller
+                      control={control}
+                      name="brand"
+                      rules={{
+                        required: 'Brand name is required',
+                        pattern: {
+                          value: regexTextPattern,
+                          message:
+                            'Please enter a valid brand name with only Hebrew or English letters',
+                        },
                       }}
                       render={({
                         field: { onChange, onBlur, value, name, ref },
@@ -976,10 +912,10 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                             inputRef={ref}
                             value={value}
                             required
-                            inputProps={{ inputMode: 'numeric' }}
-                            label="Max loan period"
-                            onChange={onChange}
-                            onBlur={onBlur}
+                            fullWidth
+                            label="Brand"
+                            onChange={onChange} // send value to hook form
+                            onBlur={onBlur} // notify when input is touched/blur
                           />
                           <FormHelperText>
                             {(function () {
@@ -987,7 +923,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                                 return fieldState.error.message
                               }
                               if (!fieldState.isDirty) {
-                                return 'Please enter max loan period'
+                                return 'Please enter brand name'
                               }
                               if (!fieldState.invalid) {
                                 return getValidText()
@@ -998,15 +934,89 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                       )}
                     />
                   </Grid>
-                </Grid>
-              </>
-            ) : (
-              <></>
-            )}
+                ) : (
+                  <></>
+                )}
+              </Grid>
+              <DescriptionInput control={control} label="DescriptionInput" />
+            </Box>
+            <Grid
+              container
+              columnSpacing={2}
+              sx={{
+                paddingBlockStart: 4,
+              }}
+            >
+              <Grid xs={12} sm={7}>
+                <ConditionInput
+                  control={control}
+                  label="ConditionInput"
+                  watch={watch}
+                />
+              </Grid>
+              <Grid xs={12} sm={5}>
+                <Controller
+                  control={control}
+                  name="maxLoanPeriod"
+                  rules={{
+                    required: 'Max loan period is required',
+                    pattern: {
+                      value: regexMaxLoanPeriodPattern,
+                      message: 'Please enter a valid number between 3-14',
+                    },
+                    // @ts-ignore
+                    valueAsNumber: true,
+                  }}
+                  render={({
+                    field: { onChange, onBlur, value, name, ref },
+                    fieldState,
+                  }) => (
+                    <FormControl fullWidth required error={!!fieldState.error}>
+                      <TextField
+                        id={name}
+                        inputRef={ref}
+                        value={value}
+                        required
+                        inputProps={{ inputMode: 'numeric' }}
+                        label="Max loan period"
+                        onChange={onChange}
+                        onBlur={onBlur}
+                      />
+                      <FormHelperText>
+                        {(function () {
+                          if (fieldState.error) {
+                            return fieldState.error.message
+                          }
+                          if (!fieldState.isDirty) {
+                            return 'Please enter max loan period'
+                          }
+                          if (!fieldState.invalid) {
+                            return getValidText()
+                          }
+                        })()}
+                      </FormHelperText>
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+            </Grid>
           </>
         )
       case 3:
-        return <ImageInput control={control} name="images" label="" />
+        return (
+          // For future use:
+          // <UppyDashboard
+          //   control={control}
+          //   setValue={setValue}
+          //   getValues={getValues}
+          //   authKey={authKey}
+          //   authSecret={authSecret}
+          //   templateId={templateId}
+          //   label=""
+          // />
+          <ImageUrlInput control={control} setError={setError} clearErrors={clearErrors}
+           watch={watch} label="" />
+        )
       case 4:
         return <LocationInput control={control} watch={watch} label={''} />
       case 5:
@@ -1057,7 +1067,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       | 'itemName'
       | 'author'
       | 'brand'
-      | 'images'
+      | 'imageUrl'
       | 'description'
       | 'itemCondition'
       | 'maxLoanPeriod'
@@ -1074,8 +1084,23 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
       ] // Modify this based on your actual form.
 
       if (watch('mainCategory') === 'book') {
-        requiredFields.push('isbn', 'danacode')
-      } else {
+        // Check if either 'ISBN' or 'Danacode' is filled.
+        const isbnFieldValue = watch('isbn')
+        const danacodeFieldValue = watch('danacode')
+        if (!(isbnFieldValue || danacodeFieldValue)) {
+          return true // Disable "Next" if both 'ISBN' and 'Danacode' are empty.
+        }
+        // Push 'isbn' and 'danacode' to requiredFields conditionally.
+        if (isbnFieldValue) {
+          requiredFields.push('isbn')
+        }
+        if (danacodeFieldValue) {
+          requiredFields.push('danacode')
+        }
+      } else if (
+        watch('mainCategory') === 'board-game' ||
+        watch('mainCategory') === 'puzzle'
+      ) {
         requiredFields.push('barcode')
       }
 
@@ -1108,7 +1133,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
 
     if (activeStep === 3) {
       // Define an array of field names that are required for the current step.
-      const requiredFields: FormFieldName[] = ['images'] // Modify this based on your actual form.
+      const requiredFields: FormFieldName[] = ['imageUrl'] // Modify this based on your actual form.
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {
@@ -1141,12 +1166,7 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
   }
 
   return (
-    <SpringModal
-      handleClose={handleClose}
-      openModal={openModal}
-      label={''}
-      keepMounted={true}
-    >
+    <>
       {status === 'authenticated' ? (
         <Box
           component="form"
@@ -1197,7 +1217,6 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                 <Box sx={{ flex: '1 1 auto' }} />
-                <Button onClick={handleClose}>Close</Button>
               </Box>
             </React.Fragment>
           ) : (
@@ -1270,10 +1289,13 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
                     )}
                   </Tooltip>
                 )}
-
-                <Button onClick={handleNext} disabled={isNextDisabled()}>
-                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                </Button>
+                {activeStep !== steps.length - 1 ? (
+                  <Button onClick={handleNext} disabled={isNextDisabled()}>
+                    Next
+                  </Button>
+                ) : (
+                  <></>
+                )}
               </Box>
             </React.Fragment>
           )}
@@ -1307,8 +1329,8 @@ const ItemPostForm: React.FC<IItemPostForm> = ({
           </Button>
         </Box>
       )}
-    </SpringModal>
+    </>
   )
 }
 
-export default ItemPostForm
+export default AddItemForm

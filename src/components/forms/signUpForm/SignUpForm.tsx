@@ -1,7 +1,8 @@
 'use client'
 
 import Link from '@/components/mui/Link'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import  Visibility from '@mui/icons-material/Visibility'
+import  VisibilityOff from '@mui/icons-material/VisibilityOff'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Avatar from '@mui/material/Avatar'

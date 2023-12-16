@@ -103,7 +103,9 @@ const LocationInput: React.FC<ILocationInput> = ({
           >
             {`${(watch('mainCategory') as string)
               .split(' ')
-              .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+              .map(
+                (word: string) => word.charAt(0).toUpperCase() + word.slice(1)
+              )
               .join(' ')} Location:`}
             <HtmlTooltip
               title={

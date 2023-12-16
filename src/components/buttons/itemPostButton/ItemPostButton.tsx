@@ -1,11 +1,10 @@
 'use client'
 
-import ItemPostForm from '@/components/forms/itemPostForm/ItemPostForm'
 import Button from '@mui/material/Button'
-import { useState } from 'react'
 import PostAddIcon from '@mui/icons-material/PostAdd'
-import Box from '@mui/material/Box'
-import { IconButton, Tooltip } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IItemPostButton {
   /**
@@ -34,19 +33,15 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
   primary = false,
   label,
 }) => {
-  const [openModal, setOpenModal] = useState(false)
-  const handleOpen = () => setOpenModal(true)
-  const handleClose = () => setOpenModal(false)
-
   return (
     <>
       <Button
+        component={NextLinkComposed}
+        to="/addItem"
         sx={{
           display: { xs: 'none', xsm: 'flex' },
           gap: 1,
-
         }}
-        onClick={handleOpen}
       >
         <PostAddIcon />
         Add Item
@@ -55,15 +50,10 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
         sx={{ display: { xs: 'block', xsm: 'none' } }}
         title="פרסם פריט להשאלה"
       >
-        <IconButton onClick={handleOpen}>
+        <IconButton component={NextLinkComposed} to="/addItem">
           <PostAddIcon />
         </IconButton>
       </Tooltip>
-      <ItemPostForm
-        label={''}
-        openModal={openModal}
-        handleClose={handleClose}
-      />
     </>
   )
 }

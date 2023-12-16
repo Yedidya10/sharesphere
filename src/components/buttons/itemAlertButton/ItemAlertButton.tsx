@@ -2,7 +2,10 @@
 
 import AddAlertIcon from '@mui/icons-material/AddAlert'
 import EventBusyIcon from '@mui/icons-material/EventBusy'
-import { Box, Button, Tooltip, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useSession } from 'next-auth/react'
 
 export interface IItemAlertButton {
