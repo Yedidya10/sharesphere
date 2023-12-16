@@ -121,6 +121,7 @@ const UppyDashboard: React.FC<IUppyDashboard> = ({
       />
       <Controller
         control={control}
+        // @ts-ignore: Temporary until the actual implementation of this component
         name={'imagesFile'}
         rules={{
           required: 'Please upload at least one image',

@@ -86,7 +86,7 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
   const { name, author, description } = details
   const { city, streetName, streetNumber, zipCode } = location
   const { isbn, danacode, barcode } = cardIds
-  const {  imagesUrl } = card
+  const {  imageUrl } = card
 
   const handleDelete = async () => {
     try {
@@ -130,7 +130,7 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
             alt={`${name} by ${author}`}
             objectFit="contain"
             objectPosition="center"
-            src={imagesUrl[0]}
+            src={imageUrl[0]}
           />
         </Grid>
         <Grid xs={58}>

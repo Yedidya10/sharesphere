@@ -8,8 +8,7 @@ export interface AddItemFormValues {
   itemName: string
   author: string
   brand: string
-  imagesFile: string | number | readonly string[]
-  // imagesFile: Array<File & { preview: string }>
+  imageUrl: string
   description: string
   itemCondition: string
   maxLoanPeriod: string

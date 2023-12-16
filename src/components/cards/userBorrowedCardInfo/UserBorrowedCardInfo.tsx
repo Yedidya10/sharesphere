@@ -73,7 +73,7 @@ const UserBorrowedCardInfo: React.FC<IUserBorrowedCardInfo> = ({
   const [itemMaxLoanPeriod, setItemMaxLoanPeriod] = useState<string>('')
   const [itemCondition, setItemCondition] = useState<string>('')
 
-  const { cardIds, details, owner, condition, location, imagesUrl, maxLoanPeriod } = card
+  const { cardIds, details, owner, condition, location, imageUrl, maxLoanPeriod } = card
 
   const { name, author, description } = details
   const { city, streetName, streetNumber, zipCode } = location
@@ -122,7 +122,7 @@ const UserBorrowedCardInfo: React.FC<IUserBorrowedCardInfo> = ({
             alt={`${name} by ${author}`}
             objectFit="contain"
             objectPosition="center"
-            src={imagesUrl[0]}
+            src={imageUrl}
           />
         </Grid>
         <Grid xs={58}>
