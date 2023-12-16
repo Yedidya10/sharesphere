@@ -42,7 +42,8 @@ const ItemCard: React.FC<IItemCard> = ({
   imageWidth,
   card,
   card: {
-    details: { name, description, author, imageUrl },
+    details: { name, description, author },
+    imageUrl,
   },
 }) => {
   const [openModal, setOpenModal] = useState(false)

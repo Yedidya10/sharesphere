@@ -1,18 +1,17 @@
-import createIntlMiddleware from 'next-intl/middleware'
+import createMiddleware from 'next-intl/middleware'
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { locales } from './navigation'
 
-const locales = ['en', 'he']
 const publicPages = ['/', '/auth/login', '/all-items', '/dashboard/']
 
-export default createIntlMiddleware({
+export default createMiddleware({
   // A list of all locales that are supported
   locales,
 
   // If this locale is matched, pathnames work without a prefix (e.g. `/about`) unless if `localePrefix` is set to `always`
   defaultLocale: 'he',
-  localePrefix: 'always',
 })
 
 // const authMiddleware = withAuth(

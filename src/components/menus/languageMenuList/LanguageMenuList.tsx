@@ -1,9 +1,8 @@
 'use client'
 
-import themeModeState from '@/recoils/themeMode/themeModeState'
+import { usePathname, useRouter } from '@/navigation'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import DarkModeIcon from '@mui/icons-material/DarkMode'
-import LightModeIcon from '@mui/icons-material/LightMode'
+import CheckIcon from '@mui/icons-material/Check'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -13,12 +12,8 @@ import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import useTranslation from 'next-translate/useTranslation'
-import * as React from 'react'
-import { useRecoilState } from 'recoil'
-import CheckIcon from '@mui/icons-material/Check'
-import { usePathname, useRouter } from 'next-intl/client'
 import { useParams } from 'next/navigation'
+import * as React from 'react'
 
 export interface ILanguageMenuList {
   handleCloseMenu: () => void

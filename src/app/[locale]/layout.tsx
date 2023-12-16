@@ -1,17 +1,21 @@
 import { useLocale } from 'next-intl'
+import { unstable_setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
-// import 'rsuite/dist/rsuite.min.css'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import Header from '@/components/layouts/header/Header'
 import Box from '@mui/material/Box'
 import { Session } from 'next-auth'
-import useTranslation from 'next-translate/useTranslation'
 import { Inter, Roboto } from 'next/font/google'
 import { headers } from 'next/headers'
 import * as React from 'react'
 import AuthProvider from '@/components/AuthProvider'
 import './globals.scss'
+import CookiesConsentBanner from '@/components/cookiesConsentBanner/CookiesConsentBanner'
+import { locales } from '@/navigation'
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -38,20 +42,18 @@ async function getSession(cookie: string): Promise<Session> {
 
 export default async function RootLayout({
   children,
-  params,
+  params: { locale },
 }: {
   children: React.ReactNode
-  params: {
-    locale: string
-  }
+  params: { locale: string }
 }) {
   const session = await getSession(headers().get('cookie') ?? '')
-  const locale = useLocale()
 
-  // Show a 404 error if the user requests an unknown locale
-  if (params.locale !== locale) {
-    notFound()
-  }
+  // Validate that the incoming `locale` parameter is valid
+  const isValidLocale = locales.some((cur) => cur === locale)
+  if (!isValidLocale) notFound()
+
+  unstable_setRequestLocale(locale)
 
   const dir = () => {
     if (locale === 'he') {
@@ -77,6 +79,7 @@ export default async function RootLayout({
               }}
             >
               {children}
+              <CookiesConsentBanner label="I understand" />
             </Box>
           </ThemeRegistry>
         </AuthProvider>
@@ -84,18 +87,3 @@ export default async function RootLayout({
     </html>
   )
 }
-
-// export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
-//   const locale = useLocale()
-
-//   // Show a 404 error if the user requests an unknown locale
-//   if (params.locale !== locale) {
-//     notFound()
-//   }
-
-//   return (
-//     <html lang={locale}>
-//       <body>{children}</body>
-//     </html>
-//   )
-// }

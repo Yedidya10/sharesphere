@@ -15,7 +15,6 @@ import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import { useRecoilValue } from 'recoil'
 import { NextLinkComposed } from '@/components/mui/Link'
@@ -52,17 +51,8 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
   drawerWidth,
   ...props
 }) => {
-  const { lang } = useTranslation('common')
   const isUserOwnedItemsExist = useRecoilValue(isUserOwnedItemsExistState)
   const isUserBorrowedItemsExist = useRecoilValue(isUserBorrowedItemsExistState)
-
-  const dir = () => {
-    if (lang === 'he') {
-      return 'rtl'
-    } else {
-      return 'ltr'
-    }
-  }
 
   const [open, setOpen] = React.useState(true)
 

@@ -1,18 +1,12 @@
 'use client'
 
-import styles from './AdminDashboardDrawer.module.scss'
-import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
-import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import Collapse from '@mui/material/Collapse'
-import ExpandLess from '@mui/icons-material/ExpandLess'
-import ExpandMore from '@mui/icons-material/ExpandMore'
 import SettingsIcon from '@mui/icons-material/Settings'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ChecklistIcon from '@mui/icons-material/Checklist'
@@ -51,16 +45,6 @@ const AdminDashboardDrawer: React.FC<IAdminDashboardDrawer> = ({
   drawerWidth,
   ...props
 }) => {
-  const { lang } = useTranslation('common')
-
-  const dir = () => {
-    if (lang === 'he') {
-      return 'rtl'
-    } else {
-      return 'ltr'
-    }
-  }
-
   const [open, setOpen] = React.useState(true)
 
   const handleClick = () => {

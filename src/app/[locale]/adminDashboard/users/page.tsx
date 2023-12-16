@@ -11,6 +11,8 @@ import {
   GridToolbar,
   GridValueGetterParams,
 } from '@mui/x-data-grid'
+import Image from 'next/image'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
 const handleOpenModal = (id: number) => {
   console.log(id)
@@ -31,7 +33,7 @@ const columns: GridColDef[] = [
     headerName: 'Image',
     width: 70,
     renderCell: (params: GridRenderCellParams) => (
-      <img
+      <Image
         src={params.row.thumbnailUrl || '/default-thumbnail.png'} // Provide a default thumbnail URL
         alt={`Thumbnail for ${params.row.firstName} ${params.row.lastName}`}
         style={{
@@ -208,7 +210,12 @@ const rows = [
   },
 ]
 
-export default function UsersPage() {
+export default function UsersPage({
+  params: { locale },
+}: {
+  params: { locale: string }
+}) {
+  unstable_setRequestLocale(locale)
   return (
     <div style={{ height: 620, width: '100%' }}>
       <DataGrid

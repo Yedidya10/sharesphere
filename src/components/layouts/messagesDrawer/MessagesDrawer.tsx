@@ -11,7 +11,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import useTranslation from 'next-translate/useTranslation'
 import * as React from 'react'
 import { useRecoilValue } from 'recoil'
 import { NextLinkComposed } from '@/components/mui/Link'
@@ -48,17 +47,8 @@ const MessagesDrawer: React.FC<IMessagesDrawer> = ({
   drawerWidth,
   ...props
 }) => {
-  const { lang } = useTranslation('common')
   const isUserOwnedItemsExist = useRecoilValue(isUserOwnedItemsExistState)
   const isUserBorrowedItemsExist = useRecoilValue(isUserBorrowedItemsExistState)
-
-  const dir = () => {
-    if (lang === 'he') {
-      return 'rtl'
-    } else {
-      return 'ltr'
-    }
-  }
 
   const [open, setOpen] = React.useState(true)
 

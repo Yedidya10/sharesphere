@@ -1,22 +1,20 @@
-'use client'
-
-import { useLocale, useTranslations } from 'next-intl'
 import Box from '@mui/material/Box'
-import { useRouter } from 'next-intl/client'
-
+import { redirect } from '@/navigation'
 import * as React from 'react'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
-export default function Home() {
-  const router = useRouter()
+export default function Home({
+  params: { locale },
+}: {
+  params: { locale: string }
+}) {
+  unstable_setRequestLocale(locale)
 
-  React.useEffect(() => {
-    // Perform any server-side operations or checks here
-    const shouldRedirect = true // For example, condition to redirect
-
-    if (shouldRedirect) {
-      router.push(`/all-items`)
-    }
-  }, [router])
+  // Perform any server-side operations or checks here
+  const shouldRedirect = true // For example, condition to redirect
+  if (shouldRedirect) {
+    redirect(`/all-items`)
+  }
 
   return (
     <Box

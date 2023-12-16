@@ -19,7 +19,7 @@ interface Location {
 }
 
 interface CurrentBorrower {
-  borrowerId: string
+  borrowerId: mongoose.Schema.Types.ObjectId | null
   startDate: Date | null
   endDate: Date | null
   loanPeriod: number
@@ -50,8 +50,8 @@ export interface ItemCore {
     author: string
     brand: string
     description: string
-    imageUrl: string
   }
+  imageUrl: string
   condition: number
   maxLoanPeriod: number
   location: Location

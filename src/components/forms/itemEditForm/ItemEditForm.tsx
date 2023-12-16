@@ -1,5 +1,6 @@
 'use client'
 
+import { NextLinkComposed } from '@/components/mui/Link'
 import categories from '@/utils/categories/categories'
 import {
   regexAddressNamePattern,
@@ -35,7 +36,6 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
 import SpringModal from '../../springModal/SpringModal'
-import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IItemEditForm {
   openModal: boolean
@@ -202,8 +202,8 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
           author: data.author,
           brand: data.brand,
           description: data.description,
-          imageUrl: data.imageUrl,
         },
+        imageUrl: data.imageUrl,
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
           city: data.city,

@@ -1,9 +1,15 @@
 import Cards from '@/components/cards/allCards/AllCards'
 import Box from '@mui/material/Box'
 import { useTranslations } from 'next-intl'
+import { unstable_setRequestLocale } from 'next-intl/server'
 
-export default function AllItems() {
+export default function AllItems({
+  params: { locale },
+}: {
+  params: { locale: string }
+}) {
   const t = useTranslations('AllItems')
+  unstable_setRequestLocale(locale)
 
   const cardsTranslations = {
     noItemsFound: t('Cards.noItemsFound'),
@@ -20,26 +26,3 @@ export default function AllItems() {
     </Box>
   )
 }
-
-// import Cards from '@/components/cards/allCards/AllCards'
-// import Box from '@mui/material/Box'
-// import { useTranslations } from 'next-intl'
-
-// export default  function AllItems() {
-//   const t = useTranslations('AllItems')
-
-//   const translations = {
-//     noItemsFound: t('noItemsFound'),
-//   }
-
-//   return (
-//     <Box
-//       sx={{
-//         width: '100%',
-//         m: 'auto',
-//       }}
-//     >
-//       <Cards label={''} t={translations} />
-//     </Box>
-//   )
-// }
