@@ -42,7 +42,7 @@ const cardSchema = new mongoose.Schema(
       },
     ],
     currentBorrower: {
-      borrowerId: { type: mongoose.Schema.Types.ObjectId },
+      borrowerId: { type: mongoose.Schema.Types.ObjectId, default: null }, // Set default value to null
       startDate: { type: Date },
       endDate: { type: Date },
       loanPeriod: { type: Number },
