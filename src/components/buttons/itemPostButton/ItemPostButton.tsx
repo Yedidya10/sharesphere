@@ -37,7 +37,7 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
     <>
       <Button
         component={NextLinkComposed}
-        to="/addItem"
+        to="/add-item"
         sx={{
           display: { xs: 'none', xsm: 'flex' },
           gap: 1,
@@ -50,7 +50,7 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
         sx={{ display: { xs: 'block', xsm: 'none' } }}
         title="פרסם פריט להשאלה"
       >
-        <IconButton component={NextLinkComposed} to="/addItem">
+        <IconButton component={NextLinkComposed} to="/add-item">
           <PostAddIcon />
         </IconButton>
       </Tooltip>
