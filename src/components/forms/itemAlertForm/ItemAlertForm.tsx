@@ -81,9 +81,9 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
     try {
       const itemAlert = {
         subscriberId: session?.user?.id,
-        alertsRequested: true
+        alertsRequested: true,
       }
-      const res = await fetch(`/api/cards/cardId/${cardId}/itemAlert`, {
+      const res = await fetch(`/api/cards/cardId/${cardId}/update/itemAlert`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -92,9 +92,6 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
           itemAlert,
         }),
       })
-
-      const json = await res.json()
-      console.log(json)
     } catch (error) {
       console.log(error)
     }
