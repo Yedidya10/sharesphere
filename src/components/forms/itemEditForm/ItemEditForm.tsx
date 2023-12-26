@@ -118,7 +118,6 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
     defaultValues: {
       mainCategory: mainCategory,
       secondaryCategory: secondaryCategory,
-      tertiaryCategory: tertiaryCategory,
       isbn: isbn,
       danacode: danacode,
       barcode: barcode,
@@ -197,7 +196,6 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
         details: {
           mainCategory: data.mainCategory,
           secondaryCategory: data.secondaryCategory,
-          tertiaryCategory: data.tertiaryCategory,
           name: data.itemName,
           author: data.author,
           brand: data.brand,

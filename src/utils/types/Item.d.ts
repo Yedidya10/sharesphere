@@ -41,11 +41,11 @@ interface AlertSubscriber {
 }
 
 export interface ItemCore {
+  _id?: mongoose.Schema.Types.ObjectId
   cardIds: CardIds
   details: {
     mainCategory: string
     secondaryCategory: string
-    tertiaryCategory: string
     name: string
     author: string
     brand: string

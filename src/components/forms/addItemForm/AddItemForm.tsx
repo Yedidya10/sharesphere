@@ -16,7 +16,6 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import SaveIcon from '@mui/icons-material/Save'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
-import StepButton from '@mui/material/StepButton'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -26,6 +25,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Step from '@mui/material/Step'
+import StepButton from '@mui/material/StepButton'
 import Stepper from '@mui/material/Stepper'
 import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
@@ -36,14 +36,12 @@ import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
-import SpringModal from '../../springModal/SpringModal'
 import ConditionInput from '../conditionInput/ConditionInput'
 import DescriptionInput from '../descriptionInput/DescriptionInput'
+import ImageUrlInput from '../imageUrlInput/ImageUrlInput'
 import LocationInput from '../locationInput/LocationInput'
 import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
 import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
-import UppyDashboard from '../uppyDashboard/UppyDashboard'
-import ImageUrlInput from '../imageUrlInput/ImageUrlInput'
 
 export interface IAddItemForm {
   authKey: string
@@ -189,7 +187,6 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     defaultValues: {
       mainCategory: '',
       secondaryCategory: '',
-      tertiaryCategory: '',
       isbn: '',
       danacode: '',
       barcode: '',
@@ -218,7 +215,6 @@ const AddItemForm: React.FC<IAddItemForm> = ({
         details: {
           mainCategory: data.mainCategory,
           secondaryCategory: data.secondaryCategory,
-          tertiaryCategory: data.tertiaryCategory,
           name: data.itemName,
           author: data.author,
           brand: data.brand,
@@ -235,7 +231,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
           zipCode: data.zipCode,
         },
         owner: ownerId,
-        status: 'active',
+        status: 'pendingForApproval',
         allBorrowers: [],
         currentBorrower: {
           borrowerId: null,
@@ -1014,8 +1010,13 @@ const AddItemForm: React.FC<IAddItemForm> = ({
           //   templateId={templateId}
           //   label=""
           // />
-          <ImageUrlInput control={control} setError={setError} clearErrors={clearErrors}
-           watch={watch} label="" />
+          <ImageUrlInput
+            control={control}
+            setError={setError}
+            clearErrors={clearErrors}
+            watch={watch}
+            label=""
+          />
         )
       case 4:
         return <LocationInput control={control} watch={watch} label={''} />
@@ -1060,7 +1061,6 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     type FormFieldName =
       | 'mainCategory'
       | 'secondaryCategory'
-      | 'tertiaryCategory'
       | 'isbn'
       | 'danacode'
       | 'barcode'

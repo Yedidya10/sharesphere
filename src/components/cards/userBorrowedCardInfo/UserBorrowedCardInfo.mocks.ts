@@ -18,7 +18,6 @@ const base: IUserBorrowedCardInfo = {
     details: {
       mainCategory: '',
       secondaryCategory: '',
-      tertiaryCategory: '',
       name: '',
       author: '',
       brand: '',

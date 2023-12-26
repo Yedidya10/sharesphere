@@ -1,7 +1,6 @@
 export interface AddItemFormValues {
   mainCategory: string
   secondaryCategory: string
-  tertiaryCategory: string
   isbn: string
   danacode: string
   barcode: string
@@ -21,7 +20,6 @@ export interface AddItemFormValues {
 export interface ItemEditFormValues {
   mainCategory: string
   secondaryCategory: string
-  tertiaryCategory: string
   isbn: string
   danacode: string
   barcode: string

@@ -74,28 +74,28 @@ const AdminDashboardDrawer: React.FC<IAdminDashboardDrawer> = ({
         component="nav"
         aria-labelledby="dashboard-list-nav"
       >
-        <ListItemButton component={NextLinkComposed} to="/adminDashboard">
+        <ListItemButton component={NextLinkComposed} to="/admin-dashboard">
           <ListItemIcon>
             <AccountCircleIcon />
           </ListItemIcon>
           <ListItemText primary="Profile" />
         </ListItemButton>
 
-        <ListItemButton component={NextLinkComposed} to="/adminDashboard/chats">
+        <ListItemButton component={NextLinkComposed} to="/admin-dashboard/chats">
           <ListItemIcon>
             <ChatIcon />
           </ListItemIcon>
           <ListItemText primary="Chats" />
         </ListItemButton>
 
-        <ListItemButton component={NextLinkComposed} to="/adminDashboard/users">
+        <ListItemButton component={NextLinkComposed} to="/admin-dashboard/users">
           <ListItemIcon>
             <ChecklistIcon />
           </ListItemIcon>
           <ListItemText primary="Users" />
         </ListItemButton>
 
-        <ListItemButton component={NextLinkComposed} to="/adminDashboard/cards">
+        <ListItemButton component={NextLinkComposed} to="/admin-dashboard/cards">
           <ListItemIcon>
             <ChecklistIcon />
           </ListItemIcon>
@@ -104,7 +104,7 @@ const AdminDashboardDrawer: React.FC<IAdminDashboardDrawer> = ({
 
         <ListItemButton
           component={NextLinkComposed}
-          to="/adminDashboard/settings"
+          to="/admin-dashboard/settings"
         >
           <ListItemIcon>
             <SettingsIcon />

@@ -21,13 +21,10 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Update the card in the database
-    await card.updateOne({
-      _id: cardId,
-      $set: data.updatedCard,
-    })
+    await Card.updateOne({ _id: cardId }, { $set: { status: data.status } })
 
     // Return a 200 response
-    return NextResponse.json({ message: 'Card updated:', Card })
+    return NextResponse.json({ message: 'Card updated:', card })
   } catch (err: any) {
     // If there is an error, return a 500 response with the error message
     return NextResponse.json(

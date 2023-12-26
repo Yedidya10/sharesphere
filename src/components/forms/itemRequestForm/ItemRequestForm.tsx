@@ -139,15 +139,18 @@ const ItemRequestForm: React.FC<IItemRequestForm> = ({
         message: data.message,
       }
 
-      const res = await fetch(`/api/cards/cardId/${cardId}/itemRequest`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          itemLoanRequest,
-        }),
-      })
+      const res = await fetch(
+        `/api/cards/cardId/${cardId}/update/itemRequest`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            itemLoanRequest,
+          }),
+        }
+      )
 
       const json = await res.json()
       console.log(json)

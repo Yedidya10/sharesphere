@@ -1,15 +1,15 @@
 'use client'
 
 import categories from '@/utils/categories/categories'
+import { AddItemFormValues } from '@/utils/types/FormValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import React from 'react'
 import { Control, Controller, UseFormWatch } from 'react-hook-form'
-import { AddItemFormValues } from '@/utils/types/FormValues'
 
 export interface IConditionInput {
   control: Control<AddItemFormValues, any>
