@@ -7,8 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function PATCH(req: NextRequest) {
   try {
     // Get the card ID from the query parameters
-    const cardId = req.nextUrl.pathname.split('/')[-2]
-    console.log(cardId)
+    const cardId = req.nextUrl.pathname.split('/')[4]
 
     // Get the data from the request body
     const data = await req.json()

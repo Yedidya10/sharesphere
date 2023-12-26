@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function PATCH(req: NextRequest) {
   try {
     // Get the card ID from the URL
-    const cardId = req.nextUrl.pathname.split('/')[-2]
+    const cardId = req.nextUrl.pathname.split('/')[4]
 
     // Get the data from the request body
     const data = await req.json()
@@ -17,8 +17,6 @@ export async function PATCH(req: NextRequest) {
       { _id: cardId },
       { $push: { pendingRequests: data.itemLoanRequest } }
     )
-
-    console.log('Card updated:', data)
 
     // Return a 200 response
     return NextResponse.json(

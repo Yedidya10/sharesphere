@@ -7,7 +7,6 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
     const cards = await Card.find({}).exec()
-
     return NextResponse.json({ cards }, { status: 200 })
   } catch (error: any) {
     console.error('Error fetching cards:', error?.message)
