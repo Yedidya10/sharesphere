@@ -19,7 +19,6 @@ const base: IUserOwnedCardInfo = {
     details: {
       mainCategory: '',
       secondaryCategory: '',
-      tertiaryCategory: '',
       name: '',
       author: '',
       brand: '',
