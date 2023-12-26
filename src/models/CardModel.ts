@@ -10,13 +10,14 @@ const cardSchema = new mongoose.Schema(
       barcode: { type: String },
     },
     details: {
-      category: { type: String },
+      mainCategory: { type: String },
+      secondaryCategory: { type: String },
       name: { type: String },
       author: { type: String },
       brand: { type: String },
       description: { type: String },
-      imageUrl: { type: String },
     },
+    imageUrl: { type: String },
     condition: { type: String },
     maxLoanPeriod: { type: Number },
     location: {
