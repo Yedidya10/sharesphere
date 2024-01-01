@@ -1,4 +1,4 @@
-export const regexTextPattern = /^[A-Ta-t\s\u0590-\u05FF:-]+$/u // English and Hebrew text, hyphens, and colons
+export const regexTextPattern = /^[A-Za-z\s\u0590-\u05FF:-]+$/u // English and Hebrew text, hyphens, and colons
 export const regexImageUrlPattern =
   /https?:\/\/[^\s\/$.?#].[^\s]*\.(?:jpg|jpeg|png|gif|bmp|svg|webp|ico|tiff?)/m // image url
 export const regexDanacodePattern = /^\d{12}$/ // 12 digits
