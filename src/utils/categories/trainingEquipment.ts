@@ -1,4 +1,4 @@
-export default {
+const trainingEquipment = {
   value: 'training-equipment',
   label: 'Training Equipment',
   subCategories: [
@@ -43,3 +43,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default trainingEquipment

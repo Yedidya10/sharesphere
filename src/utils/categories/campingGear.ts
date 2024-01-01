@@ -1,4 +1,4 @@
-export default {
+const campingGear = {
   value: 'camping-gear',
   label: 'Camping Gear',
   subCategories: [
@@ -51,3 +51,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default campingGear

@@ -1,4 +1,4 @@
-export default {
+const gardeningTool = {
   value: 'gardening-tool',
   label: 'Gardening Tool',
   subCategories: [
@@ -55,3 +55,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default gardeningTool

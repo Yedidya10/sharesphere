@@ -11,7 +11,7 @@ import puzzle from './puzzle'
 import sportingGood from './sportingGood'
 import trainingEquipment from './trainingEquipment'
 
-export default [
+const categories = [
   book,
   puzzle,
   gardeningTool,
@@ -25,3 +25,5 @@ export default [
   kitchenAppliances,
   trainingEquipment,
 ]
+
+export default categories

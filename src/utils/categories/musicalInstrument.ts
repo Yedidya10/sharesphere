@@ -1,4 +1,4 @@
-export default {
+const musicalInstrument = {
   value: 'musical-instrument',
   label: 'Musical Instrument',
   subCategories: [
@@ -91,3 +91,5 @@ export default {
     1: 'Severely Damaged, Unplayable',
   },
 }
+
+export default musicalInstrument

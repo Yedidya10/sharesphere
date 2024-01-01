@@ -1,4 +1,4 @@
-export default {
+const diyTool = {
   value: 'diy-tool',
   label: 'DIY Tool',
   subCategories: [
@@ -51,3 +51,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default diyTool

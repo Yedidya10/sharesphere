@@ -1,4 +1,4 @@
-export default {
+const sportingGood = {
   value: 'sporting-good',
   label: 'Sporting Good',
   subCategories: [
@@ -35,3 +35,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default sportingGood
