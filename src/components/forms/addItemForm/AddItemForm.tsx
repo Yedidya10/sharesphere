@@ -45,6 +45,7 @@ import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryI
 import Image from 'next/image'
 import categories from '@/utils/categories/categories'
 
+
 export interface IAddItemForm {
   authKey: string
   authSecret: string
