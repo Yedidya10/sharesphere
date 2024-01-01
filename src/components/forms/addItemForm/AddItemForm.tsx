@@ -42,6 +42,9 @@ import ImageUrlInput from '../imageUrlInput/ImageUrlInput'
 import LocationInput from '../locationInput/LocationInput'
 import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
 import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
+import Image from 'next/image'
+import categories from '@/utils/categories/categories'
+
 
 export interface IAddItemForm {
   authKey: string
@@ -1021,35 +1024,110 @@ const AddItemForm: React.FC<IAddItemForm> = ({
       case 4:
         return <LocationInput control={control} watch={watch} label={''} />
       case 5:
+        const numberCondition = parseFloat(watch('itemCondition'))
+        const category = categories.find(
+          (category) => category.value === watch('mainCategory')
+        )
         return (
           <>
-            {watch('mainCategory') && (
-              <>
-                <Tooltip
-                  followCursor
-                  title={
-                    !isValid
-                      ? 'Please enter all required fields to submit the form'
-                      : 'Click to submit the form'
-                  }
+            <Grid
+              container
+              columnSpacing={2}
+              sx={{
+                paddingBlock: 4,
+              }}
+            >
+              <Grid xs={12} sm={3} xl={3}>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                  }}
                 >
-                  <span>
-                    <Button
-                      sx={{
-                        p: 2,
-                      }}
-                      variant="contained"
-                      fullWidth
-                      disabled={!isValid}
-                      type="submit"
-                      value="Submit"
-                    >
-                      Submit
-                    </Button>
-                  </span>
-                </Tooltip>
-              </>
-            )}
+                  <Image
+                    src={watch('imageUrl')}
+                    alt={`Image of ${watch('itemName')}`}
+                    objectFit="contain"
+                    objectPosition="center"
+                    fill={true}
+                  />
+                </Box>
+              </Grid>
+              <Grid xs={12} sm={9} xl={9}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  <Typography>{watch('itemName')}</Typography>
+                  {watch('mainCategory') === 'book' ? (
+                    <Typography>
+                      Author:
+                      {watch('author')}
+                    </Typography>
+                  ) : (
+                    <Typography>
+                      Brand:
+                      {watch('brand')}
+                    </Typography>
+                  )}
+                  <Typography>
+                    Barcode:
+                    {watch('barcode')}
+                  </Typography>
+                  <Typography> Item Description:</Typography>
+                  <Typography component={'p'}>
+                    {watch('description')}
+                  </Typography>
+
+                  <Typography>
+                    Item Condition:{' '}
+                    {category &&
+                      Object.values(category.conditionTextValue)[
+                        numberCondition
+                      ]}
+                  </Typography>
+                  <Typography>
+                    Max Loan Period:
+                    {watch('maxLoanPeriod')}
+                  </Typography>
+                  <Box>
+                    <Typography>Item Location:</Typography>
+                    <Typography>
+                      {`${watch('streetName')} ${watch(
+                        'streetNumber'
+                      )}, ${watch('city')} ${watch('zipCode')}`}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+            <Tooltip
+              followCursor
+              title={
+                !isValid
+                  ? 'Please enter all required fields to submit the form'
+                  : 'Click to submit the form'
+              }
+            >
+              <span>
+                <Button
+                  sx={{
+                    p: 2,
+                  }}
+                  variant="contained"
+                  fullWidth
+                  disabled={!isValid}
+                  type="submit"
+                  value="Submit"
+                >
+                  Submit
+                </Button>
+              </span>
+            </Tooltip>
           </>
         )
       default:

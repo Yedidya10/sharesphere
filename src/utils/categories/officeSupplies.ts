@@ -1,4 +1,4 @@
-export default {
+const officeSupplies = {
   value: 'office-supplies',
   label: 'Office Supplies',
   subCategories: [
@@ -23,3 +23,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default officeSupplies

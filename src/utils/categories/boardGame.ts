@@ -1,4 +1,4 @@
-export default {
+const boardGame = {
   value: 'board-game',
   label: 'Board Game',
   subCategories: [],
@@ -10,3 +10,5 @@ export default {
     1: 'Significant parts are missing, Unplayable',
   },
 }
+
+export default boardGame

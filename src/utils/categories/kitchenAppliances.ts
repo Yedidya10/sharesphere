@@ -1,4 +1,4 @@
-export default {
+const kitchenAppliances = {
   value: 'kitchen-appliances',
   label: 'Kitchen Appliances',
   subCategories: [
@@ -40,3 +40,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default kitchenAppliances
