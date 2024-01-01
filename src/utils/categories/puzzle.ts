@@ -1,4 +1,4 @@
-export default {
+const puzzle = {
     value: 'puzzle',
     label: 'Puzzle',
     subCategories: [
@@ -35,3 +35,5 @@ export default {
       1: 'Significant parts are missing, Unplayable',
     },
   }
+
+  export default puzzle

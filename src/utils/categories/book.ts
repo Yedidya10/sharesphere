@@ -1,4 +1,4 @@
-export default {
+const book = {
   value: 'book',
   label: 'Book',
   subCategories: [
@@ -27,3 +27,6 @@ export default {
     1: 'Scribbles/Torn Pages, Unreadable',
   },
 }
+
+export default book
+

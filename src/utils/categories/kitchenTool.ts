@@ -1,4 +1,4 @@
-export default {
+const kitchenTool = {
   value: 'cooking-baking-tool',
   label: 'Cooking and Baking Tool',
   subCategories: [
@@ -19,3 +19,5 @@ export default {
     1: 'Severely Damaged, Unusable',
   },
 }
+
+export default kitchenTool
