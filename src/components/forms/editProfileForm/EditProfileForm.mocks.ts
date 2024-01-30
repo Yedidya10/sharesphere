@@ -1,6 +1,6 @@
-import { IProfileUpdateForm } from './ProfileUpdateForm'
+import { IEditProfileForm } from './EditProfileForm'
 
-const base: IProfileUpdateForm = {
+const base: IEditProfileForm = {
   label: '',
   openModal: false,
   handleClose: function (): void {
@@ -8,6 +8,6 @@ const base: IProfileUpdateForm = {
   },
 }
 
-export const mockProfileUpdateFormProps = {
+export const mockEditProfileFormProps = {
   base,
 }
