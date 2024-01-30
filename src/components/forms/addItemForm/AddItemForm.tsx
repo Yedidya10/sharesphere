@@ -1,6 +1,6 @@
 'use client'
 
-import { NextLinkComposed } from '@/components/mui/Link'
+import categories from '@/utils/categories/categories'
 import {
   regexBarcodePattern,
   regexDanacodePattern,
@@ -32,7 +32,8 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
-import { useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
+import Image from 'next/image'
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
@@ -42,9 +43,6 @@ import ImageUrlInput from '../imageUrlInput/ImageUrlInput'
 import LocationInput from '../locationInput/LocationInput'
 import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
 import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
-import Image from 'next/image'
-import categories from '@/utils/categories/categories'
-
 
 export interface IAddItemForm {
   authKey: string
@@ -70,6 +68,13 @@ export interface IAddItemForm {
    * Optional click handler
    */
   onClick?: () => void
+}
+
+type TUserAddress = {
+  city: string
+  streetName: string
+  streetNumber: string
+  zipCode?: string
 }
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -155,9 +160,35 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     console.log('Save for later - Not implemented yet')
   }
 
+  const [userAddress, setUserAddress] = React.useState<
+    TUserAddress | undefined
+  >(undefined)
+
   React.useEffect(() => {
     if (session) {
       setOwnerId(session.user!.id)
+    }
+  }, [session])
+
+  React.useEffect(() => {
+    const getUserAddress = async () => {
+      const response = await fetch(`/api/users/${session?.user?.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
+      if (response.ok) {
+        console.log('Found user:', data)
+        setUserAddress(data.user.address)
+      } else {
+        console.log('Failed to find user:', data)
+      }
+    }
+
+    if (session?.user?.id) {
+      getUserAddress()
     }
   }, [session])
 
@@ -1022,7 +1053,15 @@ const AddItemForm: React.FC<IAddItemForm> = ({
           />
         )
       case 4:
-        return <LocationInput control={control} watch={watch} label={''} />
+        return (
+          <LocationInput
+            control={control}
+            watch={watch}
+            label={''}
+            setValue={setValue}
+            userAddress={userAddress}
+          />
+        )
       case 5:
         const numberCondition = parseFloat(watch('itemCondition'))
         const category = categories.find(
@@ -1400,8 +1439,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
             sx={{
               mt: 2,
             }}
-            component={NextLinkComposed}
-            to="/login"
+            onClick={() => signIn()}
           >
             Go to login screen
           </Button>
