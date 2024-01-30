@@ -14,7 +14,7 @@ export interface AddItemFormValues {
   city: string
   streetName: string
   streetNumber: string
-  zipCode: string
+  zipCode?: string
 }
 
 export interface ItemEditFormValues {
@@ -35,18 +35,6 @@ export interface ItemEditFormValues {
   zipCode: string
 }
 
-export interface ProfileFormValues {
-  firstName: string
-  lastName: string
-  email: string
-  imageUrl: string
-  phone: string
-  city: string
-  streetName: string
-  streetNumber: string
-  zipCode: string
-}
-
 export interface ItemRequestFormValues {
   message: string
   startDate: string
@@ -56,6 +44,19 @@ export interface ItemRequestFormValues {
 export interface ItemAlertFormValues {
   startDate: string
   endDate: string
+}
+
+export interface EditProfileFormValues {
+  firstName: string
+  lastName: string
+  email: string
+  imageUrl: string
+  phone: string
+  city: string
+  streetName: string
+  streetNumber: string
+  zipCode: string
+  country: string
 }
 
 export interface RegisterFormValues {}

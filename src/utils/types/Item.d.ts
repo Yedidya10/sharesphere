@@ -10,7 +10,7 @@ interface Location {
   city: string
   streetName: string
   streetNumber: string
-  zipCode: string
+  zipCode: string | undefined
   coordinates?: {
     lat: number
     lng: number
