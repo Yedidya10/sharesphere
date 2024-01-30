@@ -30,6 +30,7 @@ export const authOptions: AuthOptions = {
     GoogleProvider({
       clientId: getCredentials('GOOGLE').clientId,
       clientSecret: getCredentials('GOOGLE').clientSecret,
+      allowDangerousEmailAccountLinking: true,
     }),
     // FacebookProvider({
     //   clientId: getCredentials('FACEBOOK').clientId,
@@ -56,23 +57,33 @@ export const authOptions: AuthOptions = {
     // signOut: '/auth/signout',
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // (used for check email message)
-    // newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
+    newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   callbacks: {
-    redirect: async ({ url, baseUrl }) => {
-      return Promise.resolve(url)
-    },
-
     // The `session` callback is called when a new session is created or updated
     session: async ({ session, user }) => {
+      const userFirstName = user.name ? user.name.split(' ')[0] : ''
+      const userLastName = user.name ? user.name.split(' ')[1] : ''
       const dbUser = await User.findOneAndUpdate(
         { email: user.email },
-        { role: 'user' }, // Set the user's role to 'user'
+        {
+          lastLogin: new Date(),
+          firstName: userFirstName,
+          lastName: userLastName,
+          role: 'user',
+        }, // Set the user's role to 'user'
         { new: true } // Return the updated user
       )
+
       return {
         ...session,
-        user: { ...session.user, role: dbUser.role, id: dbUser._id },
+        user: {
+          ...session.user,
+          role: dbUser.role,
+          id: dbUser._id,
+          firstName: dbUser.firstName,
+          lastName: dbUser.lastName,
+        },
       }
     },
   },

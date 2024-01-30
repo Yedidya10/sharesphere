@@ -1,10 +1,10 @@
 'use client'
 
-import Button from '@mui/material/Button'
+import { NextLinkComposed } from '@/components/mui/Link'
 import PostAddIcon from '@mui/icons-material/PostAdd'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
-import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IItemPostButton {
   /**
@@ -46,10 +46,7 @@ const ItemPostButton: React.FC<IItemPostButton> = ({
         <PostAddIcon />
         Add Item
       </Button>
-      <Tooltip
-        sx={{ display: { xs: 'block', xsm: 'none' } }}
-        title="פרסם פריט להשאלה"
-      >
+      <Tooltip sx={{ display: { xs: 'block', xsm: 'none' } }} title="Add Item">
         <IconButton component={NextLinkComposed} to="/add-item">
           <PostAddIcon />
         </IconButton>

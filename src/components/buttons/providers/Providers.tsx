@@ -1,5 +1,6 @@
 'use client'
 
+import Link from '@/components/mui/Link'
 import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined'
 import GoogleIcon from '@mui/icons-material/Google'
 import Box from '@mui/material/Box'
@@ -8,13 +9,13 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import Typography from '@mui/material/Typography'
 import { signIn } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { useState } from 'react'
 import { AiFillApple as AppleIcon } from 'react-icons/ai'
 import styles from './Providers.module.scss'
-import Typography from '@mui/material/Typography'
-import Link from '@/components/mui/Link'
 
 export interface IProviders {
   providersLoginText: string
@@ -51,13 +52,18 @@ const Providers: React.FC<IProviders> = ({
   primary = false,
   label,
 }) => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') as string
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null)
 
   async function handleProviderLogin(provider: any) {
     setLoadingProvider(provider.id)
+    console.log('callbackUrl:', callbackUrl)
 
     try {
-      await signIn(provider.id)
+      await signIn(provider.id, {
+        callbackUrl,
+      })
     } catch (error) {
       console.error('Error Login:', error)
     } finally {

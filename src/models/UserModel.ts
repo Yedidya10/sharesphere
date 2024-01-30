@@ -7,7 +7,6 @@ interface IUser extends AdapterUser {
   email: string
   firstName: string
   lastName: string
-  password: string
   role: string
   phone: string
   address: {
@@ -17,24 +16,30 @@ interface IUser extends AdapterUser {
     zipCode: number
     country: string
   }
+  lastLogin: Date
 }
 
 // Define the Mongoose schema for the User model
-const userSchema = new mongoose.Schema<IUser>({
-  email: { type: String, unique: true },
-  firstName: { type: String },
-  lastName: { type: String },
-  password: { type: String },
-  role: { type: String },
-  phone: { type: String },
-  address: {
-    streetName: { type: String },
-    streetNumber: { type: String },
-    city: { type: String },
-    zipCode: { type: Number },
-    country: { type: String },
+const userSchema = new mongoose.Schema<IUser>(
+  {
+    email: { type: String, unique: true },
+    firstName: { type: String },
+    lastName: { type: String },
+    role: { type: String },
+    phone: { type: String },
+    address: {
+      streetName: { type: String },
+      streetNumber: { type: String },
+      city: { type: String },
+      zipCode: { type: Number },
+      country: { type: String },
+    },
+    lastLogin: { type: Date },
   },
-})
+  {
+    timestamps: true,
+  }
+)
 
 // Create and return the Mongoose model for the User collection.
 // If the model already exists, return the existing model; otherwise, create a new one.

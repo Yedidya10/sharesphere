@@ -97,8 +97,6 @@ const AllCards: React.FC<IAllCards> = ({
 
   const skeletonArray = Array.from({ length: 10 })
 
-  console.log(allCards)
-
   return (
     <>
       <SearchBar setSearchQuery={setSearchQuery} />

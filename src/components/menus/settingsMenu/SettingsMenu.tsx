@@ -80,9 +80,7 @@ const SettingsMenu: React.FC<ISettingsMenu> = ({
   }
 
   return (
-    <Box
-      
-    >
+    <Box>
       {status === 'loading' && <CircularProgress />}
       {status === 'authenticated' && (
         <ProfileSettingsButton

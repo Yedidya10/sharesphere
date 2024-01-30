@@ -1,6 +1,6 @@
-import IconButton from '@mui/material/IconButton'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Modal from '@mui/material/Modal'
 import { animated, useSpring } from '@react-spring/web'
 import * as React from 'react'
@@ -77,6 +77,7 @@ const childrenStyle = {
   position: 'relative' as 'relative',
   // borderRadius: 2,
   maxHeight: 'calc(80vh - 70px)', // Add max-height property
+  p: 2,
   boxShadow: 24,
   overflow: 'auto',
   zIndex: 1,
