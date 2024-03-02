@@ -1,11 +1,11 @@
 import { IMainCategoryInput } from './MainCategoryInput'
 import { Control, UseFormWatch } from 'react-hook-form'
-import { AddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues } from '@/utils/types/FormValues'
 
 const base: IMainCategoryInput = {
   label: '',
-  control: {} as Control<AddItemFormValues>,
-  watch: {} as UseFormWatch<AddItemFormValues>,
+  control: {} as Control<IAddItemFormValues>,
+  watch: {} as UseFormWatch<IAddItemFormValues>,
 }
 
 export const mockMainCategoryInputProps = {

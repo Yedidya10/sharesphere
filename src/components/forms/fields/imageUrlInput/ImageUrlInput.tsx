@@ -1,29 +1,28 @@
 'use client'
 
-import {
-  regexAddressNamePattern,
-  regexAddressNumberPattern,
-  regexZipCodePattern,
-} from '@/utils/regexPatterns'
-import { AddItemFormValues } from '@/utils/types/FormValues'
+import { regexImageUrlPattern } from '@/utils/regexPatterns'
+import { IAddItemFormValues } from '@/utils/types/FormValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import Box from '@mui/material/Box'
-import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
 import React from 'react'
-import { Control, Controller, UseFormWatch } from 'react-hook-form'
+import {
+  Control,
+  Controller,
+  UseFormClearErrors,
+  UseFormSetError,
+  UseFormWatch,
+} from 'react-hook-form'
 
-export interface IDescriptionInput {
-  control: Control<AddItemFormValues, any>
-  watch?: UseFormWatch<AddItemFormValues>
+export interface IImageUrlInput {
+  control: Control<IAddItemFormValues, any>
+  setError: UseFormSetError<IAddItemFormValues>
+  clearErrors: UseFormClearErrors<IAddItemFormValues>
+  watch?: UseFormWatch<IAddItemFormValues>
   /**
    * Is this the principal call to action on the page?
    */
@@ -33,11 +32,11 @@ export interface IDescriptionInput {
    */
   backgroundColor?: string
   /**
-   * How large should the DescriptionInput be?
+   * How large should the ImageUrlInput be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * DescriptionInput contents
+   * ImageUrlInput contents
    */
   label: string
   /**
@@ -58,9 +57,11 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
-const DescriptionInput: React.FC<IDescriptionInput> = ({
+const ImageUrlInput: React.FC<IImageUrlInput> = ({
   primary = false,
   label,
+  setError,
+  clearErrors,
   control,
 }) => {
   const getValidText = () => {
@@ -84,17 +85,68 @@ const DescriptionInput: React.FC<IDescriptionInput> = ({
     )
   }
 
+  const isURL = (str: string) => {
+    const pattern =
+      /^(https?:\/\/)?([\w.-]+)\.([a-zA-Z]{2,})(:\d{1,5})?([/?#].*)?$/
+    return pattern.test(str)
+  }
+
+  const validateImageUrl = (url: string) => {
+    const splitUrl = url.split('.')
+    const lastSegment = splitUrl[splitUrl.length - 1]
+    const secondLastSegment = splitUrl[splitUrl.length - 2]
+
+    clearErrors('imageUrl') // Clear previous errors
+
+    if (!isURL(url)) {
+      setError('imageUrl', {
+        type: 'manual',
+        message: 'Please enter a valid URL',
+      })
+      return false
+    }
+
+    if (lastSegment.toLowerCase() === secondLastSegment.toLowerCase()) {
+      setError('imageUrl', {
+        type: 'manual',
+        message: 'The URL contains a duplicate file extension',
+      })
+      return false
+    }
+
+    if (!regexImageUrlPattern.test(url)) {
+      if (!url.startsWith('http')) {
+        setError('imageUrl', {
+          type: 'manual',
+          message: 'URL must start with http:// or https://',
+        })
+      }
+      if (!/\.(jpg|jpeg|png|gif|bmp|svg|webp|ico|tiff?)$/i.test(url)) {
+        setError('imageUrl', {
+          type: 'manual',
+          message: 'Missing image file extension',
+        })
+      }
+      if (
+        !/\.(jpg|jpeg|png|gif|bmp|svg|webp|ico|tiff?)$/i.test(url.split('?')[0])
+      ) {
+        setError('imageUrl', {
+          type: 'manual',
+          message: 'Characters found after file extension',
+        })
+      }
+      return false
+    }
+    return true
+  }
+
   return (
     <Controller
       control={control}
-      name="description"
+      name="imageUrl"
       rules={{
-        required: 'Description is required',
-        // pattern: {
-        //   value: regexTextPattern,
-        //   message:
-        //     'Please enter a valid description with only Hebrew or English letters',
-        // },
+        required: 'Image url is required',
+        validate: (value) => validateImageUrl(value),
       }}
       render={({
         field: { onChange, onBlur, value, name, ref },
@@ -106,10 +158,8 @@ const DescriptionInput: React.FC<IDescriptionInput> = ({
             required
             inputRef={ref}
             value={value}
-            label="Description"
+            label="Image Url"
             fullWidth
-            multiline
-            rows={3}
             onChange={onChange}
             onBlur={onBlur}
           />
@@ -119,7 +169,7 @@ const DescriptionInput: React.FC<IDescriptionInput> = ({
                 return fieldState.error.message
               }
               if (!fieldState.isDirty) {
-                return 'Please enter description'
+                return 'Please enter a valid image url'
               }
               if (!fieldState.invalid) {
                 return getValidText()
@@ -132,4 +182,4 @@ const DescriptionInput: React.FC<IDescriptionInput> = ({
   )
 }
 
-export default DescriptionInput
+export default ImageUrlInput

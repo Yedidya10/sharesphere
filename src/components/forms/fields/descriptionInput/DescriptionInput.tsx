@@ -1,9 +1,9 @@
 'use client'
 
-import categories from '@/utils/categories/categories'
-import { AddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues } from '@/utils/types/FormValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
@@ -11,9 +11,9 @@ import { styled } from '@mui/material/styles'
 import React from 'react'
 import { Control, Controller, UseFormWatch } from 'react-hook-form'
 
-export interface ISecondaryCategoryInput {
-  control: Control<AddItemFormValues, any>
-  watch: UseFormWatch<AddItemFormValues>
+export interface IDescriptionInput {
+  control: Control<IAddItemFormValues, any>
+  watch?: UseFormWatch<IAddItemFormValues>
   /**
    * Is this the principal call to action on the page?
    */
@@ -23,11 +23,11 @@ export interface ISecondaryCategoryInput {
    */
   backgroundColor?: string
   /**
-   * How large should the SecondaryCategoryInput be?
+   * How large should the DescriptionInput be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * SecondaryCategoryInput contents
+   * DescriptionInput contents
    */
   label: string
   /**
@@ -48,11 +48,10 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
-const SecondaryCategoryInput: React.FC<ISecondaryCategoryInput> = ({
+const DescriptionInput: React.FC<IDescriptionInput> = ({
   primary = false,
   label,
   control,
-  watch,
 }) => {
   const getValidText = () => {
     return (
@@ -78,41 +77,49 @@ const SecondaryCategoryInput: React.FC<ISecondaryCategoryInput> = ({
   return (
     <Controller
       control={control}
-      name="secondaryCategory"
+      name="description"
       rules={{
-        required: 'Sub-category is required',
+        required: 'Description is required',
+        // pattern: {
+        //   value: regexWordsPattern,
+        //   message:
+        //     'Please enter a valid description with only Hebrew or English letters',
+        // },
       }}
       render={({
         field: { onChange, onBlur, value, name, ref },
         fieldState,
       }) => (
-        <TextField
-          fullWidth
-          id={name}
-          inputRef={ref}
-          value={value}
-          required
-          select
-          label="Sub-category"
-          helperText={
-            fieldState.isDirty ? '' : 'Please select item sub-category'
-          }
-          error={!!fieldState.error}
-          onChange={onChange}
-          onBlur={onBlur}
-        >
-          {watch('mainCategory') &&
-            categories
-              .find((category) => category.value === watch('mainCategory'))
-              ?.subCategories?.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-        </TextField>
+        <FormControl fullWidth required error={!!fieldState.error}>
+          <TextField
+            id={name}
+            required
+            inputRef={ref}
+            value={value}
+            label="Description"
+            fullWidth
+            multiline
+            rows={3}
+            onChange={onChange}
+            onBlur={onBlur}
+          />
+          <FormHelperText>
+            {(function () {
+              if (fieldState.error) {
+                return fieldState.error.message
+              }
+              if (!fieldState.isDirty) {
+                return 'Please enter description'
+              }
+              if (!fieldState.invalid) {
+                return getValidText()
+              }
+            })()}
+          </FormHelperText>
+        </FormControl>
       )}
     />
   )
 }
 
-export default SecondaryCategoryInput
+export default DescriptionInput

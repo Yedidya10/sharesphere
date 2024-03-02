@@ -3,9 +3,9 @@
 import {
   regexAddressNamePattern,
   regexAddressNumberPattern,
-  regexZipCodePattern,
+  regexSevenZipCodePattern,
 } from '@/utils/regexPatterns'
-import { AddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues, ILocation } from '@/utils/types/FormValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
@@ -19,25 +19,22 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { styled } from '@mui/material/styles'
 import React from 'react'
-import { Control, Controller, UseFormWatch } from 'react-hook-form'
+import {
+  Control,
+  Controller,
+  UseFormResetField,
+  UseFormSetValue,
+  UseFormWatch,
+  UseFormTrigger,
+} from 'react-hook-form'
 
 export interface ILocationInput {
-  control: Control<AddItemFormValues, any>
-  watch: UseFormWatch<AddItemFormValues>
-  setValue: (
-    name: keyof AddItemFormValues,
-    value: any,
-    options?: Partial<{
-      shouldValidate: boolean
-      shouldDirty: boolean
-    }>
-  ) => void
-  userAddress?: {
-    city: string
-    streetName: string
-    streetNumber: string
-    zipCode?: string
-  }
+  control: Control<IAddItemFormValues, any>
+  watch: UseFormWatch<IAddItemFormValues>
+  setValue: UseFormSetValue<Partial<IAddItemFormValues>>
+  resetField: UseFormResetField<Partial<IAddItemFormValues>>
+  userAddress: ILocation
+  trigger: UseFormTrigger<IAddItemFormValues>
   /**
    * Is this the principal call to action on the page?
    */
@@ -60,6 +57,8 @@ export interface ILocationInput {
   onClick?: () => void
 }
 
+type TLocationFormFields = ['city', 'streetName', 'streetNumber', 'zipCode']
+
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -72,32 +71,30 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
-type TUserLocation = {
-  coordinates?: {
-    lat: number
-    lng: number
-  }
-  address?: {
-    city: string
-    streetName: string
-    streetNumber: string
-    zipCode?: string
-  }
-}
-
 const LocationInput: React.FC<ILocationInput> = ({
   primary = false,
   label,
   control,
   setValue,
+  resetField,
+  trigger,
   watch,
   userAddress,
 }) => {
   const [userLocation, setUserLocation] = React.useState<
-    TUserLocation | undefined
+    Partial<ILocation> | undefined
   >(undefined)
-  const [userLocationChecked, setUserLocationChecked] = React.useState(false)
-  const [userAddressChecked, setUserAddressChecked] = React.useState(false)
+  const [userLocationChecked, setUserLocationChecked] =
+    React.useState<boolean>(false)
+  const [userAddressChecked, setUserAddressChecked] =
+    React.useState<boolean>(false)
+
+  const locationFormFields = [
+    'city',
+    'streetName',
+    'streetNumber',
+    'zipCode',
+  ] as TLocationFormFields
 
   const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -120,11 +117,29 @@ const LocationInput: React.FC<ILocationInput> = ({
     )
   }
 
+  const setUserAddressValues = () => {
+    setValue('city', userAddress?.city ?? '', {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+    setValue('streetName', userAddress?.streetName ?? '', {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+    setValue('streetNumber', userAddress?.streetNumber ?? '', {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+    setValue('zipCode', userAddress?.zipCode ?? '', {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+  }
+
   const resetValues = () => {
-    setValue('city', '', { shouldDirty: false })
-    setValue('streetName', '', { shouldDirty: false })
-    setValue('streetNumber', '', { shouldDirty: false })
-    setValue('zipCode', '', { shouldDirty: false })
+    locationFormFields.forEach((field) => {
+      resetField(field)
+    })
   }
 
   const getValidText = () => {
@@ -181,9 +196,9 @@ const LocationInput: React.FC<ILocationInput> = ({
                   >
                     What is the reason for requesting this information?
                   </Typography>
-                  {`We require the full address to calculate the distance
+                  {`We require the address to calculate the distance
           between the ${watch('mainCategory')}'s location and the borrower. Rest
-          assured, the full address will not be made public, and it
+          assured, the address will not be made public, and it
           will only be shared with the borrower after your
           approval.`}
                 </React.Fragment>
@@ -205,11 +220,7 @@ const LocationInput: React.FC<ILocationInput> = ({
                   resetValues()
                 }
                 setUserAddressChecked(true)
-
-                setValue('city', userAddress?.city)
-                setValue('streetName', userAddress?.streetName)
-                setValue('streetNumber', userAddress?.streetNumber)
-                setValue('zipCode', userAddress?.zipCode)
+                setUserAddressValues()
               } else {
                 setUserAddressChecked(false)
                 resetValues()
@@ -236,15 +247,15 @@ const LocationInput: React.FC<ILocationInput> = ({
                   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.coordinates?.lat},${userLocation.coordinates?.lng}&result_type=street_address&key=${mapApiKey}`
 
                   try {
-                    const response = await fetch(url, {
+                    const res = await fetch(url, {
                       method: 'GET',
                     })
 
-                    const geocode = await response.json()
-                    if (response.ok) {
+                    const geocode = await res.json()
+                    if (res.ok) {
                       console.log('Found street address:', geocode)
-                      setUserLocation({
-                        ...userLocation,
+                      setUserLocation((prevState) => ({
+                        ...prevState,
                         address: {
                           city: geocode.results[0].address_components[2]
                             .long_name,
@@ -257,30 +268,31 @@ const LocationInput: React.FC<ILocationInput> = ({
                           streetNumber:
                             geocode.results[0].address_components[0].long_name,
                         },
-                      })
+                      }))
                     } else {
                       console.log('No street address found:', geocode)
                     }
                   } catch (error) {
                     if (error instanceof Error) {
-                      console.log('Error updating user:', error.message)
+                      console.error('Error updating user:', error.message)
                     } else {
                       // If the error is not an instance of Error (unlikely), you can handle it differently
-                      console.log('Error updating user:', error)
+                      console.error('Error updating user:', error)
                     }
                   }
                 }
 
-                if (userLocation?.address) {
-                  setValue('city', userLocation.address?.city, {
+                if (userLocation!) {
+                  setValue('city', userLocation.city ?? '', {
                     shouldDirty: true,
                     shouldValidate: true,
                   })
-                  setValue('streetName', userLocation.address?.streetName, {
+                  setValue('streetName', userLocation.streetName ?? '', {
                     shouldDirty: true,
                     shouldValidate: true,
                   })
-                  setValue('streetNumber', userLocation.address?.streetNumber, {
+
+                  setValue('streetNumber', userLocation.streetNumber ?? '', {
                     shouldDirty: true,
                     shouldValidate: true,
                   })
@@ -435,7 +447,7 @@ const LocationInput: React.FC<ILocationInput> = ({
                 rules={{
                   required: false,
                   pattern: {
-                    value: regexZipCodePattern,
+                    value: regexSevenZipCodePattern,
                     message: 'Please enter a valid zip code with 7 digits',
                   },
                 }}

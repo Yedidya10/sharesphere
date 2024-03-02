@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles'
 import React from 'react'
 import { Control, Controller, UseFormWatch } from 'react-hook-form'
 
-export interface IMainCategoryInput {
+export interface ISecondaryCategoryInput {
   control: Control<IAddItemFormValues, any>
   watch: UseFormWatch<IAddItemFormValues>
   /**
@@ -23,11 +23,11 @@ export interface IMainCategoryInput {
    */
   backgroundColor?: string
   /**
-   * How large should the MainCategoryInput be?
+   * How large should the SecondaryCategoryInput be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * MainCategoryInput contents
+   * SecondaryCategoryInput contents
    */
   label: string
   /**
@@ -48,7 +48,7 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
-const MainCategoryInput: React.FC<IMainCategoryInput> = ({
+const SecondaryCategoryInput: React.FC<ISecondaryCategoryInput> = ({
   primary = false,
   label,
   control,
@@ -78,9 +78,9 @@ const MainCategoryInput: React.FC<IMainCategoryInput> = ({
   return (
     <Controller
       control={control}
-      name="mainCategory"
+      name="secondaryCategory"
       rules={{
-        required: 'Main category is required',
+        required: 'Sub-category is required',
       }}
       render={({
         field: { onChange, onBlur, value, name, ref },
@@ -93,23 +93,26 @@ const MainCategoryInput: React.FC<IMainCategoryInput> = ({
           value={value}
           required
           select
-          label="Category"
+          label="Sub-category"
           helperText={
-            fieldState.isDirty ? '' : 'Please select item main category'
+            fieldState.isDirty ? '' : 'Please select item sub-category'
           }
           error={!!fieldState.error}
           onChange={onChange}
           onBlur={onBlur}
         >
-          {categories.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
+          {watch('mainCategory') &&
+            categories
+              .find((category) => category.value === watch('mainCategory'))
+              ?.subCategories?.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
         </TextField>
       )}
     />
   )
 }
 
-export default MainCategoryInput
+export default SecondaryCategoryInput
