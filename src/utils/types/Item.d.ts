@@ -1,6 +1,34 @@
 import mongoose from 'mongoose'
 
-interface CardIds {
+export interface ItemCore {
+  _id?: mongoose.Schema.Types.ObjectId
+  ids: ItemIds
+  details: {
+    mainCategory: string
+    secondaryCategory: string
+    name: string
+    author?: string
+    brand?: string
+    description: string
+    imageUrl: string
+  }
+  condition: number
+  maxLoanPeriod: number
+  location: Location
+  owner: string
+  // TODO: Add lender
+  postingStatus: string
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+export interface ItemCoreWithLoanDetails extends ItemCore {
+  allBorrowers: AllBorrowers | null
+  requests: ItemRequest[] | null
+  alertSubscribers?: AlertSubscriber[] | null
+}
+
+interface ItemIds {
   isbn?: string
   danacode?: string
   barcode?: string
@@ -18,19 +46,43 @@ interface Location {
   country?: string
 }
 
+interface AllBorrowers {
+  currentBorrower: CurrentBorrower | null
+  previousBorrowers: PreviousBorrower[] | null
+}
+
 interface CurrentBorrower {
-  borrowerId: mongoose.Schema.Types.ObjectId | null
-  startDate: Date | null
-  endDate: Date | null
+  borrowerId: mongoose.Schema.Types.ObjectId
+  pickupDate: Date
+  returnDate: Date
+  loanPeriod: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface PreviousBorrower {
+  borrowerId: mongoose.Schema.Types.ObjectId
+  pickupDate: Date
+  returnDate: Date
   loanPeriod: number
 }
 
-interface Request {
+interface ItemRequestStatus {
+  requestStatus: string
+  borrowerMessage?: string
+  lenderMessage?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ItemRequest {
   borrowerId: mongoose.Schema.Types.ObjectId
-  requestStartDate: Date
-  requestEndDate: Date
+  pickupDate: Date
+  returnDate: Date
   loanPeriod: number
-  message: string
+  status: ItemRequestStatus
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface AlertSubscriber {
@@ -38,47 +90,4 @@ interface AlertSubscriber {
   alertsRequested: boolean
   createdAt: Date
   updatedAt: Date
-}
-
-export interface ItemCore {
-  _id?: mongoose.Schema.Types.ObjectId
-  cardIds: CardIds
-  details: {
-    mainCategory: string
-    secondaryCategory: string
-    name: string
-    author: string
-    brand: string
-    description: string
-  }
-  imageUrl: string
-  condition: number
-  maxLoanPeriod: number
-  location: Location
-  owner: string
-  status: string
-  createdAt?: Date
-  updatedAt?: Date
-}
-
-export interface ItemCoreWithLoanDetails extends ItemCore {
-  allBorrowers?: Array<{
-    borrowerId: string
-    startDate: Date
-    endDate: Date
-    loanPeriod: number
-  }>
-  currentBorrower?: CurrentBorrower
-  pendingRequests?: Request[]
-  approvedRequests?: Array<{
-    borrowerId: mongoose.Schema.Types.ObjectId
-    startDate: Date
-    endDate: Date
-    loanPeriod: number
-  }>
-  rejectedRequests?: Array<{
-    borrowerId: mongoose.Schema.Types.ObjectId
-    requestExplanation: string
-  }>
-  alertSubscribers?: AlertSubscriber[]
 }
