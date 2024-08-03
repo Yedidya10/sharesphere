@@ -1,31 +1,28 @@
 import mongoose from 'mongoose'
 
-export interface ItemCore {
-  _id?: mongoose.Schema.Types.ObjectId
+export interface Item {
+  readonly _id?: mongoose.Schema.Types.ObjectId
   ids: ItemIds
-  details: {
-    mainCategory: string
-    secondaryCategory: string
-    name: string
-    author?: string
-    brand?: string
-    description: string
-    imageUrl: string
-  }
+  mainCategory: string
+  secondaryCategory: string
+  name: string
+  author?: string
+  brand?: string
+  description: string
+  imageUrl: string
   condition: number
   maxLoanPeriod: number
   location: Location
   owner: string
-  // TODO: Add lender
   postingStatus: string
-  createdAt?: Date
+  readonly createdAt?: Date
   updatedAt?: Date
 }
 
-export interface ItemCoreWithLoanDetails extends ItemCore {
-  allBorrowers: AllBorrowers | null
-  requests: ItemRequest[] | null
-  alertSubscribers?: AlertSubscriber[] | null
+export interface ItemCoreWithLoanDetails extends Item {
+  allBorrowers: AllBorrowers
+  requests: ItemRequest[]
+  alertSubscribers: AlertSubscriber[]
 }
 
 interface ItemIds {
@@ -48,46 +45,65 @@ interface Location {
 
 interface AllBorrowers {
   currentBorrower: CurrentBorrower | null
-  previousBorrowers: PreviousBorrower[] | null
+  previousBorrowers: PreviousBorrower[]
 }
 
 interface CurrentBorrower {
-  borrowerId: mongoose.Schema.Types.ObjectId
+  readonly borrowerId: mongoose.Schema.Types.ObjectId
   pickupDate: Date
   returnDate: Date
   loanPeriod: number
-  createdAt: Date
+  readonly createdAt: Date
   updatedAt: Date
 }
 
 interface PreviousBorrower {
-  borrowerId: mongoose.Schema.Types.ObjectId
+  readonly borrowerId: mongoose.Schema.Types.ObjectId
   pickupDate: Date
   returnDate: Date
   loanPeriod: number
+  readonly createdAt: Date
 }
 
 interface ItemRequestStatus {
-  requestStatus: string
-  borrowerMessage?: string
-  lenderMessage?: string
-  createdAt: Date
+  value: string
+  message?: {
+    readonly _id?: mongoose.Schema.Types.ObjectId
+    readonly sender: string
+    readonly message: string
+  }
+  readonly createdAt: Date
+}
+
+// interface ItemRequestDatesFlexible {
+//   startDate: Date
+//   endDate: Date
+//   borrowingPeriod: number
+//   readonly createdAt: Date
+//   updatedAt: Date
+// }
+
+interface ItemRequestDates {
+  // flexibleDates: ItemRequestDatesFlexible
+  pickupDate: Date
+  returnDate: Date
+  borrowingPeriod: number
+  readonly createdAt: Date
   updatedAt: Date
 }
 
 export interface ItemRequest {
-  borrowerId: mongoose.Schema.Types.ObjectId
-  pickupDate: Date
-  returnDate: Date
-  loanPeriod: number
-  status: ItemRequestStatus
-  createdAt: Date
+  readonly _id?: mongoose.Schema.Types.ObjectId
+  readonly borrowerId: mongoose.Schema.Types.ObjectId
+  dates: ItemRequestDates
+  status: ItemRequestStatus[]
+  readonly createdAt: Date
   updatedAt: Date
 }
 
 interface AlertSubscriber {
-  subscriberId: mongoose.Schema.Types.ObjectId
+  readonly subscriberId: mongoose.Schema.Types.ObjectId
   alertsRequested: boolean
-  createdAt: Date
+  readonly createdAt: Date
   updatedAt: Date
 }
