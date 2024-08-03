@@ -6,15 +6,20 @@ import { NextRequest, NextResponse } from 'next/server'
 // This is the API route that will be called when the form is submitted
 export async function PATCH(req: NextRequest) {
   try {
-    // Get the card ID from the url query parameters
-    const cardId = req.nextUrl.pathname.split('/')[4]
+    // Get the card ID from the URL
+    const cardId = req.nextUrl.pathname.split('/')[3]
+
+    // Get the data from the request body
+    const data = await req.json()
 
     // Update the card in the database
-    await Card.updateOne({ _id: cardId }, { $set: { status: 'deleted' } })
-
+    await Card.updateOne(
+      { _id: cardId },
+      { $set: { requests: data.itemRequest } }
+    )
     // Return a 200 response
     return NextResponse.json(
-      { message: 'Card marked as deleted' },
+      { message: 'Card updated:', data },
       { status: 200 }
     )
   } catch (err: any) {

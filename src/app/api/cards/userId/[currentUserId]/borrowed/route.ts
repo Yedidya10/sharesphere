@@ -8,15 +8,21 @@ export async function GET(req: NextRequest) {
     // Get the current user ID from the URL
     const currentUserId = req.nextUrl.href.split('/')[6]
 
-     // Find cards that have the specified user as the current borrower
-     const cards = await Card.find({
-      'currentBorrower.borrowerId': currentUserId
+    // Find cards that have the specified user as the current borrower
+    const cards = await Card.find({
+      'requests.status.currentStatus': 'accepted',
+      'requests.borrowerId': currentUserId,
     }).exec()
+
+
 
     // If no cards are found, return a 404 response
     if (!cards || cards.length === 0) {
       return NextResponse.json(
-        { error: 'No cards found for this current borrower', message: 'No cards found for this current borrower' },
+        {
+          error: 'No cards found',
+          message: 'No cards found for this current borrower',
+        },
         { status: 404 }
       )
     }

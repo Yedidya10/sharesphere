@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function PATCH(req: NextRequest) {
   try {
     // Get the card ID from the query parameters
-    const cardId = req.nextUrl.pathname.split('/')[4]
+    const cardId = req.nextUrl.pathname.split('/')[3]
 
     // Get the data from the request body
     const data = await req.json()
@@ -15,13 +15,17 @@ export async function PATCH(req: NextRequest) {
     // Get the card from the database
     const card = await Card.findById(cardId)
 
+
     // If the card doesn't exist, return a 404 response
     if (!card) {
       return NextResponse.json({ error: 'Card not found' }, { status: 404 })
     }
 
     // Update the card in the database
-    await Card.updateOne({ _id: cardId }, { $set: { status: data.status } })
+    await Card.updateOne(
+      { _id: cardId },
+      { $set: { postingStatus: data.postingStatus } }
+    )
 
     // Return a 200 response
     return NextResponse.json({ message: 'Card updated:', card })

@@ -24,7 +24,8 @@ export async function PATCH(req: NextRequest) {
       // User is already subscribed
       return NextResponse.json(
         { error: 'User is already subscribed' },
-        { status: 400 } // You can choose an appropriate HTTP status code for this scenario
+        // Return a 409 response: Conflict
+        { status: 409 }
       )
     } else {
       // Update the card in the database
@@ -46,10 +47,10 @@ export async function PATCH(req: NextRequest) {
         { status: 200 }
       )
     }
-  } catch (err: any) {
-    // If there is an error, return a 500 response with the error message
+  } catch (error: any) {
     return NextResponse.json(
-      { error: 'Internal server error', details: err.message },
+      { error: error.message },
+      // Return a 500 response: Internal Server Error
       { status: 500 }
     )
   }
