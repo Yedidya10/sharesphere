@@ -105,10 +105,10 @@ const SignUpForm: React.FC<ISignUpForm> = () => {
       const results = await response.json()
 
       if (results.error === 'User already exists') {
-        console.log('User already exists')
+        console.error('User already exists')
       }
     } catch (error: any) {
-      console.log(error.message)
+      console.error(error.message)
     }
   }
 
