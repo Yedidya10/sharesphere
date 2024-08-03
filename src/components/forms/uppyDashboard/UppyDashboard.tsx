@@ -1,7 +1,7 @@
 'use client'
 
 import themeModeState from '@/recoils/themeMode/themeModeState'
-import { AddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues } from '@/utils/types/FormValues'
 import Box from '@mui/material/Box'
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
@@ -20,9 +20,9 @@ import createUppy from '@/components/uppy/createUppy'
 import TextField from '@mui/material/TextField'
 
 export interface IUppyDashboard {
-  control: Control<AddItemFormValues, any>
-  getValues?: UseFormGetValues<AddItemFormValues>
-  setValue?: UseFormSetValue<AddItemFormValues>
+  control: Control<IAddItemFormValues, any>
+  getValues?: UseFormGetValues<IAddItemFormValues>
+  setValue?: UseFormSetValue<IAddItemFormValues>
   templateId: string
   authKey: string
   authSecret: string
@@ -79,11 +79,11 @@ const UppyDashboard: React.FC<IUppyDashboard> = ({
   }, [uppy, houseId, roomId])
 
   uppy.on('complete', (result) => {
-    console.log(result)
+    // console.log(result)
   })
 
   uppy.on('error', (error) => {
-    console.log(error)
+    console.error(error)
   })
 
   return (
