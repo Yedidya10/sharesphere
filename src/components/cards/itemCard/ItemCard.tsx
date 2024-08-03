@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useState } from 'react'
 import CardInfo from '../cardModal/CardModal'
+import { Divider } from '@mui/material'
 
 export interface IItemCard {
   card: ItemCoreWithLoanDetails
@@ -41,15 +42,13 @@ const ItemCard: React.FC<IItemCard> = ({
   imageHeight,
   imageWidth,
   card,
-  card: {
-    details: { name, description, author },
-    imageUrl,
-  },
+  card: { name, description, author, imageUrl },
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const handleOpen = () => setOpenModal(true)
   const handleClose = () => setOpenModal(false)
 
+  // TODO: Implement the handleChipClick function
   const handleChipClick = () => {
     console.info('You clicked the Chip.')
   }
@@ -60,29 +59,45 @@ const ItemCard: React.FC<IItemCard> = ({
         sx={{
           '& .MuiCardContent-root': {
             padding: '0.8rem',
-            boxShadow: 'inset 0 -20px 20px -20px rgba(0,0,0,0.17)',
           },
         }}
       >
-        <Box>
-          <Box>
+        <Box
+          sx={{
+            height: '400px',
+            borderRadius: '10px',
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              height: '250px',
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: '5px',
+            }}
+          >
             <Image
               style={{
-                width: '100%',
-                height: 'auto',
                 cursor: 'pointer',
+                borderRadius: '5px',
               }}
-              alt={`${name} by ${author}`}
-              width={imageWidth}
-              height={imageHeight}
+              fill={true}
+              alt={`${name}`}
               src={imageUrl}
               onClick={handleOpen}
             />
           </Box>
           <CardContent>
-            <Stack direction="row" spacing={1}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                marginBottom: '0.5rem',
+              }}
+            >
               <Chip
-                label={card.details.mainCategory}
+                label={card.mainCategory}
                 size="small"
                 variant="outlined"
                 onClick={handleChipClick}
@@ -98,7 +113,6 @@ const ItemCard: React.FC<IItemCard> = ({
                 maxHeight: '100px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                boxShadow: 'inset 0 -20px 20px -20px rgba(0,0,0,0.17)',
                 fontSize: '0.8rem',
               }}
             >
