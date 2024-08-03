@@ -9,14 +9,12 @@ const cardSchema = new mongoose.Schema(
       danacode: { type: String },
       barcode: { type: String },
     },
-    details: {
-      mainCategory: { type: String },
-      secondaryCategory: { type: String },
-      name: { type: String },
-      author: { type: String },
-      brand: { type: String },
-      description: { type: String },
-    },
+    mainCategory: { type: String },
+    secondaryCategory: { type: String },
+    name: { type: String },
+    author: { type: String },
+    brand: { type: String },
+    description: { type: String },
     imageUrl: { type: String },
     condition: { type: String },
     maxLoanPeriod: { type: Number },
@@ -29,45 +27,50 @@ const cardSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
     },
-    status: { type: String },
-    allBorrowers: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        borrowingDates: [
-          {
-            startDate: { type: Date },
-            endDate: { type: Date },
-          },
-        ],
-        loanPeriod: { type: Number },
-      },
-    ],
-    currentBorrower: {
-      borrowerId: { type: mongoose.Schema.Types.ObjectId, default: null }, // Set default value to null
-      startDate: { type: Date },
-      endDate: { type: Date },
-      loanPeriod: { type: Number },
+    // lender: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    // },
+    postingStatus: {
+      type: String,
+      enum: ['inReview', 'published', 'inactive', 'deleted'],
+      default: 'inReview',
     },
-    pendingRequests: [
-      {
+    allBorrowers: {
+      currentBorrower: {
         borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        requestStartDate: { type: Date },
-        requestEndDate: { type: Date },
+        pickupDate: { type: Date },
+        returnDate: { type: Date },
         loanPeriod: { type: Number },
+        createdAt: { type: Date },
+        updatedAt: { type: Date },
       },
-    ],
-    approvedRequests: [
+      previousBorrowers: [
+        {
+          borrowerId: { type: mongoose.Schema.Types.ObjectId },
+          pickupDate: { type: Date },
+          returnDate: { type: Date },
+          loanPeriod: { type: Number },
+        },
+      ],
+    },
+    requests: [
       {
         borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        startDate: { type: Date },
-        endDate: { type: Date },
+        pickupDate: { type: Date },
+        returnDate: { type: Date },
         loanPeriod: { type: Number },
-      },
-    ],
-    rejectedRequests: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        requestExplanation: { type: String },
+        status: {
+          currentStatus: {
+            type: String,
+            enum: ['pending', 'accepted', 'rejected', 'removed'],
+          },
+          borrowerMessage: { type: String },
+          lenderMessage: { type: String },
+          createdAt: { type: Date, default: Date.now },
+          updatedAt: { type: Date },
+        },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date },
       },
     ],
     alertSubscribers: [
