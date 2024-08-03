@@ -140,7 +140,7 @@ const SignInForm: React.FC<ISignInForm> = ({
         redirect: false,
       })
 
-      console.log('res:', res?.error)
+ 
 
       if (res?.error) {
         if (res.error === 'No user found with this email') {
