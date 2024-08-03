@@ -1,4 +1,4 @@
-export interface ILocation  {
+export interface ILocation {
   city: string
   streetName: string
   streetNumber: string
@@ -28,9 +28,9 @@ export interface IAddItemFormValues extends ILocation {
 export interface IItemEditFormValues extends IAddItemFormValues {}
 
 export type ItemRequestFormValues = {
-  message: string
   pickupDate: string
   returnDate: string
+  message: string
 }
 
 export type ItemAlertFormValues = {
