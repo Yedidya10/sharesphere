@@ -1,9 +1,8 @@
-import { Inter } from 'next/font/google'
-import * as React from 'react'
-import { Roboto } from 'next/font/google'
-import Box from '@mui/material/Box'
 import AdminDashboardDrawer from '@/components/layouts/adminDashboardDrawer/AdminDashboardDrawer'
+import Box from '@mui/material/Box'
 import { unstable_setRequestLocale } from 'next-intl/server'
+import { Inter, Roboto } from 'next/font/google'
+import * as React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -22,9 +21,13 @@ export default async function DashboardLayout({
   children,
   params: { locale },
 }: {
-  children: React.ReactNode,
+  children: React.ReactNode
   params: { locale: string }
 }) {
+  // next-intl provides a temporary API that can be used to distribute the locale that
+  // is received via params in layouts and pages for usage in all Server Components that
+  // are rendered as part of the request.
+  // For more information, see https://next-intl-docs.vercel.app/docs/getting-started/app-router/with-i18n-routing#add-unstable_setrequestlocale-to-all-layouts-and-pages
   unstable_setRequestLocale(locale)
   return (
     <Box
