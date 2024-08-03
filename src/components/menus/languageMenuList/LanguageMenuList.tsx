@@ -50,9 +50,6 @@ const LanguageMenuList: React.FC<ILanguageMenuList> = ({
   const pathname = usePathname()
   const { locale } = useParams()
 
-  React.useEffect(() => {
-    console.log('locale', locale)
-  }, [locale])
 
   const languageList = [
     {
