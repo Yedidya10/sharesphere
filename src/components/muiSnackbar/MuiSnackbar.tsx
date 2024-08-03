@@ -5,7 +5,7 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert'
 interface IMuiSnackbar {
   message: string
   severity: 'success' | 'info' | 'warning' | 'error'
-  state:  {
+  state: {
     open: boolean
     vertical: 'top' | 'bottom'
     horizontal: 'left' | 'center' | 'right'
@@ -33,7 +33,7 @@ const MuiSnackbar: React.FC<IMuiSnackbar> = ({
       anchorOrigin={{ vertical, horizontal }}
       key={vertical + horizontal}
       open={open}
-      autoHideDuration={5000}
+      autoHideDuration={6000}
       onClose={handleClose}
     >
       <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
