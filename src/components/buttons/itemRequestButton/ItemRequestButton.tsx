@@ -4,12 +4,15 @@ import EmailIcon from '@mui/icons-material/Email'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Tooltip from '@mui/material/Tooltip'
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useSession } from 'next-auth/react'
+import { styled } from '@mui/material/styles'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 export interface IItemRequestButton {
   handleClick?: () => void
+  isUserAlreadyRequest: boolean
   /**
    * Is this the principal call to action on the page?
    */
@@ -32,10 +35,23 @@ export interface IItemRequestButton {
   onClick?: () => void
 }
 
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 500,
+    fontSize: theme.typography.pxToRem(13),
+    border: '1px solid #dadde9',
+  },
+}))
+
 const ItemRequestButton: React.FC<IItemRequestButton> = ({
   primary = false,
   label,
   handleClick,
+  isUserAlreadyRequest,
 }) => {
   const { status } = useSession()
 
@@ -53,40 +69,91 @@ const ItemRequestButton: React.FC<IItemRequestButton> = ({
         }}
       >
         <EventAvailableIcon fontSize="large" color="success" />
-        <Typography>זמין להשאלה</Typography>
+        <Typography>Available for request</Typography>
       </Box>
       <Tooltip
-        title={status === 'authenticated' ? '' : 'Log in to request the item'}
+        title={
+          status === 'authenticated'
+            ? 'Click to request this item'
+            : 'Please login to request this item'
+        }
       >
-        <span>
-          <Button
-            fullWidth
-            variant="outlined"
-            color={'primary'}
-            disabled={status === 'unauthenticated'}
-            onClick={handleClick}
-          >
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '5px',
-                paddingBlock: '5px',
-              }}
+        {!isUserAlreadyRequest ? (
+          <span>
+            <Button
+              fullWidth
+              variant="outlined"
+              color={'primary'}
+              disabled={status === 'unauthenticated'}
+              onClick={handleClick}
             >
-              <EmailIcon fontSize="small" />
-              <Typography
+              <Box
                 sx={{
-                  fontSize: '0.9rem',
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '5px',
+                  paddingBlock: '5px',
                 }}
               >
-                בקש פריט
-              </Typography>
-            </Box>
-          </Button>
-        </span>
+                <EmailIcon />
+                <Typography
+                  sx={{
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  Request Item
+                </Typography>
+              </Box>
+            </Button>
+          </span>
+        ) : (
+          <Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '5px',
+                  paddingBlock: '5px',
+                }}
+              >
+                    <HtmlTooltip
+              title={
+                <>
+                  <Typography
+                    color="inherit"
+                    sx={{
+                      fontSize: '.8rem',
+                    }}
+                  ></Typography>
+                  {`
+                You already requested this item. 
+                if you want to cancel or modify your request, you can do it from your dashboard > borrow items > pending requests.
+                you will be notified when the owner accepts or rejects your request.
+              `}
+                </>
+              }
+            >
+              <InfoOutlinedIcon
+                sx={{
+                  fontSize: '16px',
+                }}
+              />
+            </HtmlTooltip>
+                <Typography
+                  sx={{
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  Already Requested
+                </Typography>
+              </Box>
+    
+          </Box>
+        )}
       </Tooltip>
     </>
   )
