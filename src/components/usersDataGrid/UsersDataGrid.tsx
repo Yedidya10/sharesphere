@@ -62,6 +62,7 @@ const UsersDataGrid: React.FC<IUsersDataGrid> = ({
   const [isLoading, setIsLoading] = useState(true)
   const [allUsers, setAllUsers] = useState<User[]>([])
 
+  // TODO: Fetch all users in server component
   useEffect(() => {
     async function fetchAllCards() {
       try {
