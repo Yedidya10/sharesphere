@@ -1,10 +1,9 @@
 import { IUserOwnedCardInfo } from './UserOwnedCardInfo'
 
 const base: IUserOwnedCardInfo = {
-  isAvailable: false,
   isOwner: false,
   card: {
-    cardIds: {},
+    ids: {},
     condition: 0,
     maxLoanPeriod: 0,
     location: {
@@ -13,25 +12,23 @@ const base: IUserOwnedCardInfo = {
       streetNumber: '',
       zipCode: '',
     },
-    imageUrl: '',
     owner: '',
-    status: '',
-    details: {
-      mainCategory: '',
-      secondaryCategory: '',
-      name: '',
-      author: '',
-      brand: '',
-      description: '',
-    }
-
+    postingStatus: '',
+    mainCategory: '',
+    secondaryCategory: '',
+    name: '',
+    author: '',
+    brand: '',
+    description: '',
+    imageUrl: '',
+    allBorrowers: {
+      currentBorrower: null,
+      previousBorrowers: [],
+    },
+    requests: [],
+    alertSubscribers: [],
   },
-
   label: '',
-  activeButton: false,
-  deleteButton: false,
-  editButton: false,
-  restoreButton: false,
 }
 
 export const mockUserOwnedCardInfoProps = {
