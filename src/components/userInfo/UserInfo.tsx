@@ -52,10 +52,9 @@ const UserInfo: React.FC<IUserInfo> = ({
       })
       const data = await response.json()
       if (response.ok) {
-        console.log('Found user:', data)
         setUserInfo(data.user)
       } else {
-        console.log('Failed to find user:', data)
+        console.error('Failed to find user:', data)
       }
     }
 
@@ -123,13 +122,15 @@ const UserInfo: React.FC<IUserInfo> = ({
                 }}
               >
                 <Typography>Address:</Typography>
-                <Typography>
-                  {userInfo?.address.streetName}{' '}
-                  {userInfo?.address.streetNumber}{', '}
-                  {userInfo?.address.city}{' '}
-                  {userInfo?.address.country}{' '}
-                  {userInfo?.address.zipCode}
-                </Typography>
+                {userInfo?.address && (
+                  <Typography>
+                    {userInfo?.address.streetName}{' '}
+                    {userInfo?.address.streetNumber}
+                    {', '}
+                    {userInfo?.address.city} {userInfo?.address.country}{' '}
+                    {userInfo?.address.zipCode}
+                  </Typography>
+                )}
               </Box>
             </Box>
           </Box>
