@@ -1,17 +1,18 @@
 'use client'
 
+import theme from '@/components/ThemeRegistry/theme'
 import ItemAlertForm from '@/components/forms/itemAlertForm/ItemAlertForm'
 import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import React from 'react'
 import ItemAlertButton from '../../buttons/itemAlertButton/ItemAlertButton'
 import ItemRequestButton from '../../buttons/itemRequestButton/ItemRequestButton'
 import ItemRequestForm from '../../forms/itemRequestForm/ItemRequestForm'
 import SpringModal from '../../springModal/SpringModal'
-import styles from './CardModal.module.scss'
 
 export interface ICardModal {
   openModal: boolean
@@ -45,20 +46,35 @@ const CardModal: React.FC<ICardModal> = ({
   openModal,
   handleClose,
   card: {
-    details: { name, description, author },
-    maxLoanPeriod,
-    condition,
+    name,
+    description,
+    author,
     imageUrl,
+    maxLoanPeriod,
+    requests,
+    condition,
     location: { city, streetName, streetNumber },
-    currentBorrower,
+    allBorrowers,
   },
   card,
   ...props
 }) => {
+  const { data: session, status } = useSession()
   const [openRequestForm, setOpenRequestForm] = React.useState(false)
+  const [isUserAlreadyRequest, setIsUserAlreadyRequest] = React.useState(false)
   const [openAlertForm, setOpenAlertForm] = React.useState(false)
 
   const handleRequestButtonClick = () => {
+    // Check if the item is already requested by the current user
+    if (requests?.length! > 0) {
+      const isUserAlreadyRequest = requests?.some(
+        (request) => request.borrowerId.toString() === (session?.user?.id ?? '')
+      )
+      if (isUserAlreadyRequest) {
+        setIsUserAlreadyRequest(true)
+        return
+      }
+    }
     setOpenRequestForm(!openRequestForm)
   }
 
@@ -95,12 +111,12 @@ const CardModal: React.FC<ICardModal> = ({
               src={imageUrl}
             />
           </Grid>
-          <Grid xs={58}>
+          <Grid xs={55}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <Typography>{name}</Typography>
               <Typography>מחבר: {author}</Typography>
               <Typography component={'p'}>{description}</Typography>
-              <Box></Box>
+
               <Box>
                 <Typography>מיקום הפריט:</Typography>
                 <Typography>
@@ -116,13 +132,14 @@ const CardModal: React.FC<ICardModal> = ({
               minWidth: '140px',
               gap: '10px',
             }}
-            xs={20}
-            className={styles.itemOptions}
+            xs={23}
           >
-            {currentBorrower?.loanPeriod === 0 ? (
+            {/* TODO: Check if the item is already borrowed to the current user */}
+            {allBorrowers?.currentBorrower === null ? (
               <ItemRequestButton
                 label={''}
                 handleClick={handleRequestButtonClick}
+                isUserAlreadyRequest={isUserAlreadyRequest}
               />
             ) : (
               <ItemAlertButton
@@ -135,42 +152,74 @@ const CardModal: React.FC<ICardModal> = ({
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '10px',
                 gap: '5px',
-                borderRadius: '3px',
-                boxShadow: '0px 0px 5px 1px rgba(0, 0, 0, 0.15)',
+                height: '100%',
               }}
             >
-              <Typography
-                sx={{ fontSize: '1.5rem' }}
-                color="primary"
-              >{`${condition}/5`}</Typography>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '10px',
+                  gap: '5px',
+                  borderRadius: '3px',
+                  boxShadow: theme.shadows[2],
+                }}
+              >
+                <Typography sx={{ fontSize: '.8rem' }}>Max Loan</Typography>
+                <Typography sx={{ fontSize: '1.5rem' }} color="primary">
+                  {maxLoanPeriod}
+                </Typography>
+                <Typography>Days</Typography>
+              </Box>
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: 'center',
+                  flexGrow: 1,
+                  flexDirection: 'column',
                   alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '10px',
                   gap: '5px',
+                  borderRadius: '3px',
+                  boxShadow: theme.shadows[2],
                 }}
               >
                 <Typography sx={{ fontSize: '.8rem' }}>
                   Item Condition
                 </Typography>
+                <Typography
+                  sx={{ fontSize: '1.5rem' }}
+                  color="primary"
+                >{`${condition}/5`}</Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '5px',
+                  }}
+                >
+                  <Typography>Gently Used</Typography>
+                </Box>
               </Box>
             </Box>
           </Grid>
         </Grid>
         <ItemRequestForm
           maxLoanPeriod={maxLoanPeriod}
+          requests={requests || []}
           label={''}
           open={openRequestForm}
+          handleRequestFormClose={handleRequestButtonClick}
           // @ts-ignore
           cardId={card._id}
         />
-
         <ItemAlertForm
           open={openAlertForm} // @ts-ignore
           cardId={card._id}
