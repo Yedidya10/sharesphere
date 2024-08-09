@@ -1,4 +1,3 @@
-// Import the mongoose library to interact with MongoDB
 import mongoose from 'mongoose'
 
 // Step 1: Define the Mongoose schema for the card model
@@ -27,60 +26,20 @@ const cardSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
     },
-    // lender: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    // },
     postingStatus: {
       type: String,
       enum: ['inReview', 'published', 'inactive', 'deleted'],
       default: 'inReview',
     },
-    allBorrowers: {
-      currentBorrower: {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        pickupDate: { type: Date },
-        returnDate: { type: Date },
-        loanPeriod: { type: Number },
-        createdAt: { type: Date },
-        updatedAt: { type: Date },
-      },
-      previousBorrowers: [
-        {
-          borrowerId: { type: mongoose.Schema.Types.ObjectId },
-          pickupDate: { type: Date },
-          returnDate: { type: Date },
-          loanPeriod: { type: Number },
-        },
-      ],
-    },
-    requests: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        pickupDate: { type: Date },
-        returnDate: { type: Date },
-        loanPeriod: { type: Number },
-        status: {
-          currentStatus: {
-            type: String,
-            enum: ['pending', 'accepted', 'rejected', 'removed'],
-          },
-          borrowerMessage: { type: String },
-          lenderMessage: { type: String },
-          createdAt: { type: Date, default: Date.now },
-          updatedAt: { type: Date },
-        },
-        createdAt: { type: Date, default: Date.now },
-        updatedAt: { type: Date },
-      },
-    ],
-    alertSubscribers: [
-      {
-        subscriberId: { type: mongoose.Schema.Types.ObjectId },
-        alertsRequested: { type: Boolean, default: true },
-        createdAt: { type: Date },
-        updatedAt: { type: Date },
-      },
-    ],
+    isAvailable: { type: Boolean, default: true },
+    // alertSubscribers: [
+    //   {
+    //     subscriberId: { type: mongoose.Schema.Types.ObjectId },
+    //     alertsRequested: { type: Boolean, default: true },
+    //     createdAt: { type: Date },
+    //     updatedAt: { type: Date },
+    //   },
+    // ],
   },
   {
     timestamps: true, // Enable timestamps option, which creates "createdAt" and "updatedAt" fields

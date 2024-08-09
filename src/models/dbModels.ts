@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { Card } from './CardModel'
 import { User } from './UserModel'
+import { Request } from './RequestModel'
 
 mongoose.Promise = global.Promise
 
@@ -22,4 +23,4 @@ const connectToDatabase = async () => {
 // Call the connectToDatabase function to establish the connection
 connectToDatabase()
 
-export { Card, User }
+export { Card, User, Request }
