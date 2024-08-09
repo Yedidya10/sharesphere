@@ -1,7 +1,7 @@
 'use client'
 
 import categories from '@/utils/categories/categories'
-import { IAddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues } from '@/utils/types/formValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'

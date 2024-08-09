@@ -1,6 +1,6 @@
-import { ISecondaryCategoryInput } from './SecondaryCategoryInput'
+import { IAddItemFormValues } from '@/utils/types/formValues'
 import { Control, UseFormWatch } from 'react-hook-form'
-import { IAddItemFormValues } from '@/utils/types/FormValues'
+import { ISecondaryCategoryInput } from './SecondaryCategoryInput'
 
 const base: ISecondaryCategoryInput = {
   label: '',

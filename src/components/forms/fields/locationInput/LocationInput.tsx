@@ -5,7 +5,7 @@ import {
   regexAddressNumberPattern,
   regexSevenZipCodePattern,
 } from '@/utils/regexPatterns'
-import { IAddItemFormValues, ILocation } from '@/utils/types/FormValues'
+import { IAddItemFormValues, ILocation } from '@/utils/types/formValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
@@ -25,7 +25,6 @@ import {
   UseFormResetField,
   UseFormSetValue,
   UseFormWatch,
-  UseFormTrigger,
 } from 'react-hook-form'
 
 export interface ILocationInput {
@@ -34,7 +33,6 @@ export interface ILocationInput {
   setValue: UseFormSetValue<Partial<IAddItemFormValues>>
   resetField: UseFormResetField<Partial<IAddItemFormValues>>
   userAddress: ILocation
-  trigger: UseFormTrigger<IAddItemFormValues>
   /**
    * Is this the principal call to action on the page?
    */
@@ -77,7 +75,6 @@ const LocationInput: React.FC<ILocationInput> = ({
   control,
   setValue,
   resetField,
-  trigger,
   watch,
   userAddress,
 }) => {
@@ -107,7 +104,7 @@ const LocationInput: React.FC<ILocationInput> = ({
         })
       },
       (error) => {
-        console.log(error)
+        console.error(error)
       },
       {
         enableHighAccuracy: true,
@@ -253,7 +250,6 @@ const LocationInput: React.FC<ILocationInput> = ({
 
                     const geocode = await res.json()
                     if (res.ok) {
-                      console.log('Found street address:', geocode)
                       setUserLocation((prevState) => ({
                         ...prevState,
                         address: {
@@ -270,7 +266,7 @@ const LocationInput: React.FC<ILocationInput> = ({
                         },
                       }))
                     } else {
-                      console.log('No street address found:', geocode)
+                      console.info('No street address found:', geocode)
                     }
                   } catch (error) {
                     if (error instanceof Error) {

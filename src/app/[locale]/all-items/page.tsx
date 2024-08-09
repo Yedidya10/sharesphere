@@ -1,5 +1,5 @@
 import AllCards from '@/components/cards/allCards/AllCards'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import { useTranslations } from 'next-intl'
 import { unstable_setRequestLocale } from 'next-intl/server'
@@ -27,7 +27,7 @@ async function getAllCards() {
 function AllItemsContent({
   allCards,
 }: {
-  allCards: ItemCoreWithLoanDetails[]
+  allCards: Item[]
 }) {
   const t = useTranslations('AllItems')
   const cardsTranslations = {

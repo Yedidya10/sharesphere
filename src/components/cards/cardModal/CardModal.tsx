@@ -2,14 +2,15 @@
 
 import theme from '@/components/ThemeRegistry/theme'
 import ItemAlertForm from '@/components/forms/itemAlertForm/ItemAlertForm'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
+import { Request } from '@/utils/types/request'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import React from 'react'
-import ItemAlertButton from '../../buttons/itemAlertButton/ItemAlertButton'
+import React, { useEffect } from 'react'
+// import ItemAlertButton from '../../buttons/itemAlertButton/ItemAlertButton'
 import ItemRequestButton from '../../buttons/itemRequestButton/ItemRequestButton'
 import ItemRequestForm from '../../forms/itemRequestForm/ItemRequestForm'
 import SpringModal from '../../springModal/SpringModal'
@@ -17,7 +18,7 @@ import SpringModal from '../../springModal/SpringModal'
 export interface ICardModal {
   openModal: boolean
   handleClose: () => void
-  card: ItemCoreWithLoanDetails
+  card: Item
   /**
    * Is this the principal call to action on the page?
    */
@@ -51,29 +52,73 @@ const CardModal: React.FC<ICardModal> = ({
     author,
     imageUrl,
     maxLoanPeriod,
-    requests,
     condition,
     location: { city, streetName, streetNumber },
-    allBorrowers,
   },
   card,
   ...props
 }) => {
   const { data: session, status } = useSession()
+  const [requests, setRequests] = React.useState<Request[]>()
   const [openRequestForm, setOpenRequestForm] = React.useState(false)
   const [isUserAlreadyRequest, setIsUserAlreadyRequest] = React.useState(false)
   const [openAlertForm, setOpenAlertForm] = React.useState(false)
 
+  useEffect(() => {
+    const isRequest = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/requests/${card._id}/${session?.user?.id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      
+
+      const status = await response.json()
+      setIsUserAlreadyRequest(status === 'pending' ? true : false)
+    }
+
+    isRequest()
+  }, [session, card._id])
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/requests/${card._id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: session?.user?.id,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const requests = await response.json()
+      setRequests(requests)
+    }
+
+    fetchRequests()
+  }, [session, card._id])
+
   const handleRequestButtonClick = () => {
     // Check if the item is already requested by the current user
-    if (requests?.length! > 0) {
-      const isUserAlreadyRequest = requests?.some(
-        (request) => request.borrowerId.toString() === (session?.user?.id ?? '')
-      )
-      if (isUserAlreadyRequest) {
-        setIsUserAlreadyRequest(true)
-        return
-      }
+    if (isUserAlreadyRequest) {
+      return
     }
     setOpenRequestForm(!openRequestForm)
   }
@@ -135,20 +180,11 @@ const CardModal: React.FC<ICardModal> = ({
             xs={23}
           >
             {/* TODO: Check if the item is already borrowed to the current user */}
-            {allBorrowers?.currentBorrower === null ? (
-              <ItemRequestButton
-                label={''}
-                handleClick={handleRequestButtonClick}
-                isUserAlreadyRequest={isUserAlreadyRequest}
-              />
-            ) : (
-              <ItemAlertButton
-                label={''}
-                handleClick={handleAlertButtonClick}
-                // @ts-ignore
-                cardId={card._id}
-              />
-            )}
+            <ItemRequestButton
+              label={''}
+              handleClick={handleRequestButtonClick}
+              isUserAlreadyRequest={isUserAlreadyRequest}
+            />
             <Box
               sx={{
                 display: 'flex',

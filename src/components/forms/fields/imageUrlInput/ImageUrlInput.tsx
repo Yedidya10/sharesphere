@@ -1,7 +1,7 @@
 'use client'
 
 import { regexImageUrlPattern } from '@/utils/regexPatterns'
-import { IAddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues } from '@/utils/types/formValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
