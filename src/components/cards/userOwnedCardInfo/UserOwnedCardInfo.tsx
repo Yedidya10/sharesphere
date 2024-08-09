@@ -1,12 +1,8 @@
 'use client'
 
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
-import DeleteIcon from '@mui/icons-material/Delete'
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
-import IconButton from '@mui/material/IconButton'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
@@ -14,17 +10,10 @@ import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import React, { useState } from 'react'
-import ItemEditButton from '../../buttons/itemEditButton/ItemEditButton'
-import styles from './UserOwnedCardInfo.module.scss'
 
 export interface IUserOwnedCardInfo {
-  isAvailable: boolean
   isOwner: boolean
-  card: ItemCoreWithLoanDetails
-  activeButton: boolean
-  deleteButton: boolean
-  editButton: boolean
-  restoreButton: boolean
+  card: Item
   /**
    * Is this the principal call to action on the page?
    */
@@ -68,12 +57,7 @@ function ControlledSwitches() {
 const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
   primary = false,
   label,
-  isAvailable,
   isOwner,
-  activeButton,
-  deleteButton,
-  editButton,
-  restoreButton,
   card,
   ...props
 }) => {
@@ -81,12 +65,18 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
   const [itemMaxLoanPeriod, setItemMaxLoanPeriod] = useState<string>('')
   const [itemCondition, setItemCondition] = useState<string>('')
 
-  const { cardIds, details, owner, condition, location, maxLoanPeriod } = card
-
-  const { name, author, description } = details
+  const {
+    ids,
+    mainCategory,
+    name,
+    description,
+    imageUrl,
+    owner,
+    condition,
+    location,
+    maxLoanPeriod,
+  } = card
   const { city, streetName, streetNumber, zipCode } = location
-  const { isbn, danacode, barcode } = cardIds
-  const {  imageUrl } = card
 
   const handleDelete = async () => {
     try {
@@ -99,12 +89,12 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
       })
 
       if (res.status === 200) {
-        console.log('success')
+        console.info('success')
       } else {
-        console.log('error')
+        console.info('error')
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -125,30 +115,53 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
           xs={22}
         >
           <Image
-            className={styles.image}
             fill={true}
-            alt={`${name} by ${author}`}
+            alt={name}
             objectFit="contain"
             objectPosition="center"
-            src={imageUrl[0]}
+            src={imageUrl}
           />
         </Grid>
         <Grid xs={58}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <Typography className={styles.name}>{name}</Typography>
-            <Typography className={styles.author}>מחבר: {author}</Typography>
-            <Typography component={'p'} className={styles.description}>
-              {description}
-            </Typography>
-            <Box className={styles.itemLender}></Box>
-            <Box className={styles.itemLocation}>
-              <Typography className={styles.optionText}>
-                מיקום הפריט:
+          <Box
+            sx={{
+              display: 'flex',
+              padding: '10px',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <Typography>{name}</Typography>
+            {mainCategory === 'book' && (
+              <>
+                <Typography>ISBN: {ids?.isbn}</Typography>
+                <Typography>מחבר: {card?.author}</Typography>
+              </>
+            )}
+            <Typography component={'p'}>{description}</Typography>
+
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'end',
+                gap: '10px',
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '.9rem',
+                }}
+              >
+                Item Location:
+              </Typography>
+              <Typography>
+                {streetName} st. {city}, Israel
               </Typography>
             </Box>
           </Box>
         </Grid>
-        <Grid
+        {/* <Grid
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -177,7 +190,7 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
               {activeButton && <ControlledSwitches />}
             </CardActions>
           )}
-        </Grid>
+        </Grid> */}
       </Grid>
     </Card>
   )
