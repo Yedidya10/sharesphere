@@ -1,6 +1,6 @@
 'use client'
 
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -14,7 +14,7 @@ import React, { useState } from 'react'
 import styles from './UserBorrowedCardInfo.module.scss'
 
 export interface IUserBorrowedCardInfo {
-  card: ItemCoreWithLoanDetails
+  card: Item
   returnButton?: boolean
   extendButton?: boolean
   /**

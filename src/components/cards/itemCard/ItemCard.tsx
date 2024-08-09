@@ -1,6 +1,8 @@
 'use client'
 
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
+import { Request } from '@/utils/types/request'
+import { CircularProgress } from '@mui/material'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -8,12 +10,11 @@ import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useState } from 'react'
-import CardInfo from '../cardModal/CardModal'
-import { Divider } from '@mui/material'
+import { lazy, Suspense, useState } from 'react'
+const CardInfo = lazy(() => import('../cardModal/CardModal'))
 
 export interface IItemCard {
-  card: ItemCoreWithLoanDetails
+  card: Item
   imageWidth: number
   imageHeight: number
   /**
@@ -121,12 +122,14 @@ const ItemCard: React.FC<IItemCard> = ({
           </CardContent>
         </Box>
       </Card>
-      <CardInfo
-        openModal={openModal}
-        handleClose={handleClose}
-        label={''}
-        card={card}
-      />
+      <Suspense fallback={<CircularProgress />}>
+        <CardInfo
+          openModal={openModal}
+          handleClose={handleClose}
+          label={''}
+          card={card}
+        />
+      </Suspense>
     </>
   )
 }

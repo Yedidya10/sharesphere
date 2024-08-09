@@ -1,7 +1,7 @@
 'use client'
 
 import SearchBar from '@/components/forms/searchBar/SearchBar'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -12,7 +12,7 @@ import { lazy, Suspense, useState } from 'react'
 const ItemCard = lazy(() => import('../itemCard/ItemCard'))
 
 export interface IAllCards {
-  allCards: ItemCoreWithLoanDetails[]
+  allCards: Item[]
   t: {
     noItemsFound: string
   }
@@ -51,11 +51,9 @@ const AllCards: React.FC<IAllCards> = ({
 
   const filteredAllCards = allCards.filter((card) => {
     const authorMatch =
-      card.author?.toLowerCase().includes(searchQuery.toLowerCase()) ??
-      false
+      card.author?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
     const nameMatch =
-      card.name?.toLowerCase().includes(searchQuery.toLowerCase()) ??
-      false
+      card.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
     const isbnMatch =
       card.ids?.isbn?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
     const danacodeMatch =
@@ -94,7 +92,7 @@ const AllCards: React.FC<IAllCards> = ({
       <SearchBar setSearchQuery={setSearchQuery} />
       {filteredAllCards.length > 0 && (
         <Grid container rowSpacing={0} columnSpacing={2} columns={30}>
-          {filteredAllCards.map((card: ItemCoreWithLoanDetails) =>
+          {filteredAllCards.map((card: Item) =>
             card.postingStatus === 'published' &&
             card.owner !== corrntUserId ? (
               // @ts-ignore

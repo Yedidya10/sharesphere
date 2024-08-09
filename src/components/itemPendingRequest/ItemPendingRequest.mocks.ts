@@ -22,12 +22,7 @@ const base: IItemPendingRequest = {
     brand: '',
     description: '',
     imageUrl: '',
-    allBorrowers: {
-      currentBorrower: null,
-      previousBorrowers: [],
-    },
-    requests: [],
-    alertSubscribers: [],
+    isAvailable: true,
   },
 }
 

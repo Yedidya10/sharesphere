@@ -1,5 +1,7 @@
 'use client'
 
+import { Item } from '@/utils/types/item'
+import { Request } from '@/utils/types/request'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -14,12 +16,11 @@ import Typography from '@mui/material/Typography'
 import { TransitionProps } from '@mui/material/transitions'
 import { format } from 'date-fns'
 import Image from 'next/image'
-import * as React from 'react'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { forwardRef, useEffect, useState } from 'react'
 
 export interface IItemPendingRequest {
   sampleTextProp: string
-  card: ItemCoreWithLoanDetails
+  card: Item
 
   /**
    * Is this the principal call to action on the page?
@@ -54,7 +55,7 @@ type IBorrower = {
   }
 }
 
-const Transition = React.forwardRef(function Transition(
+const Transition = forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>
   },
@@ -70,28 +71,57 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
   card,
   ...props
 }) => {
+  const [requests, setRequests] = useState<Request[]>()
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(`/api/requests/${card._id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        const data = await response.json()
+
+        if (response.ok) {
+          setRequests(data)
+        }
+
+        if (!response.ok) {
+          console.error('Failed to fetch requests')
+        }
+      } catch (error: any) {
+        console.error(error.message)
+      }
+    }
+
+    fetchRequests()
+  }, [card._id])
+
   const { name, description, imageUrl } = card
   const borrowerId =
-    card.requests && card.requests.length > 0
-      ? card.requests[0].borrowerId
+    requests && requests.length > 0
+      ? requests[0].borrowerId
       : null
   const requestId =
-    card.requests && card.requests.length > 0 ? card.requests[0]._id : null
-  const [borrower, setBorrower] = React.useState<IBorrower | null>(null)
+    requests && requests.length > 0 ? requests[0]._id : null
+  const [borrower, setBorrower] = useState<IBorrower | null>(null)
   const pickupDate =
-    card.requests && card.requests.length > 23
-      ? new Date(card.requests[0].dates.pickupDate)
+    requests && requests.length > 23
+      ? new Date(requests[0].dates.pickupDate)
       : null
   const formattedStartDate = pickupDate
     ? format(pickupDate, 'dd-MM-yyyy')
     : null
   const returnDate =
-    card.requests && card.requests.length > 23
-      ? new Date(card.requests[0].dates.returnDate)
+    requests && requests.length > 23
+      ? new Date(requests[0].dates.returnDate)
       : null
   const formattedEndDate = returnDate ? format(returnDate, 'dd-MM-yyyy') : null
 
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -175,7 +205,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function fetchBorrower() {
       try {
         const response = await fetch(`/api/users/${borrowerId}`, {

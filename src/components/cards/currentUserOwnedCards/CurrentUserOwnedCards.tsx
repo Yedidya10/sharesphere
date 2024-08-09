@@ -1,7 +1,8 @@
 'use client'
 
+import PostingStatusFilter from '@/components/forms/postingStatusFilter/PostingStatusFilter'
 import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
@@ -9,11 +10,10 @@ import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { useRecoilState } from 'recoil'
 import UserOwnedCardInfo from '../userOwnedCardInfo/UserOwnedCardInfo'
-import PostingStatusFilter from '@/components/forms/postingStatusFilter/PostingStatusFilter'
 
 export interface ICurrentUserOwnedCards {
   sampleTextProp: string
-  userOwnedItems: ItemCoreWithLoanDetails[]
+  userOwnedItems: Item[]
   /**
    * Is this the principal call to action on the page?
    */

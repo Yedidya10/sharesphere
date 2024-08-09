@@ -21,12 +21,7 @@ const base: IUserOwnedCardInfo = {
     brand: '',
     description: '',
     imageUrl: '',
-    allBorrowers: {
-      currentBorrower: null,
-      previousBorrowers: [],
-    },
-    requests: [],
-    alertSubscribers: [],
+    isAvailable: true,
   },
   label: '',
 }
