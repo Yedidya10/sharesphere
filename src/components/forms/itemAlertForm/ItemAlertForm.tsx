@@ -1,16 +1,15 @@
 'use client'
 
-import { ItemAlertFormValues } from '@/utils/types/FormValues'
+import { ItemAlertFormValues } from '@/utils/types/formValues'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
-import { DatePicker, DateValidationError } from '@mui/x-date-pickers'
+import { DatePicker } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { differenceInDays } from 'date-fns'
 import he from 'date-fns/locale/he'
 import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
@@ -72,8 +71,8 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
     formState: { errors, isDirty, isValid },
   } = useForm<ItemAlertFormValues>({
     defaultValues: {
-      startDate: '',
-      endDate: '',
+      pickupDate: '',
+      returnDate: '',
     },
   })
 
@@ -93,7 +92,7 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
         }),
       })
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -121,7 +120,7 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
             >
               <Grid item xs={12} sm={6}>
                 <Controller
-                  name="startDate"
+                  name="pickupDate"
                   control={control}
                   rules={{
                     required: 'Please enter a pick up date',
@@ -130,7 +129,7 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
                     <DatePicker
                       label="Start date"
                       disablePast
-                      maxDate={watch('endDate')}
+                      maxDate={watch('returnDate')}
                       value={value || null}
                       slotProps={{
                         textField: {
@@ -147,7 +146,7 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
-                  name="endDate"
+                  name="returnDate"
                   control={control}
                   rules={{
                     required: 'Please enter a return date',
@@ -156,7 +155,7 @@ const ItemAlertForm: React.FC<IItemAlertForm> = ({
                     <DatePicker
                       label="End date"
                       disablePast
-                      minDate={watch('startDate')}
+                      minDate={watch('pickupDate')}
                       value={value || null}
                       slotProps={{
                         textField: {
