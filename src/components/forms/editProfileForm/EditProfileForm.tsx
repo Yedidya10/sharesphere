@@ -1,14 +1,13 @@
 'use client'
 
 import {
+  firstAndLastEnglishNamePattern,
+  firstAndLastHebrewNamePattern,
   regexAddressNamePattern,
   regexAddressNumberPattern,
-  regexZipCodePattern,
-  regexTextPattern,
-  regexGoogleProfileImageUrlPattern,
-  regexImageUrlPattern,
+  regexSevenZipCodePattern,
 } from '@/utils/regexPatterns'
-import { EditProfileFormValues } from '@/utils/types/FormValues'
+import { EditProfileFormValues } from '@/utils/types/formValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -77,10 +76,9 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
     let stream = null
 
     try {
-      console.log(event)
       stream = await navigator.mediaDevices.getUserMedia({ video: true })
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -142,19 +140,17 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
 
       const responseData = await response.json()
       if (response.ok) {
-        console.log('User updated successfully:', responseData)
         // Optionally, you can redirect the user to a success page
         // or show a success message on the form.
       } else {
-        console.log('Failed to update user:', responseData)
         // Optionally, you can show an error message on the form.
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log('Error updating user:', error.message)
+        console.error('Error updating user:', error.message)
       } else {
         // If the error is not an instance of Error (unlikely), you can handle it differently
-        console.log('Error updating user:', error)
+        console.error('Error updating user:', error)
       }
     } finally {
       handleClose()
@@ -225,9 +221,13 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 rules={{
                   required: 'First name is required',
                   pattern: {
-                    value: regexTextPattern,
-                    message:
-                      'Please enter a valid first name with a minimum of 2 letters',
+                    value:
+                      locale === 'he'
+                        ? firstAndLastHebrewNamePattern
+                        : firstAndLastEnglishNamePattern,
+                    message: `Please enter a valid ${
+                      locale === 'he' ? 'Hebrew' : 'English'
+                    } first name with a minimum of 2 letters`,
                   },
                 }}
                 render={({
@@ -274,9 +274,13 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 rules={{
                   required: 'Last name is required',
                   pattern: {
-                    value: regexTextPattern,
-                    message:
-                      'Please enter a valid last name with a minimum of 2 letters',
+                    value:
+                      locale === 'he'
+                        ? firstAndLastHebrewNamePattern
+                        : firstAndLastEnglishNamePattern,
+                    message: `Please enter a valid ${
+                      locale === 'he' ? 'Hebrew' : 'English'
+                    } last name with a minimum of 2 letters`,
                   },
                 }}
                 render={({
@@ -624,7 +628,7 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 rules={{
                   required: 'Zip code is required',
                   pattern: {
-                    value: regexZipCodePattern,
+                    value: regexSevenZipCodePattern,
                     message: 'Please enter a valid zip code with 7 digits',
                   },
                 }}

@@ -1,13 +1,15 @@
 'use client'
 
+import createUppy from '@/components/uppy/createUppy'
 import themeModeState from '@/recoils/themeMode/themeModeState'
-import { IAddItemFormValues } from '@/utils/types/FormValues'
-import Box from '@mui/material/Box'
+import { IAddItemFormValues } from '@/utils/types/formValues'
+import TextField from '@mui/material/TextField'
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 import { Dashboard } from '@uppy/react'
 import '@uppy/url/dist/style.css'
 import * as React from 'react'
+import { useEffect, useState } from 'react'
 import {
   Control,
   Controller,
@@ -15,9 +17,6 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
-import { useEffect, useState } from 'react'
-import createUppy from '@/components/uppy/createUppy'
-import TextField from '@mui/material/TextField'
 
 export interface IUppyDashboard {
   control: Control<IAddItemFormValues, any>
