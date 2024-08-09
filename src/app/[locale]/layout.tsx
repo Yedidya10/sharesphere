@@ -1,12 +1,12 @@
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import AuthProvider from '@/components/AuthProvider'
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry'
 import Header from '@/components/layouts/header/Header'
 import { locales } from '@/navigation'
 import Box from '@mui/material/Box'
-import { Session } from 'next-auth'
 import { unstable_setRequestLocale } from 'next-intl/server'
 import { Inter, Roboto } from 'next/font/google'
-import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import * as React from 'react'
 import './globals.scss'
@@ -26,21 +26,6 @@ export const metadata = {
   description: 'Scalable Next.js Project Template',
 }
 
-async function getSession(cookie: string): Promise<Session> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_URL}/api/auth/session`,
-    {
-      headers: {
-        cookie,
-      },
-    }
-  )
-
-  const session = await response.json()
-
-  return Object.keys(session).length > 0 ? session : null
-}
-
 export default async function RootLayout({
   children,
   params: { locale },
@@ -48,8 +33,8 @@ export default async function RootLayout({
   children: React.ReactNode
   params: { locale: string }
 }) {
-  const session = await getSession(headers().get('cookie') ?? '')
-
+  const session = await getServerSession(authOptions)
+  console.log('session:', session)
   // Validate that the incoming `locale` parameter is valid
   const isValidLocale = locales.some((cur) => cur === locale)
   if (!isValidLocale) notFound()
@@ -71,7 +56,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={dir()}>
       <Box component="body" className={inter.className}>
-        <AuthProvider session={session}>
+        <AuthProvider session={session!}>
           <ThemeRegistry locale={locale}>
             <Header sampleTextProp={''} label={''} />
             <Box

@@ -1,30 +1,15 @@
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import CurrentUserBorrowedItems from '@/components/cards/currentUserBorrowedItems/CurrentUserBorrowedItems'
 import Box from '@mui/material/Box'
-import { Session } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { unstable_setRequestLocale } from 'next-intl/server'
-import { headers } from 'next/headers'
 
-// fetch session from server
-async function getSession(cookie: string): Promise<Session> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_URL}/api/auth/session`,
-    {
-      headers: {
-        cookie,
-      },
-    }
-  )
-
-  const session = await response.json()
-
-  return Object.keys(session).length > 0 ? session : null
-}
+const BASE_URL = process.env.NEXT_PUBLIC_URL
 
 // fetch user borrowed items from server
 async function getUserBorrowedItems() {
-  const session = await getSession(headers().get('cookie') ?? '')
-  const BASE_URL = process.env.NEXT_PUBLIC_URL
-  const userId = session.user.id
+  const session = await getServerSession(authOptions)
+  const userId = session?.user.id
 
   try {
     const response = await fetch(
