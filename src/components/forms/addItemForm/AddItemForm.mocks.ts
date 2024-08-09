@@ -4,7 +4,8 @@ const base: IAddItemForm = {
   label: '',
   authKey: '',
   authSecret: '',
-  templateId: ''
+  templateId: '',
+  locale: ''
 }
 
 export const mockAddItemFormProps = {

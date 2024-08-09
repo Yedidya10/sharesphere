@@ -1,6 +1,6 @@
-import { IMainCategoryInput } from './MainCategoryInput'
+import { IAddItemFormValues } from '@/utils/types/formValues'
 import { Control, UseFormWatch } from 'react-hook-form'
-import { IAddItemFormValues } from '@/utils/types/FormValues'
+import { IMainCategoryInput } from './MainCategoryInput'
 
 const base: IMainCategoryInput = {
   label: '',
