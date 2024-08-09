@@ -1,11 +1,15 @@
 'use client'
 
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import Delete from '@mui/icons-material/Delete'
 import Edit from '@mui/icons-material/Edit'
 import Info from '@mui/icons-material/Info'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { Box, Tooltip } from '@mui/material'
+import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
+import Rating from '@mui/material/Rating'
+import Typography from '@mui/material/Typography'
 import {
   DataGrid,
   GridColDef,
@@ -14,12 +18,7 @@ import {
 } from '@mui/x-data-grid'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import Typography from '@mui/material/Typography'
 import SpringModal from '../springModal/SpringModal'
-import Chip from '@mui/material/Chip'
-import Rating from '@mui/material/Rating'
-import { Box, Tooltip } from '@mui/material'
-import { ca } from 'date-fns/locale'
 
 export interface ICardsDataGrid {
   sampleTextProp: string
@@ -46,11 +45,11 @@ export interface ICardsDataGrid {
 }
 
 const handleEditUser = (id: number) => {
-  console.log(id)
+  // console.info(id)
 }
 
 const handleDeleteUser = (id: number) => {
-  console.log(id)
+  // console.info(id)
 }
 
 const CardsDataGrid: React.FC<ICardsDataGrid> = ({
@@ -60,10 +59,10 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
   ...props
 }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [allCards, setAllCards] = useState<ItemCoreWithLoanDetails[]>([])
+  const [allCards, setAllCards] = useState<Item[]>([])
   const [open, setOpen] = useState(false)
   const [selectedCardDetails, setSelectedCardDetails] = useState<
-    ItemCoreWithLoanDetails | undefined
+    Item | undefined
   >(undefined)
 
   useEffect(() => {
@@ -110,20 +109,20 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
 
   const handleApproveCard = async (cardId: number) => {
     try {
-      const res = await fetch(`/api/cards/cardId/${cardId}/update/itemStatus`, {
+      const res = await fetch(`/api/cards/${cardId}/update/itemStatus`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          status: 'published',
+          postingStatus: 'published',
         }),
       })
       if (res.ok) {
         // Update the local state with the changed status
         const updatedCards = allCards.map((card) =>
           card._id!.toString() === cardId.toString()
-            ? { ...card, status: 'published' }
+            ? { ...card, postingStatus: 'published' }
             : card
         )
         setAllCards(updatedCards)
@@ -163,15 +162,15 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
     },
     { field: 'itemName', headerName: 'Item name' },
     {
-      field: 'status',
-      headerName: 'Status',
-      width: 180,
+      field: 'postingStatus',
+      headerName: 'Posting status',
+      width: 140,
       renderCell: (params: GridRenderCellParams) => (
         <Chip
           icon={
-            params.row.status === 'pendingForApproval' ? (
+            params.row.postingStatus === 'inReview' ? (
               <Info />
-            ) : params.row.status === 'published' ? (
+            ) : params.row.postingStatus === 'published' ? (
               <CheckCircleIcon />
             ) : (
               <Delete />
@@ -179,16 +178,16 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
           }
           variant="outlined"
           color={
-            params.row.status === 'pendingForApproval'
+            params.row.postingStatus === 'inReview'
               ? 'warning'
-              : params.row.status === 'published'
+              : params.row.postingStatus === 'published'
               ? 'success'
               : 'error'
           }
           label={
-            params.row.status === 'pendingForApproval'
-              ? 'Pending approval'
-              : params.row.status === 'published'
+            params.row.postingStatus === 'inReview'
+              ? 'Pending'
+              : params.row.postingStatus === 'published'
               ? 'Published'
               : 'Inactive'
           }
@@ -239,7 +238,7 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
       width: 180,
       renderCell: (params: GridRenderCellParams) => (
         <div>
-          {params.row.status === 'pendingForApproval' && (
+          {params.row.postingStatus === 'inReview' && (
             <IconButton
               aria-label="Approve"
               onClick={() => handleApproveCard(params.row.cardId)}
@@ -272,17 +271,17 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
 
   const rows =
     allCards.length > 0
-      ? allCards.map((card: ItemCoreWithLoanDetails) => ({
+      ? allCards.map((card: Item) => ({
           id: card._id,
           cardId: card._id,
-          itemName: card.details.name,
-          mainCategory: card.details.mainCategory,
-          secondaryCategory: card.details.secondaryCategory,
-          description: card.details.description,
+          itemName: card.name,
+          mainCategory: card.mainCategory,
+          secondaryCategory: card.secondaryCategory,
+          description: card.description,
           condition: card.condition,
           loanPeriod: card.maxLoanPeriod,
           location: card.location.city,
-          status: card.status,
+          postingStatus: card.postingStatus,
           thumbnailUrl: card.imageUrl,
         }))
       : []
@@ -322,11 +321,9 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
           {selectedCardDetails && (
             /* Your modal content here, for example: */
             <div>
-              <Typography variant="h5">
-                {selectedCardDetails.details.name}
-              </Typography>
+              <Typography variant="h5">{selectedCardDetails.name}</Typography>
               <Typography variant="body1">
-                Main Category: {selectedCardDetails.details.mainCategory}
+                Main Category: {selectedCardDetails.mainCategory}
               </Typography>
               {/* Display other card details similarly */}
             </div>
