@@ -1,10 +1,11 @@
 'use client'
 
-import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
+import { NextLinkComposed } from '@/components/mui/Link'
 import isUserBorrowedItemsExistState from '@/recoils/isUserBorrowedItemsExistState/isUserBorrowedItemsExistState'
+import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import ChatIcon from '@mui/icons-material/Chat'
 import ChecklistIcon from '@mui/icons-material/Checklist'
+import DashboardIcon from '@mui/icons-material/Dashboard'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import SettingsIcon from '@mui/icons-material/Settings'
@@ -15,12 +16,10 @@ import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import { useLocale } from 'next-intl'
+import { usePathname } from 'next/navigation'
 import * as React from 'react'
 import { useRecoilValue } from 'recoil'
-import { NextLinkComposed } from '@/components/mui/Link'
-import { useLocale } from 'next-intl'
-import DashboardIcon from '@mui/icons-material/Dashboard'
-import { usePathname } from 'next/navigation'
 
 export interface IDashboardDrawer {
   sampleTextProp: string
