@@ -1,4 +1,3 @@
-// Import the mongoose library to interact with MongoDB
 import mongoose from 'mongoose'
 
 // Step 1: Define the Mongoose schema for the card model
@@ -9,14 +8,12 @@ const cardSchema = new mongoose.Schema(
       danacode: { type: String },
       barcode: { type: String },
     },
-    details: {
-      mainCategory: { type: String },
-      secondaryCategory: { type: String },
-      name: { type: String },
-      author: { type: String },
-      brand: { type: String },
-      description: { type: String },
-    },
+    mainCategory: { type: String },
+    secondaryCategory: { type: String },
+    name: { type: String },
+    author: { type: String },
+    brand: { type: String },
+    description: { type: String },
     imageUrl: { type: String },
     condition: { type: String },
     maxLoanPeriod: { type: Number },
@@ -29,55 +26,20 @@ const cardSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
     },
-    status: { type: String },
-    allBorrowers: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        borrowingDates: [
-          {
-            startDate: { type: Date },
-            endDate: { type: Date },
-          },
-        ],
-        loanPeriod: { type: Number },
-      },
-    ],
-    currentBorrower: {
-      borrowerId: { type: mongoose.Schema.Types.ObjectId, default: null }, // Set default value to null
-      startDate: { type: Date },
-      endDate: { type: Date },
-      loanPeriod: { type: Number },
+    postingStatus: {
+      type: String,
+      enum: ['inReview', 'published', 'inactive', 'deleted'],
+      default: 'inReview',
     },
-    pendingRequests: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        requestStartDate: { type: Date },
-        requestEndDate: { type: Date },
-        loanPeriod: { type: Number },
-      },
-    ],
-    approvedRequests: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        startDate: { type: Date },
-        endDate: { type: Date },
-        loanPeriod: { type: Number },
-      },
-    ],
-    rejectedRequests: [
-      {
-        borrowerId: { type: mongoose.Schema.Types.ObjectId },
-        requestExplanation: { type: String },
-      },
-    ],
-    alertSubscribers: [
-      {
-        subscriberId: { type: mongoose.Schema.Types.ObjectId },
-        alertsRequested: { type: Boolean, default: true },
-        createdAt: { type: Date },
-        updatedAt: { type: Date },
-      },
-    ],
+    isAvailable: { type: Boolean, default: true },
+    // alertSubscribers: [
+    //   {
+    //     subscriberId: { type: mongoose.Schema.Types.ObjectId },
+    //     alertsRequested: { type: Boolean, default: true },
+    //     createdAt: { type: Date },
+    //     updatedAt: { type: Date },
+    //   },
+    // ],
   },
   {
     timestamps: true, // Enable timestamps option, which creates "createdAt" and "updatedAt" fields

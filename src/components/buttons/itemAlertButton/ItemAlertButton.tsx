@@ -58,9 +58,9 @@ const ItemAlertButton: React.FC<IItemAlertButton> = ({
       })
 
       const json = await res.json()
-      console.log(json)
+
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

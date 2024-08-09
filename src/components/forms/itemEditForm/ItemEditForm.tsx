@@ -5,16 +5,21 @@ import categories from '@/utils/categories/categories'
 import {
   regexAddressNamePattern,
   regexAddressNumberPattern,
+  regexAuthorEnglishNamePattern,
+  regexAuthorHebrewNamePattern,
   regexBarcodePattern,
+  regexBrandEnglishNamePattern,
+  regexBrandHebrewNamePattern,
   regexDanacodePattern,
+  regexEnglishWordsPattern,
+  regexHebrewWordsPattern,
   regexImageUrlPattern,
   regexIsbnPattern,
   regexMaxLoanPeriodPattern,
-  regexTextPattern,
-  regexZipCodePattern,
+  regexSevenZipCodePattern,
 } from '@/utils/regexPatterns'
-import { ItemEditFormValues } from '@/utils/types/FormValues'
-import { ItemCore } from '@/utils/types/Item'
+import { IItemEditFormValues } from '@/utils/types/formValues'
+import { Item } from '@/utils/types/item'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -32,6 +37,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
+import { useParams } from 'next/navigation'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
@@ -70,6 +76,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
   openModal,
   handleClose,
 }) => {
+  const { locale } = useParams()
   const { data: session, status } = useSession()
 
   const { cardIds, details, owner, condition, location, maxLoanPeriod } =
@@ -99,10 +106,9 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
     let stream = null
 
     try {
-      console.log(event)
       stream = await navigator.mediaDevices.getUserMedia({ video: true })
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -113,7 +119,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
     getFieldState,
     formState: { isValid, isDirty, dirtyFields, errors },
     handleSubmit,
-  } = useForm<ItemEditFormValues>({
+  } = useForm<IItemEditFormValues>({
     mode: 'onChange',
     defaultValues: {
       mainCategory: mainCategory,
@@ -157,11 +163,9 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
     return hasNonEmptyProperties ? filteredObj : {}
   }
 
-  const onSubmit = async (data: ItemEditFormValues) => {
-    console.log('cardId:', cardId)
-
+  const onSubmit = async (data: IItemEditFormValues) => {
     try {
-      // const updatedCard: Partial<ItemCore> = {
+      // const updatedCard: Partial<Item> = {
       //   cardIds: {
       //     isbn: dirtyFields.isbn ? data.isbn : undefined,
       //     danacode: dirtyFields.danacode ? data.danacode : undefined,
@@ -187,20 +191,18 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
       //   },
       // }
 
-      const updatedCard: Partial<ItemCore> = {
-        cardIds: {
+      const updatedCard: Partial<Item> = {
+        ids: {
           isbn: data.isbn,
           danacode: data.danacode,
           barcode: data.barcode,
         },
-        details: {
-          mainCategory: data.mainCategory,
-          secondaryCategory: data.secondaryCategory,
-          name: data.itemName,
-          author: data.author,
-          brand: data.brand,
-          description: data.description,
-        },
+        mainCategory: data.mainCategory,
+        secondaryCategory: data.secondaryCategory,
+        name: data.itemName,
+        author: data.author,
+        brand: data.brand,
+        description: data.description,
         imageUrl: data.imageUrl,
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
         location: {
@@ -212,8 +214,6 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
       }
 
       // const filteredCardFields = filterEmptyProperties(updatedCard)
-
-      // console.log(updatedCard)
 
       // Send updatedCard to the database
       const response = await fetch(`/api/cards/cardId/${cardId}/update`, {
@@ -229,10 +229,8 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
       const responseData = await response.json()
 
       if (response.ok) {
-        console.log('Card updated successfully:', responseData)
         // Optionally, you can show a success message to the user
       } else {
-        console.log('Failed to update card:', responseData)
         // Optionally, you can show an error message to the user
       }
     } catch (error: any) {
@@ -582,10 +580,15 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                               )
                               .join(' ')} name is required`,
                             pattern: {
-                              value: regexTextPattern,
+                              value:
+                                locale === 'he'
+                                  ? regexHebrewWordsPattern
+                                  : regexEnglishWordsPattern,
                               message: `Please enter a valid ${watch(
                                 'mainCategory'
-                              )} name with only Hebrew or English letters`,
+                              )} name with only ${
+                                locale === 'he' ? 'Hebrew' : 'English'
+                              } letters`,
                             },
                           }}
                           render={({
@@ -642,9 +645,13 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                             rules={{
                               required: 'Author name is required',
                               pattern: {
-                                value: regexTextPattern,
-                                message:
-                                  'Please enter a valid author name with only Hebrew or English letters',
+                                value:
+                                  locale === 'he'
+                                    ? regexAuthorHebrewNamePattern
+                                    : regexAuthorEnglishNamePattern,
+                                message: `Please enter a valid author name with only ${
+                                  locale === 'he' ? 'Hebrew' : 'English'
+                                } letters`,
                               },
                             }}
                             render={({
@@ -694,9 +701,13 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                             rules={{
                               required: 'Brand name is required',
                               pattern: {
-                                value: regexTextPattern,
-                                message:
-                                  'Please enter a valid brand name with only Hebrew or English letters',
+                                value:
+                                  locale === 'he'
+                                    ? regexBrandHebrewNamePattern
+                                    : regexBrandEnglishNamePattern,
+                                message: `Please enter a valid brand name with only ${
+                                  locale === 'he' ? 'Hebrew' : 'English'
+                                } letters`,
                               },
                             }}
                             render={({
@@ -790,7 +801,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                       rules={{
                         required: 'Description is required',
                         // pattern: {
-                        //   value: regexTextPattern,
+                        //   value: regexWordsPattern,
                         //   message:
                         //     'Please enter a valid description with only Hebrew or English letters',
                         // },
@@ -1070,7 +1081,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                           rules={{
                             required: 'Zip code is required',
                             pattern: {
-                              value: regexZipCodePattern,
+                              value: regexSevenZipCodePattern,
                               message:
                                 'Please enter a valid zip code with 7 digits',
                             },

@@ -82,7 +82,7 @@ const childrenStyle = {
   overflow: 'auto',
   zIndex: 1,
   bgcolor: 'background.paper',
-  // color: 'text.primary',
+  color: 'text.primary',
 }
 
 export interface ISpringModal {

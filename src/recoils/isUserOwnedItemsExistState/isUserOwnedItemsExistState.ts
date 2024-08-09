@@ -1,4 +1,4 @@
-import { AtomEffect, atom } from 'recoil'
+import { atom } from 'recoil'
 
 // export type ThemeMode = 'light' | 'dark'
 
@@ -33,7 +33,7 @@ import { AtomEffect, atom } from 'recoil'
 
 const isUserOwnedItemsExistState = atom<boolean>({
   key: 'isUserOwnedItemsExistState',
-  default: false
+  default: false,
   // effects: [localStorageEffect('themeMode')],
 })
 

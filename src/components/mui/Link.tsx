@@ -18,6 +18,8 @@ interface NextLinkComposedProps
   linkAs?: NextLinkProps['as']
 }
 
+// This component is unstyled and only responsible for handling the navigation
+// https://mui.com/material-ui/integrations/routing/#next-js-pages-router
 export const NextLinkComposed = React.forwardRef<
   HTMLAnchorElement,
   NextLinkComposedProps

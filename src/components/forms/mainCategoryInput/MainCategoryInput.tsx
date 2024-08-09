@@ -1,7 +1,7 @@
 'use client'
 
 import categories from '@/utils/categories/categories'
-import { AddItemFormValues } from '@/utils/types/FormValues'
+import { IAddItemFormValues } from '@/utils/types/formValues'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
@@ -12,8 +12,8 @@ import React from 'react'
 import { Control, Controller, UseFormWatch } from 'react-hook-form'
 
 export interface IMainCategoryInput {
-  control: Control<AddItemFormValues, any>
-  watch: UseFormWatch<AddItemFormValues>
+  control: Control<IAddItemFormValues, any>
+  watch: UseFormWatch<IAddItemFormValues>
   /**
    * Is this the principal call to action on the page?
    */

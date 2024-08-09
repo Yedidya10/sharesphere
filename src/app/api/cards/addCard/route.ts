@@ -40,7 +40,6 @@ export async function PATCH(
     const cardId = req.query['cardId']
     // Get the data from the request body
     const data = await req.json()
-    console.log(data)
 
     // Get the card from the database
     const card = await Card.findById(cardId)

@@ -58,7 +58,6 @@ const Providers: React.FC<IProviders> = ({
 
   async function handleProviderLogin(provider: any) {
     setLoadingProvider(provider.id)
-    console.log('callbackUrl:', callbackUrl)
 
     try {
       await signIn(provider.id, {

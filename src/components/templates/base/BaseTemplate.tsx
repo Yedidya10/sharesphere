@@ -1,4 +1,4 @@
-import styles from './BaseTemplate.module.scss'
+import Box from '@mui/material/Box'
 
 export interface IBaseTemplate {
   sampleTextProp: string
@@ -30,7 +30,7 @@ const BaseTemplate: React.FC<IBaseTemplate> = ({
   sampleTextProp,
   ...props
 }) => {
-  return <div className={styles.container}>{sampleTextProp}</div>
+  return <Box>{sampleTextProp}</Box>
 }
 
 export default BaseTemplate

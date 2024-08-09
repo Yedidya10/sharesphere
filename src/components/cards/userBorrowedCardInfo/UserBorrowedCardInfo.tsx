@@ -1,12 +1,9 @@
 'use client'
 
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
-import DeleteIcon from '@mui/icons-material/Delete'
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
-import IconButton from '@mui/material/IconButton'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
@@ -14,11 +11,10 @@ import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import React, { useState } from 'react'
-import ItemEditButton from '../../buttons/itemEditButton/ItemEditButton'
 import styles from './UserBorrowedCardInfo.module.scss'
 
 export interface IUserBorrowedCardInfo {
-  card: ItemCoreWithLoanDetails
+  card: Item
   returnButton?: boolean
   extendButton?: boolean
   /**
@@ -73,12 +69,18 @@ const UserBorrowedCardInfo: React.FC<IUserBorrowedCardInfo> = ({
   const [itemMaxLoanPeriod, setItemMaxLoanPeriod] = useState<string>('')
   const [itemCondition, setItemCondition] = useState<string>('')
 
-  const { cardIds, details, owner, condition, location, imageUrl, maxLoanPeriod } = card
-
-  const { name, author, description } = details
+  const {
+    ids,
+    name,
+    author,
+    description,
+    imageUrl,
+    owner,
+    condition,
+    location,
+    maxLoanPeriod,
+  } = card
   const { city, streetName, streetNumber, zipCode } = location
-  const { isbn, danacode, barcode } = cardIds
-
 
   const handleDelete = async () => {
     try {
@@ -91,12 +93,12 @@ const UserBorrowedCardInfo: React.FC<IUserBorrowedCardInfo> = ({
       })
 
       if (res.status === 200) {
-        console.log('success')
+        console.info('Item deleted')
       } else {
-        console.log('error')
+        console.info('Item not deleted')
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

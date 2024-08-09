@@ -4,7 +4,11 @@ const base: IItemRequestForm = {
   label: '',
   open: false,
   maxLoanPeriod: 0,
-  cardId: ''
+  cardId: '',
+  requests: [],
+  handleRequestFormClose: function (): void {
+    throw new Error('Function not implemented.')
+  }
 }
 
 export const mockItemRequestFormProps = {

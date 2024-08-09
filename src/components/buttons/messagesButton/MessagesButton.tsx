@@ -48,7 +48,6 @@ const MessagesButton: React.FC<IMessagesButton> = ({
   }
   const handleClose = () => {
     setAnchorEl(null)
-    console.log(router)
   }
 
   return (

@@ -1,21 +1,19 @@
 'use client'
 
+import PostingStatusFilter from '@/components/forms/postingStatusFilter/PostingStatusFilter'
 import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
-import TabContext from '@mui/lab/TabContext'
-import TabList from '@mui/lab/TabList'
-import TabPanel from '@mui/lab/TabPanel'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
-import Tab from '@mui/material/Tab'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
 import * as React from 'react'
+import { useForm } from 'react-hook-form'
 import { useRecoilState } from 'recoil'
-import PublishedItemsLabTabs from '../../publishedItemsLabTabs/PublishedItemsLabTabs'
 import UserOwnedCardInfo from '../userOwnedCardInfo/UserOwnedCardInfo'
 
 export interface ICurrentUserOwnedCards {
   sampleTextProp: string
+  userOwnedItems: Item[]
   /**
    * Is this the principal call to action on the page?
    */
@@ -42,55 +40,13 @@ const CurrentUserOwnedCards: React.FC<ICurrentUserOwnedCards> = ({
   primary = false,
   label,
   sampleTextProp,
+  userOwnedItems,
   ...props
 }) => {
-  const [value, setValue] = React.useState('1')
   const { data: session, status } = useSession()
-
   const [isOwner, setIsOwner] = React.useState<boolean | null>(null)
-  const [currentUserCards, setCurrentUserOwnedCards] = React.useState<
-    ItemCoreWithLoanDetails[] | null
-  >(null)
   const [isCurrentUserOwnedCardsExist, setIsCurrentUserOwnedCardsExist] =
     useRecoilState(isUserOwnedItemsExistState)
-
-  async function getCurrentUserOwnedCards() {
-    try {
-      const response = await fetch(
-        `/api/cards/userId/${session?.user?.id}/ownedCards`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-
-      const data = await response.json()
-      const cards = data.cards
-
-      console.log('data', data)
-      console.log('cards', cards)
-
-      if (response.ok) {
-        setIsCurrentUserOwnedCardsExist(true)
-        return setCurrentUserOwnedCards(cards)
-      }
-
-      if (response.status === 404) {
-        setIsCurrentUserOwnedCardsExist(false)
-        return setCurrentUserOwnedCards(null)
-      }
-    } catch (error: any) {
-      throw new Error(error.message)
-    }
-  }
-
-  React.useEffect(() => {
-    if (session?.user?.id !== undefined && session?.user?.id !== null) {
-      getCurrentUserOwnedCards()
-    }
-  }, [session?.user?.id])
 
   React.useEffect(() => {
     if (session?.user?.id) {
@@ -100,137 +56,112 @@ const CurrentUserOwnedCards: React.FC<ICurrentUserOwnedCards> = ({
     }
   }, [session?.user?.id])
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue)
-  }
+  const {
+    watch,
+    reset,
+    control,
+    setError,
+    clearErrors,
+    getValues,
+    getFieldState,
+    formState: { isValid, isDirty, errors },
+    handleSubmit,
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      postingStatus: ['all'],
+      lendingStatus: ['all'],
+    },
+  })
+
+  React.useEffect(() => {
+    if (userOwnedItems?.length !== 0) {
+      setIsCurrentUserOwnedCardsExist(true)
+    }
+  }, [setIsCurrentUserOwnedCardsExist, userOwnedItems?.length])
+
+  const postingStatusValue = watch('postingStatus')
+
+  const isPublished =
+    postingStatusValue.includes('published') ||
+    postingStatusValue.includes('all')
 
   return (
-    <Box sx={{ width: '100%', typography: 'body1' }}>
-      <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Pending publication" value="1" />
-            <Tab label="Published" value="2" />
-            <Tab label="On hold" value="3" />
-            <Tab label="Deleted" value="4" />
-          </TabList>
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+      }}
+    >
+      {userOwnedItems?.length !== 0 ? (
+        <>
+          <PostingStatusFilter
+            primary={primary}
+            label={label}
+            control={control}
+            filterType={'postingStatus'}
+            filterName={'Posting Status'}
+          />
+          <Grid container spacing={2}>
+            {userOwnedItems?.map((card) => {
+              // Check if the card's postingStatus is included in statusValue array
+              if (postingStatusValue.includes(card.postingStatus)) {
+                return (
+                  <Grid
+                    // @ts-ignore
+                    key={card._id}
+                    xs={12}
+                    sx={{
+                      height: 'max-content',
+                    }}
+                  >
+                    <UserOwnedCardInfo
+                      card={card}
+                      label={''}
+                      isOwner={isOwner!}
+                    />
+                  </Grid>
+                )
+              } else if (postingStatusValue.includes('all')) {
+                return (
+                  <Grid
+                    // @ts-ignore
+                    key={card._id}
+                    xs={12}
+                    sx={{
+                      height: 'max-content',
+                    }}
+                  >
+                    <UserOwnedCardInfo
+                      card={card}
+                      label={''}
+                      isOwner={isOwner!}
+                    />
+                  </Grid>
+                )
+              } else {
+                // If not included, you may choose to handle it differently or skip the card
+                return null
+              }
+            })}
+          </Grid>
+        </>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            paddingTop: '6rem',
+
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <h1>No items found</h1>
         </Box>
-        <TabPanel
-          value="1"
-          sx={{
-            paddingInline: 0,
-          }}
-        >
-          <Grid container spacing={2}>
-            {currentUserCards?.map(
-              (card) =>
-                card.status === 'pendingPublication' && (
-                  <Grid
-                    // @ts-ignore
-                    key={card._id}
-                    xs={12}
-                    sx={{
-                      height: 'max-content',
-                    }}
-                  >
-                    <UserOwnedCardInfo
-                      card={card}
-                      isOwner={isOwner!}
-                      isAvailable={true}
-                      label={''}
-                      activeButton={false}
-                      deleteButton={true}
-                      editButton={true}
-                      restoreButton={false}
-                    />
-                  </Grid>
-                )
-            )}
-          </Grid>
-        </TabPanel>
-        <TabPanel
-          value="2"
-          sx={{
-            paddingInline: 0,
-          }}
-        >
-          <Grid container spacing={2}>
-            <PublishedItemsLabTabs
-              currentUserCards={currentUserCards}
-              label=""
-              isOwner={isOwner!}
-            />
-          </Grid>
-        </TabPanel>
-        <TabPanel
-          value="3"
-          sx={{
-            paddingInline: 0,
-          }}
-        >
-          <Grid container spacing={2}>
-            {currentUserCards?.map(
-              (card) =>
-                card.status === 'onHold' && (
-                  <Grid
-                    // @ts-ignore
-                    key={card._id}
-                    xs={12}
-                    sx={{
-                      height: 'max-content',
-                    }}
-                  >
-                    <UserOwnedCardInfo
-                      card={card}
-                      isOwner={isOwner!}
-                      isAvailable={true}
-                      label={''}
-                      activeButton={true}
-                      deleteButton={true}
-                      editButton={true}
-                      restoreButton={false}
-                    />
-                  </Grid>
-                )
-            )}
-          </Grid>
-        </TabPanel>
-        <TabPanel
-          value="4"
-          sx={{
-            paddingInline: 0,
-          }}
-        >
-          <Grid container spacing={2}>
-            {currentUserCards?.map(
-              (card) =>
-                card.status === 'deleted' && (
-                  <Grid
-                    // @ts-ignore
-                    key={card._id}
-                    xs={12}
-                    sx={{
-                      height: 'max-content',
-                    }}
-                  >
-                    <Box>
-                      <UserOwnedCardInfo
-                        card={card}
-                        isOwner={isOwner!}
-                        isAvailable={true}
-                        label={''}
-                        activeButton={false}
-                        deleteButton={false}
-                        editButton={false}
-                        restoreButton={true}
-                      />
-                    </Box>
-                  </Grid>
-                )
-            )}
-          </Grid>
-        </TabPanel>
-      </TabContext>
+      )}
     </Box>
   )
 }

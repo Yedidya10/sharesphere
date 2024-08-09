@@ -57,7 +57,7 @@ export const authOptions: AuthOptions = {
     // signOut: '/auth/signout',
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // (used for check email message)
-    newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
+    // newUser: '/auth/register', // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   callbacks: {
     // The `session` callback is called when a new session is created or updated

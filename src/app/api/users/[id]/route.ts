@@ -49,7 +49,6 @@ export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.href.split('/')[5]
     const user = await User.findOne({ _id: userId })
-    console.log(user)
     if (!user) {
       // If no user was found, return a 404 error
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

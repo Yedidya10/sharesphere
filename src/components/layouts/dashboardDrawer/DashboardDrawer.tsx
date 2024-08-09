@@ -1,10 +1,11 @@
 'use client'
 
-import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
+import { NextLinkComposed } from '@/components/mui/Link'
 import isUserBorrowedItemsExistState from '@/recoils/isUserBorrowedItemsExistState/isUserBorrowedItemsExistState'
+import isUserOwnedItemsExistState from '@/recoils/isUserOwnedItemsExistState/isUserOwnedItemsExistState'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import ChatIcon from '@mui/icons-material/Chat'
 import ChecklistIcon from '@mui/icons-material/Checklist'
+import DashboardIcon from '@mui/icons-material/Dashboard'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import SettingsIcon from '@mui/icons-material/Settings'
@@ -15,9 +16,10 @@ import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import { useLocale } from 'next-intl'
+import { usePathname } from 'next/navigation'
 import * as React from 'react'
 import { useRecoilValue } from 'recoil'
-import { NextLinkComposed } from '@/components/mui/Link'
 
 export interface IDashboardDrawer {
   sampleTextProp: string
@@ -55,7 +57,10 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
   const isUserBorrowedItemsExist = useRecoilValue(isUserBorrowedItemsExistState)
 
   const [open, setOpen] = React.useState(true)
+  const pathnames = usePathname()
+  const pathnamesWithoutLocale = pathnames.substring(pathnames.indexOf('/', 1))
 
+  const locale = useLocale()
   const handleClick = () => {
     setOpen(!open)
   }
@@ -79,17 +84,34 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
     >
       <Divider />
       <List
-        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+        sx={{
+          width: '100%',
+          maxWidth: 360,
+          bgcolor: 'background.paper',
+        }}
         component="nav"
         aria-labelledby="dashboard-list-nav"
       >
-        <ListItemButton  component={NextLinkComposed} to="/dashboard/profile">
+        <ListItemButton
+          component={NextLinkComposed}
+          to="/dashboard"
+          selected={pathnamesWithoutLocale === '/dashboard'}
+        >
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItemButton>
+        <ListItemButton
+          component={NextLinkComposed}
+          to="/dashboard/profile"
+          selected={pathnamesWithoutLocale === '/dashboard/profile'}
+        >
           <ListItemIcon>
             <AccountCircleIcon />
           </ListItemIcon>
           <ListItemText primary="Profile" />
         </ListItemButton>
-
         <ListItemButton onClick={handleClick}>
           <ListItemIcon>
             <ChecklistIcon />
@@ -100,9 +122,11 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItemButton
-              sx={{ pl: 4 }}
-              component={NextLinkComposed} to="/dashboard/borrowed-items"
-              disabled={!isUserBorrowedItemsExist}
+              sx={{ paddingInlineStart: 4 }}
+              component={NextLinkComposed}
+              to="/dashboard/borrowed-items"
+              // disabled={!isUserBorrowedItemsExist}
+              selected={pathnamesWithoutLocale === '/dashboard/borrowed-items'}
             >
               <ListItemIcon>
                 <ChecklistIcon />
@@ -110,19 +134,24 @@ const DashboardDrawer: React.FC<IDashboardDrawer> = ({
               <ListItemText primary="Borrowed items" />
             </ListItemButton>
             <ListItemButton
-              sx={{ pl: 4 }}
-              component={NextLinkComposed} to="/dashboard/your-items"
-              disabled={!isUserOwnedItemsExist}
+              sx={{ paddingInlineStart: 4 }}
+              component={NextLinkComposed}
+              to="/dashboard/my-items"
+              // disabled={isUserOwnedItemsExist}
+              selected={pathnamesWithoutLocale === '/dashboard/your-items'}
             >
               <ListItemIcon>
                 <ChecklistIcon />
               </ListItemIcon>
-              <ListItemText primary="Your items" />
+              <ListItemText primary="My items" />
             </ListItemButton>
           </List>
         </Collapse>
-
-        <ListItemButton  component={NextLinkComposed} to="/dashboard/settings">
+        <ListItemButton
+          component={NextLinkComposed}
+          to="/dashboard/settings"
+          selected={pathnamesWithoutLocale === '/dashboard/settings'}
+        >
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

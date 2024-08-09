@@ -1,22 +1,24 @@
 'use client'
 
+import theme from '@/components/ThemeRegistry/theme'
 import ItemAlertForm from '@/components/forms/itemAlertForm/ItemAlertForm'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { Item } from '@/utils/types/item'
+import { Request } from '@/utils/types/request'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import React from 'react'
-import ItemAlertButton from '../../buttons/itemAlertButton/ItemAlertButton'
+import React, { useEffect } from 'react'
+// import ItemAlertButton from '../../buttons/itemAlertButton/ItemAlertButton'
 import ItemRequestButton from '../../buttons/itemRequestButton/ItemRequestButton'
 import ItemRequestForm from '../../forms/itemRequestForm/ItemRequestForm'
 import SpringModal from '../../springModal/SpringModal'
-import styles from './CardModal.module.scss'
 
 export interface ICardModal {
   openModal: boolean
   handleClose: () => void
-  card: ItemCoreWithLoanDetails
+  card: Item
   /**
    * Is this the principal call to action on the page?
    */
@@ -45,20 +47,79 @@ const CardModal: React.FC<ICardModal> = ({
   openModal,
   handleClose,
   card: {
-    details: { name, description, author },
+    name,
+    description,
+    author,
+    imageUrl,
     maxLoanPeriod,
     condition,
-    imageUrl,
     location: { city, streetName, streetNumber },
-    currentBorrower,
   },
   card,
   ...props
 }) => {
+  const { data: session, status } = useSession()
+  const [requests, setRequests] = React.useState<Request[]>()
   const [openRequestForm, setOpenRequestForm] = React.useState(false)
+  const [isUserAlreadyRequest, setIsUserAlreadyRequest] = React.useState(false)
   const [openAlertForm, setOpenAlertForm] = React.useState(false)
 
+  useEffect(() => {
+    const isRequest = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/requests/${card._id}/${session?.user?.id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      
+
+      const status = await response.json()
+      setIsUserAlreadyRequest(status === 'pending' ? true : false)
+    }
+
+    isRequest()
+  }, [session, card._id])
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/requests/${card._id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: session?.user?.id,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const requests = await response.json()
+      setRequests(requests)
+    }
+
+    fetchRequests()
+  }, [session, card._id])
+
   const handleRequestButtonClick = () => {
+    // Check if the item is already requested by the current user
+    if (isUserAlreadyRequest) {
+      return
+    }
     setOpenRequestForm(!openRequestForm)
   }
 
@@ -95,12 +156,12 @@ const CardModal: React.FC<ICardModal> = ({
               src={imageUrl}
             />
           </Grid>
-          <Grid xs={58}>
+          <Grid xs={55}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <Typography>{name}</Typography>
               <Typography>מחבר: {author}</Typography>
               <Typography component={'p'}>{description}</Typography>
-              <Box></Box>
+
               <Box>
                 <Typography>מיקום הפריט:</Typography>
                 <Typography>
@@ -116,61 +177,85 @@ const CardModal: React.FC<ICardModal> = ({
               minWidth: '140px',
               gap: '10px',
             }}
-            xs={20}
-            className={styles.itemOptions}
+            xs={23}
           >
-            {currentBorrower?.loanPeriod === 0 ? (
-              <ItemRequestButton
-                label={''}
-                handleClick={handleRequestButtonClick}
-              />
-            ) : (
-              <ItemAlertButton
-                label={''}
-                handleClick={handleAlertButtonClick}
-                // @ts-ignore
-                cardId={card._id}
-              />
-            )}
+            {/* TODO: Check if the item is already borrowed to the current user */}
+            <ItemRequestButton
+              label={''}
+              handleClick={handleRequestButtonClick}
+              isUserAlreadyRequest={isUserAlreadyRequest}
+            />
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '10px',
                 gap: '5px',
-                borderRadius: '3px',
-                boxShadow: '0px 0px 5px 1px rgba(0, 0, 0, 0.15)',
+                height: '100%',
               }}
             >
-              <Typography
-                sx={{ fontSize: '1.5rem' }}
-                color="primary"
-              >{`${condition}/5`}</Typography>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '10px',
+                  gap: '5px',
+                  borderRadius: '3px',
+                  boxShadow: theme.shadows[2],
+                }}
+              >
+                <Typography sx={{ fontSize: '.8rem' }}>Max Loan</Typography>
+                <Typography sx={{ fontSize: '1.5rem' }} color="primary">
+                  {maxLoanPeriod}
+                </Typography>
+                <Typography>Days</Typography>
+              </Box>
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: 'center',
+                  flexGrow: 1,
+                  flexDirection: 'column',
                   alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '10px',
                   gap: '5px',
+                  borderRadius: '3px',
+                  boxShadow: theme.shadows[2],
                 }}
               >
                 <Typography sx={{ fontSize: '.8rem' }}>
                   Item Condition
                 </Typography>
+                <Typography
+                  sx={{ fontSize: '1.5rem' }}
+                  color="primary"
+                >{`${condition}/5`}</Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '5px',
+                  }}
+                >
+                  <Typography>Gently Used</Typography>
+                </Box>
               </Box>
             </Box>
           </Grid>
         </Grid>
         <ItemRequestForm
           maxLoanPeriod={maxLoanPeriod}
+          requests={requests || []}
           label={''}
           open={openRequestForm}
+          handleRequestFormClose={handleRequestButtonClick}
           // @ts-ignore
           cardId={card._id}
         />
-
         <ItemAlertForm
           open={openAlertForm} // @ts-ignore
           cardId={card._id}

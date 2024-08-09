@@ -1,15 +1,23 @@
 'use client'
 
+import React, { Suspense, lazy, useEffect, useState } from 'react'
+
 import categories from '@/utils/categories/categories'
 import {
+  regexAuthorEnglishNamePattern,
+  regexAuthorHebrewNamePattern,
   regexBarcodePattern,
+  regexBrandEnglishNamePattern,
+  regexBrandHebrewNamePattern,
   regexDanacodePattern,
   regexIsbnPattern,
+  regexItemEnglishTitlePattern,
+  regexItemHebrewTitlePattern,
   regexMaxLoanPeriodPattern,
-  regexTextPattern,
 } from '@/utils/regexPatterns'
-import { AddItemFormValues } from '@/utils/types/FormValues'
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import { IAddItemFormValues, ILocation } from '@/utils/types/formValues'
+import { Item } from '@/utils/types/item'
+import { Request } from '@/utils/types/request'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -18,6 +26,7 @@ import SaveIcon from '@mui/icons-material/Save'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import IconButton from '@mui/material/IconButton'
@@ -25,29 +34,49 @@ import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Step from '@mui/material/Step'
-import StepButton from '@mui/material/StepButton'
+import StepContent from '@mui/material/StepContent'
+import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import TextField from '@mui/material/TextField'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { signIn, useSession } from 'next-auth/react'
 import Image from 'next/image'
-import React, { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import {
+  Controller,
+  UseFormResetField,
+  UseFormSetValue,
+  useForm,
+} from 'react-hook-form'
 import { BiBarcodeReader } from 'react-icons/bi'
-import ConditionInput from '../conditionInput/ConditionInput'
-import DescriptionInput from '../descriptionInput/DescriptionInput'
-import ImageUrlInput from '../imageUrlInput/ImageUrlInput'
-import LocationInput from '../locationInput/LocationInput'
-import MainCategoryInput from '../mainCategoryInput/MainCategoryInput'
-import SecondaryCategoryInput from '../secondaryCategoryInput/SecondaryCategoryInput'
+
+const ConditionInput = lazy(
+  () => import('../fields/conditionInput/ConditionInput')
+)
+const DescriptionInput = lazy(
+  () => import('../fields/descriptionInput/DescriptionInput')
+)
+const ImageUrlInput = lazy(
+  () => import('../fields/imageUrlInput/ImageUrlInput')
+)
+const LocationInput = lazy(
+  () => import('../fields/locationInput/LocationInput')
+)
+const SecondaryCategoryInput = lazy(
+  () => import('../fields/secondaryCategoryInput/SecondaryCategoryInput')
+)
+const MainCategoryInput = lazy(
+  () => import('../mainCategoryInput/MainCategoryInput')
+)
 
 export interface IAddItemForm {
   authKey: string
   authSecret: string
   templateId: string
+  locale: string
   /**
    * Is this the principal call to action on the page?
    */
@@ -70,13 +99,6 @@ export interface IAddItemForm {
   onClick?: () => void
 }
 
-type TUserAddress = {
-  city: string
-  streetName: string
-  streetNumber: string
-  zipCode?: string
-}
-
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -89,19 +111,11 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
-const steps = [
-  'Instructions',
-  'Category - Item ID',
-  'Details',
-  'Images',
-  'Location',
-  'Review',
-]
-
 const AddItemForm: React.FC<IAddItemForm> = ({
   authKey,
   authSecret,
   templateId,
+  locale,
   ...props
 }) => {
   const [activeStep, setActiveStep] = React.useState(0)
@@ -109,6 +123,8 @@ const AddItemForm: React.FC<IAddItemForm> = ({
   const [draftSaved, setDraftSaved] = useState<boolean>(false)
   const { data: session, status } = useSession()
   const [ownerId, setOwnerId] = useState<string>('')
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('mdl'))
 
   const isStepOptional = (step: number) => {
     return (
@@ -155,35 +171,35 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     })
   }
 
+  // TODO: Implement the save for later feature
   // Not implemented yet
   const handleSaveDraft = () => {
-    console.log('Save for later - Not implemented yet')
+    console.info('Save draft clicked. Not implemented yet.')
   }
 
-  const [userAddress, setUserAddress] = React.useState<
-    TUserAddress | undefined
-  >(undefined)
+  const [userAddress, setUserAddress] = React.useState<ILocation | undefined>(
+    undefined
+  )
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (session) {
       setOwnerId(session.user!.id)
     }
   }, [session])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getUserAddress = async () => {
-      const response = await fetch(`/api/users/${session?.user?.id}`, {
+      const res = await fetch(`/api/users/${session?.user?.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      const data = await response.json()
-      if (response.ok) {
-        console.log('Found user:', data)
+      const data = await res.json()
+      if (res.ok) {
         setUserAddress(data.user.address)
       } else {
-        console.log('Failed to find user:', data)
+        console.error('Failed to fetch user address:', data)
       }
     }
 
@@ -198,10 +214,9 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     let stream = null
 
     try {
-      console.log(event)
       stream = await navigator.mediaDevices.getUserMedia({ video: true })
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 
@@ -212,11 +227,11 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     setError,
     clearErrors,
     setValue,
-    getValues,
+    resetField,
     getFieldState,
     formState: { isValid, isDirty, errors },
     handleSubmit,
-  } = useForm<AddItemFormValues>({
+  } = useForm<IAddItemFormValues>({
     mode: 'onChange',
     defaultValues: {
       mainCategory: '',
@@ -235,26 +250,25 @@ const AddItemForm: React.FC<IAddItemForm> = ({
       streetName: '',
       streetNumber: '',
       zipCode: '',
+      country: locale === 'he' ? 'ישראל' : 'Israel',
     },
   })
 
-  const onSubmit = async (data: AddItemFormValues) => {
+  const onSubmit = async (data: IAddItemFormValues) => {
     try {
-      const card: ItemCoreWithLoanDetails = {
-        cardIds: {
+      const card: Item = {
+        ids: {
           isbn: data.isbn,
           danacode: data.danacode,
           barcode: data.barcode,
         },
-        details: {
-          mainCategory: data.mainCategory,
-          secondaryCategory: data.secondaryCategory,
-          name: data.itemName,
-          author: data.author,
-          brand: data.brand,
-          description: data.description,
-        },
-        // next line is a temporary solution until we implement the images upload
+        mainCategory: data.mainCategory,
+        secondaryCategory: data.secondaryCategory,
+        name: data.itemName,
+        author: data.author,
+        brand: data.brand,
+        description: data.description,
+        // TODO: next line is a temporary solution until we implement the images upload
         imageUrl: data.imageUrl,
         condition: parseFloat(data.itemCondition),
         maxLoanPeriod: parseFloat(data.maxLoanPeriod),
@@ -263,20 +277,11 @@ const AddItemForm: React.FC<IAddItemForm> = ({
           streetName: data.streetName,
           streetNumber: data.streetNumber,
           zipCode: data.zipCode,
+          country: data.country,
         },
         owner: ownerId,
-        status: 'pendingForApproval',
-        allBorrowers: [],
-        currentBorrower: {
-          borrowerId: null,
-          startDate: null,
-          endDate: null,
-          loanPeriod: 0,
-        },
-        pendingRequests: [],
-        rejectedRequests: [],
-        approvedRequests: [],
-        alertSubscribers: [],
+        postingStatus: 'inReview',
+        isAvailable: true,
       }
 
       const response = await fetch('/api/cards/addCard', {
@@ -289,19 +294,17 @@ const AddItemForm: React.FC<IAddItemForm> = ({
 
       const responseData = await response.json()
       if (response.ok) {
-        console.log('Card created successfully:', responseData)
         // Optionally, you can redirect the user to a success page
         // or show a success message on the form.
       } else {
-        console.log('Failed to create card:', responseData)
         // Optionally, you can show an error message on the form.
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log('Error creating card:', error.message)
+        console.error('Error creating card:', error.message)
       } else {
         // If the error is not an instance of Error (unlikely), you can handle it differently
-        console.log('Error creating card:', error)
+        console.error('Error creating card:', error)
       }
     }
   }
@@ -335,6 +338,15 @@ const AddItemForm: React.FC<IAddItemForm> = ({
   const handleStep = (step: number) => () => {
     setActiveStep(step)
   }
+
+  const steps = [
+    'Instructions',
+    'Category - Item ID',
+    'Details',
+    'Images',
+    'Location',
+    'Review',
+  ]
 
   const getStepContent = (step: number) => {
     switch (step) {
@@ -408,18 +420,22 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                 >
                   Please select category:
                 </Typography>
-                <MainCategoryInput
-                  control={control}
-                  watch={watch}
-                  label="MainCategoryInput"
-                />
+                <Suspense fallback={<CircularProgress />}>
+                  <MainCategoryInput
+                    control={control}
+                    watch={watch}
+                    label="MainCategoryInput"
+                  />
+                </Suspense>
               </Box>
               <Box>
-                <SecondaryCategoryInput
-                  control={control}
-                  watch={watch}
-                  label="SecondaryCategoryInput"
-                />
+                <Suspense fallback={<CircularProgress />}>
+                  <SecondaryCategoryInput
+                    control={control}
+                    watch={watch}
+                    label="SecondaryCategoryInput"
+                  />
+                </Suspense>
               </Box>
             </Box>
             {watch('mainCategory') && (
@@ -445,7 +461,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                       number:
                       <HtmlTooltip
                         title={
-                          <React.Fragment>
+                          <>
                             <Typography
                               color="inherit"
                               sx={{
@@ -455,7 +471,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                             {`ISBN is a global identifier for books,
                           while Danacode is a unique identification code used in Israel
                           for books written in Hebrew or other languages distributed in Israel`}
-                          </React.Fragment>
+                          </>
                         }
                       >
                         <InfoOutlinedIcon
@@ -812,10 +828,16 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                         )
                         .join(' ')} name is required`,
                       pattern: {
-                        value: regexTextPattern,
+                        value:
+                          locale === 'he'
+                            ? regexItemHebrewTitlePattern
+                            : regexItemEnglishTitlePattern,
                         message: `Please enter a valid ${watch(
                           'mainCategory'
-                        )} name with only Hebrew or English letters`,
+                        )} name with only  ${
+                          locale === 'he' ? 'Hebrew' : 'English'
+                        }
+                         letters`,
                       },
                     }}
                     render={({
@@ -871,9 +893,13 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                       rules={{
                         required: 'Author name is required',
                         pattern: {
-                          value: regexTextPattern,
-                          message:
-                            'Please enter a valid author name with only Hebrew or English letters',
+                          value:
+                            locale === 'he'
+                              ? regexAuthorHebrewNamePattern
+                              : regexAuthorEnglishNamePattern,
+                          message: `Please enter a valid author name with only ${
+                            locale === 'he' ? 'Hebrew' : 'English'
+                          } letters`,
                         },
                       }}
                       render={({
@@ -915,17 +941,30 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                 ) : (
                   <></>
                 )}
-                {watch('mainCategory') === 'board-game' ? (
+                {watch('mainCategory') === 'puzzle' ||
+                watch('mainCategory') === 'board-game' ||
+                watch('mainCategory') === 'sporting-good' ||
+                watch('mainCategory') === 'camping-gear' ||
+                watch('mainCategory') === 'training-equipment' ||
+                watch('mainCategory') === 'musical-instrument' ||
+                watch('mainCategory') === 'kitchen-appliance' ||
+                watch('mainCategory') === 'office-supplies' ||
+                watch('mainCategory') === 'diy-tool' ||
+                watch('mainCategory') === 'gardening-tool' ? (
                   <Grid xs={12} sm={6}>
                     <Controller
                       control={control}
                       name="brand"
                       rules={{
-                        required: 'Brand name is required',
+                        required: false,
                         pattern: {
-                          value: regexTextPattern,
-                          message:
-                            'Please enter a valid brand name with only Hebrew or English letters',
+                          value:
+                            locale === 'he'
+                              ? regexBrandHebrewNamePattern
+                              : regexBrandEnglishNamePattern,
+                          message: `Please enter a valid brand name with only ${
+                            locale === 'he' ? 'Hebrew' : 'English'
+                          } letters`,
                         },
                       }}
                       render={({
@@ -934,14 +973,14 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                       }) => (
                         <FormControl
                           fullWidth
-                          required
+                          required={false}
                           error={!!fieldState.error}
                         >
                           <TextField
                             id={name}
                             inputRef={ref}
                             value={value}
-                            required
+                            required={false}
                             fullWidth
                             label="Brand"
                             onChange={onChange} // send value to hook form
@@ -968,7 +1007,9 @@ const AddItemForm: React.FC<IAddItemForm> = ({
                   <></>
                 )}
               </Grid>
-              <DescriptionInput control={control} label="DescriptionInput" />
+              <Suspense fallback={<CircularProgress />}>
+                <DescriptionInput control={control} label="DescriptionInput" />
+              </Suspense>
             </Box>
             <Grid
               container
@@ -978,11 +1019,13 @@ const AddItemForm: React.FC<IAddItemForm> = ({
               }}
             >
               <Grid xs={12} sm={7}>
-                <ConditionInput
-                  control={control}
-                  label="ConditionInput"
-                  watch={watch}
-                />
+                <Suspense fallback={<CircularProgress />}>
+                  <ConditionInput
+                    control={control}
+                    label="ConditionInput"
+                    watch={watch}
+                  />
+                </Suspense>
               </Grid>
               <Grid xs={12} sm={5}>
                 <Controller
@@ -1044,23 +1087,32 @@ const AddItemForm: React.FC<IAddItemForm> = ({
           //   templateId={templateId}
           //   label=""
           // />
-          <ImageUrlInput
-            control={control}
-            setError={setError}
-            clearErrors={clearErrors}
-            watch={watch}
-            label=""
-          />
+          <Suspense fallback={<CircularProgress />}>
+            <ImageUrlInput
+              control={control}
+              setError={setError}
+              clearErrors={clearErrors}
+              watch={watch}
+              label=""
+            />
+          </Suspense>
         )
       case 4:
         return (
-          <LocationInput
-            control={control}
-            watch={watch}
-            label={''}
-            setValue={setValue}
-            userAddress={userAddress}
-          />
+          <Suspense fallback={<CircularProgress />}>
+            <LocationInput
+              control={control}
+              watch={watch}
+              label={''}
+              setValue={
+                setValue as UseFormSetValue<Partial<IAddItemFormValues>>
+              }
+              resetField={
+                resetField as UseFormResetField<Partial<IAddItemFormValues>>
+              }
+              userAddress={userAddress as ILocation}
+            />
+          </Suspense>
         )
       case 5:
         const numberCondition = parseFloat(watch('itemCondition'))
@@ -1198,7 +1250,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
       const requiredFields: FormFieldName[] = [
         'mainCategory',
         'secondaryCategory',
-      ] // Modify this based on your actual form.
+      ]
 
       if (watch('mainCategory') === 'book') {
         // Check if either 'ISBN' or 'Danacode' is filled.
@@ -1237,7 +1289,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
         'description',
         'itemCondition',
         'maxLoanPeriod',
-      ] // Modify this based on your actual form.
+      ]
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {
@@ -1268,7 +1320,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
         'streetName',
         'streetNumber',
         'zipCode',
-      ] // Modify this based on your actual form.
+      ]
 
       // Check if any of the required fields are empty or invalid.
       for (const fieldName of requiredFields) {
@@ -1280,6 +1332,86 @@ const AddItemForm: React.FC<IAddItemForm> = ({
     }
 
     return false // Enable "Next" for other cases (all required fields are filled and valid).
+  }
+
+  const navBar = () => {
+    return (
+      <Box
+        sx={{
+          position: 'sticky',
+          bottom: 0,
+          zIndex: 1,
+          backgroundColor: 'background.paper',
+          display: 'flex',
+          flexDirection: 'row',
+          paddingBlock: 2,
+        }}
+      >
+        <IconButton
+          onClick={handleResetForm}
+          type="reset"
+          value="Reset"
+          title="Reset form"
+          disabled={!isDirty}
+        >
+          <RestartAltIcon />
+        </IconButton>
+        <Button
+          color="inherit"
+          disabled={activeStep === 0}
+          onClick={handleBack}
+          sx={{ mr: 1 }}
+        >
+          Back
+        </Button>
+        <Box sx={{ flex: '1 1 auto' }} />
+        {isStepOptional(activeStep) && (
+          <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+            Skip
+          </Button>
+        )}
+        {activeStep !== 0 && (
+          <Tooltip title="Will be implemented soon">
+            {draftSaved ? (
+              <Box
+                sx={{
+                  mr: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <SaveIcon />
+                <Typography sx={{ mr: 1 }}>Draft saved</Typography>
+              </Box>
+            ) : (
+              <span>
+                <Button
+                  onClick={handleSaveDraft}
+                  sx={{
+                    mr: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                  disabled={draftSaved || !isDirty}
+                >
+                  <SaveOutlinedIcon />
+                  <Typography>Save draft</Typography>
+                </Button>
+              </span>
+            )}
+          </Tooltip>
+        )}
+        {activeStep !== steps.length - 1 ? (
+          <Button onClick={handleNext} disabled={isNextDisabled()}>
+            Next
+          </Button>
+        ) : (
+          <></>
+        )}
+      </Box>
+    )
   }
 
   return (
@@ -1303,119 +1435,83 @@ const AddItemForm: React.FC<IAddItemForm> = ({
             activeStep={activeStep}
             sx={{
               paddingBlock: 4,
+              display: isMobile ? 'block' : 'none',
+            }}
+            orientation="vertical"
+          >
+            {steps.map((step, index) => (
+              <Step key={step}>
+                <StepLabel
+                  // TODO: Bag fix for the LTR support
+                  // The next line is a temporary solution until we implement the LTR support
+
+                  optional={
+                    isStepOptional(index) ? (
+                      <Typography variant="caption">Optional</Typography>
+                    ) : index === 5 ? (
+                      <Typography variant="caption">Last step</Typography>
+                    ) : null
+                  }
+                >
+                  {step}
+                </StepLabel>
+                <StepContent>
+                  {getStepContent(index)}
+                  {navBar()}
+                </StepContent>
+              </Step>
+            ))}
+          </Stepper>
+          <Box
+            sx={{
+              display: isMobile ? 'none' : 'block',
             }}
           >
-            {steps.map((label, index) => {
-              const stepProps: { completed?: boolean } = {}
-              const labelProps: {
-                optional?: React.ReactNode
-              } = {}
-              if (isStepOptional(index)) {
-                labelProps.optional = (
-                  <Typography variant="caption">Optional</Typography>
+            <Stepper
+              activeStep={activeStep}
+              sx={{
+                paddingBlock: 4,
+              }}
+              orientation="horizontal"
+            >
+              {steps.map((label, index) => {
+                const stepProps: { completed?: boolean } = {}
+                const labelProps: {
+                  optional?: React.ReactNode
+                } = {}
+                if (isStepOptional(index)) {
+                  labelProps.optional = (
+                    <Typography variant="caption">Optional</Typography>
+                  )
+                }
+                if (isStepSkipped(index)) {
+                  stepProps.completed = false
+                }
+                return (
+                  <Step key={label} {...stepProps}>
+                    <StepLabel onClick={handleStep(index)} {...labelProps}>
+                      {label}
+                    </StepLabel>
+                  </Step>
                 )
-              }
-              if (isStepSkipped(index)) {
-                stepProps.completed = false
-              }
-              return (
-                <Step key={label} {...stepProps}>
-                  <StepButton onClick={handleStep(index)} {...labelProps}>
-                    {label}
-                  </StepButton>
-                </Step>
-              )
-            })}
-          </Stepper>
-          {activeStep === steps.length ? (
-            <React.Fragment>
-              <Typography sx={{ mt: 2, mb: 1 }}>
-                All steps completed - you&apos;re finished
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                <Box sx={{ flex: '1 1 auto' }} />
-              </Box>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              {getStepContent(activeStep)}
-              <Box
-                sx={{
-                  position: 'sticky',
-                  bottom: 0,
-                  zIndex: 1,
-                  backgroundColor: 'background.paper',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  paddingBlock: 2,
-                }}
-              >
-                <IconButton
-                  onClick={handleResetForm}
-                  type="reset"
-                  value="Reset"
-                  title="Reset form"
-                  disabled={!isDirty}
-                >
-                  <RestartAltIcon />
-                </IconButton>
-                <Button
-                  color="inherit"
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  sx={{ mr: 1 }}
-                >
-                  Back
-                </Button>
-                <Box sx={{ flex: '1 1 auto' }} />
-                {isStepOptional(activeStep) && (
-                  <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                    Skip
-                  </Button>
-                )}
-                {activeStep !== 0 && (
-                  <Tooltip title="Will be implemented soon">
-                    {draftSaved ? (
-                      <Box
-                        sx={{
-                          mr: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1,
-                        }}
-                      >
-                        <SaveIcon />
-                        <Typography sx={{ mr: 1 }}>Draft saved</Typography>
-                      </Box>
-                    ) : (
-                      <span>
-                        <Button
-                          onClick={handleSaveDraft}
-                          sx={{
-                            mr: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                          }}
-                          disabled={draftSaved || !isDirty}
-                        >
-                          <SaveOutlinedIcon />
-                          <Typography>Save draft</Typography>
-                        </Button>
-                      </span>
-                    )}
-                  </Tooltip>
-                )}
-                {activeStep !== steps.length - 1 ? (
-                  <Button onClick={handleNext} disabled={isNextDisabled()}>
-                    Next
-                  </Button>
-                ) : (
-                  <></>
-                )}
-              </Box>
-            </React.Fragment>
-          )}
+              })}
+            </Stepper>
+            {activeStep === steps.length ? (
+              <>
+                <Typography sx={{ mt: 2, mb: 1 }}>
+                  All steps completed - you&apos;re finished
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                  <Box sx={{ flex: '1 1 auto' }} />
+                </Box>
+              </>
+            ) : (
+              <>
+                {getStepContent(activeStep)}
+                {navBar()}
+              </>
+            )}
+          </Box>
         </Box>
       ) : (
         <Box

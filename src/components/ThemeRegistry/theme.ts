@@ -14,6 +14,17 @@ declare module '@mui/material/styles' {
   }
 }
 
+interface Shape {
+  color: string;
+  width: number;
+  height: number;
+  boxShadow?: string; // Add boxShadow as an optional property
+}
+
+let myShape: Partial<Shape> = {
+  boxShadow: '10px 10px 5px grey' // This is now fine
+};
+
 const defaultTheme = createTheme({
   palette: {
     mode: 'light',
@@ -32,7 +43,7 @@ const defaultTheme = createTheme({
     },
   },
   components: {
-    MuiListItemText : {
+    MuiListItemText: {
       styleOverrides: {
         root: {
           color: 'text.primary',
@@ -51,7 +62,6 @@ const defaultTheme = createTheme({
         h2: {
           fontSize: '1.6rem',
           fontWeight: 500,
-       
         },
         subtitle1: {
           fontSize: '1.2rem',

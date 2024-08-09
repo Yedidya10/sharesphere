@@ -1,19 +1,21 @@
 'use client'
 
-import { ItemCoreWithLoanDetails } from '@/utils/types/Item'
+import SearchBar from '@/components/forms/searchBar/SearchBar'
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
-import { useEffect, useState } from 'react'
-import ItemCard from '../itemCard/ItemCard'
-import SearchBar from '@/components/forms/searchBar/SearchBar'
+import { useSession } from 'next-auth/react'
+import { lazy, Suspense, useState } from 'react'
+const ItemCard = lazy(() => import('../itemCard/ItemCard'))
 
 export interface IAllCards {
-    t: {
-      noItemsFound: string
-    }
+  allCards: Item[]
+  t: {
+    noItemsFound: string
+  }
   /**
    * Is this the principal call to action on the page?
    */
@@ -40,107 +42,75 @@ const AllCards: React.FC<IAllCards> = ({
   primary = false,
   label,
   t,
+  allCards,
   ...props
 }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [allCards, setAllCards] = useState<ItemCoreWithLoanDetails[]>([])
+  const { data: session } = useSession()
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const corrntUserId = session?.user?.id
 
   const filteredAllCards = allCards.filter((card) => {
-    const isbnMatch = card.cardIds
-      ?.isbn!.toLowerCase()
-      .includes(searchQuery.toLowerCase())
-    const danacodeMatch = card.cardIds
-      ?.danacode!.toLowerCase()
-      .includes(searchQuery.toLowerCase())
-    const barcodeMatch = card.cardIds
-      ?.barcode!.toLowerCase()
-      .includes(searchQuery.toLowerCase())
-    const authorMatch = card.details.author
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-    const nameMatch = card.details.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+    const authorMatch =
+      card.author?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+    const nameMatch =
+      card.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+    const isbnMatch =
+      card.ids?.isbn?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+    const danacodeMatch =
+      card.ids?.danacode?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+      false
+    const barcodeMatch =
+      card.ids?.barcode?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+      false
 
     return (
       nameMatch || authorMatch || barcodeMatch || danacodeMatch || isbnMatch
     )
   })
 
-  useEffect(() => {
-    async function fetchAllCards() {
-      try {
-        const response = await fetch('/api/cards', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-
-        const data = await response.json()
-        const cards = data.cards
-
-        if (response.ok) {
-          return setAllCards(cards)
-        } else {
-          throw new Error(cards.error || 'Failed to fetch cards')
-        }
-      } catch (error: any) {
-        console.error(error.message)
-      } finally {
-        setIsLoading(false) // Set loading state to false after fetching
-      }
-    }
-    fetchAllCards()
-  }, [])
-
-  const skeletonArray = Array.from({ length: 10 })
+  const skeletonItem = (
+    <Stack spacing={1}>
+      <Skeleton variant="rectangular" height={200} />
+      <Skeleton
+        variant="rounded"
+        width={100}
+        height={20}
+        sx={{
+          borderRadius: '1rem',
+        }}
+      />
+      <Skeleton variant="text" width={140} height={35} />
+      <Skeleton variant="text" height={25} />
+      <Skeleton variant="text" height={25} />
+      <Skeleton variant="text" height={25} />
+      <Skeleton variant="text" width={'80%'} height={25} />
+    </Stack>
+  )
 
   return (
     <>
       <SearchBar setSearchQuery={setSearchQuery} />
-      {isLoading ? (
+      {filteredAllCards.length > 0 && (
         <Grid container rowSpacing={0} columnSpacing={2} columns={30}>
-          {skeletonArray.slice(0, 10).map((_, index) => (
-            <Grid key={index} xs={15} mb={7.5} sm={10} lg={6}>
-              <Stack spacing={1}>
-                <Skeleton variant="rectangular" height={200} />
-                <Skeleton
-                  variant="rounded"
-                  width={100}
-                  height={20}
-                  sx={{
-                    borderRadius: '1rem',
-                  }}
-                />
-                <Skeleton variant="text" width={140} height={35} />
-                <Skeleton variant="text" height={25} />
-                <Skeleton variant="text" height={25} />
-                <Skeleton variant="text" height={25} />
-                <Skeleton variant="text" width={'80%'} height={25} />
-              </Stack>
-            </Grid>
-          ))}
-        </Grid>
-      ) : filteredAllCards.length > 0 ? (
-        <Grid container rowSpacing={0} columnSpacing={2} columns={30}>
-          {filteredAllCards.map((card: ItemCoreWithLoanDetails) =>
-            card.status === 'published' ? (
-              // card.owner !== session?.user?.id && (
+          {filteredAllCards.map((card: Item) =>
+            card.postingStatus === 'published' &&
+            card.owner !== corrntUserId ? (
               // @ts-ignore
               <Grid key={card._id} xs={15} mb={7.5} sm={10} lg={6}>
-                <ItemCard
-                  label={''}
-                  card={card}
-                  imageWidth={180}
-                  imageHeight={300}
-                />
+                <Suspense fallback={skeletonItem}>
+                  <ItemCard
+                    label={''}
+                    card={card}
+                    imageWidth={150}
+                    imageHeight={250}
+                  />
+                </Suspense>
               </Grid>
             ) : null
           )}
         </Grid>
-      ) : (
+      )}
+      {filteredAllCards.length === 0 && (
         <Box
           sx={{
             display: 'flex',
@@ -171,7 +141,7 @@ const AllCards: React.FC<IAllCards> = ({
   //       filteredAllCards.map(
   //         (card: ItemCoreWithLoanDetails) =>
   //           card.status === 'active' && (
-  //             // card.owner !== session?.user?.id && (
+  //             // card.owner !== corrntUserId && (
   //             // @ts-ignore
   //             <Grid key={card._id} xs={15} mb={7.5} sm={10} lg={6}>
   //               <ItemCard

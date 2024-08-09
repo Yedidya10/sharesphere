@@ -1,4 +1,16 @@
-export interface AddItemFormValues {
+export interface ILocation {
+  city: string
+  streetName: string
+  streetNumber: string
+  zipCode?: string
+  country: string
+  coordinates: {
+    lat: number
+    lng: number
+  }
+}
+
+export interface IAddItemFormValues extends ILocation {
   mainCategory: string
   secondaryCategory: string
   isbn: string
@@ -11,42 +23,22 @@ export interface AddItemFormValues {
   description: string
   itemCondition: string
   maxLoanPeriod: string
-  city: string
-  streetName: string
-  streetNumber: string
-  zipCode?: string
 }
 
-export interface ItemEditFormValues {
-  mainCategory: string
-  secondaryCategory: string
-  isbn: string
-  danacode: string
-  barcode: string
-  itemName: string
-  author: string
-  brand: string
-  imageUrl: string
-  description: string
-  maxLoanPeriod: string
-  city: string
-  streetName: string
-  streetNumber: string
-  zipCode: string
-}
+export interface IItemEditFormValues extends IAddItemFormValues {}
 
-export interface ItemRequestFormValues {
+export type ItemRequestFormValues = {
+  pickupDate: string
+  returnDate: string
   message: string
-  startDate: string
-  endDate: string
 }
 
-export interface ItemAlertFormValues {
-  startDate: string
-  endDate: string
+export type ItemAlertFormValues = {
+  pickupDate: string
+  returnDate: string
 }
 
-export interface EditProfileFormValues {
+export type EditProfileFormValues = {
   firstName: string
   lastName: string
   email: string
@@ -59,12 +51,12 @@ export interface EditProfileFormValues {
   country: string
 }
 
-export interface RegisterFormValues {}
+export type RegisterFormValues = {}
 
-export interface LoginFormValues {}
+export type LoginFormValues = {}
 
-export interface ResetPasswordFormValues {}
+export type ResetPasswordFormValues = {}
 
-export interface ForgotPasswordFormValues {}
+export type ForgotPasswordFormValues = {}
 
-export interface ChangePasswordFormValues {}
+export type ChangePasswordFormValues = {}

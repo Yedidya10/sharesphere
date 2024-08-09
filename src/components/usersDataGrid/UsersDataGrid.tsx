@@ -4,6 +4,8 @@ import Delete from '@mui/icons-material/Delete'
 import Edit from '@mui/icons-material/Edit'
 import Info from '@mui/icons-material/Info'
 import IconButton from '@mui/material/IconButton'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+
 import {
   DataGrid,
   GridColDef,
@@ -11,7 +13,9 @@ import {
   GridToolbar,
   GridValueGetterParams,
 } from '@mui/x-data-grid'
+import { User } from '@/utils/types/user'
 import Image from 'next/image'
+import { use, useEffect, useState } from 'react'
 
 export interface IUsersDataGrid {
   sampleTextProp: string
@@ -49,196 +53,104 @@ const handleDeleteUser = (id: number) => {
   console.log(id)
 }
 
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  {
-    field: 'thumbnail',
-    headerName: 'Image',
-    width: 70,
-    renderCell: (params: GridRenderCellParams) => (
-      <Image
-        src={params.row.thumbnailUrl || '/default-thumbnail.png'} // Provide a default thumbnail URL
-        alt={`Thumbnail for ${params.row.firstName} ${params.row.lastName}`}
-        width={50}
-        height={50}
-        style={{
-          objectFit: 'cover',
-          borderRadius: '50%',
-          padding: '5px',
-        }}
-      />
-    ),
-  },
-  { field: 'firstName', headerName: 'First name', hideable: false },
-  { field: 'lastName', headerName: 'Last name', hideable: false },
-  { field: 'country', headerName: 'Country' },
-  { field: 'language', headerName: 'Language', width: 80 },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 70,
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-  },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    width: 140,
-    renderCell: (params: GridRenderCellParams) => (
-      <div>
-        <IconButton
-          aria-label="Info"
-          onClick={() => handleOpenModal(params.row.id)}
-        >
-          <Info />
-        </IconButton>
-        <IconButton
-          aria-label="Edit"
-          onClick={() => handleEditUser(params.row.id)}
-        >
-          <Edit />
-        </IconButton>
-        <IconButton
-          aria-label="Delete"
-          onClick={() => handleDeleteUser(params.row.id)}
-        >
-          <Delete />
-        </IconButton>
-      </div>
-    ),
-  },
-]
-
-const rows = [
-  {
-    id: 1,
-    country: 'Israel',
-    language: 'he-IL',
-    thumbnailUrl: 'https://avatars.githubusercontent.com/u/86730512?v=4',
-    lastName: 'Snow',
-    firstName: 'Jon',
-    age: 35,
-  },
-  {
-    id: 2,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Lannister',
-    firstName: 'Cersei',
-    age: 42,
-  },
-  {
-    id: 3,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Lannister',
-    firstName: 'Jaime',
-    age: 45,
-  },
-  {
-    id: 4,
-    country: 'USA',
-    language: 'en-US',
-    lastName: 'Stark',
-    firstName: 'Arya',
-    age: 16,
-  },
-  {
-    id: 5,
-    country: 'USA',
-    language: 'en-US',
-    lastName: 'Targaryen',
-    firstName: 'Daenerys',
-    age: null,
-  },
-  {
-    id: 6,
-    country: 'USA',
-    language: 'en-US',
-    lastName: 'Melisandre',
-    firstName: null,
-    age: 150,
-  },
-  {
-    id: 7,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Clifford',
-    firstName: 'Ferrara',
-    age: 44,
-  },
-  {
-    id: 8,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Frances',
-    firstName: 'Rossini',
-    age: 36,
-  },
-  {
-    id: 9,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Roxie',
-    firstName: 'Harvey',
-    age: 65,
-  },
-  {
-    id: 10,
-    country: 'USA',
-    language: 'en-US',
-    lastName: 'Targaryen',
-    firstName: 'Daenerys',
-    age: null,
-  },
-  {
-    id: 11,
-    country: 'USA',
-    language: 'en-US',
-    lastName: 'Melisandre',
-    firstName: null,
-    age: 150,
-  },
-  {
-    id: 12,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Clifford',
-    firstName: 'Ferrara',
-    age: 44,
-  },
-  {
-    id: 13,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Frances',
-    firstName: 'Rossini',
-    age: 36,
-  },
-  {
-    id: 14,
-    country: 'Israel',
-    language: 'he-IL',
-    lastName: 'Roxie',
-    firstName: 'Harvey',
-    age: 65,
-  },
-]
-
 const UsersDataGrid: React.FC<IUsersDataGrid> = ({
   primary = false,
   label,
   sampleTextProp,
   ...props
 }) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [allUsers, setAllUsers] = useState<User[]>([])
+
+  // TODO: Fetch all users in server component
+  useEffect(() => {
+    async function fetchAllCards() {
+      try {
+        const response = await fetch('/api/users', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        const data = await response.json()
+        const users = data.users
+
+        if (response.ok) {
+          setAllUsers(users)
+          return
+        } else {
+          throw new Error(users.error || 'Failed to fetch cards')
+        }
+      } catch (error: any) {
+        console.error(error.message)
+      } finally {
+        setIsLoading(false) // Set loading state to false after fetching
+      }
+    }
+    fetchAllCards()
+  }, [])
+
+  const columns: GridColDef[] = [
+    {
+      field: 'userId',
+      headerName: 'ID',
+      width: 220,
+    },
+    {
+      field: 'thumbnailUrl',
+      headerName: 'Thumbnail',
+      width: 70,
+      renderCell: (params: GridRenderCellParams) => (
+        <Image
+          src={params.row.thumbnailUrl}
+          alt={`Thumbnail for ${params.row.itemName}`}
+          width={50}
+          height={50}
+          style={{
+            objectFit: 'cover',
+            borderRadius: '50%',
+            padding: '5px',
+            boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.05)',
+          }}
+        />
+      ),
+    },
+    { field: 'firstName', headerName: 'First name', hideable: false },
+    { field: 'lastName', headerName: 'Last name', hideable: false },
+    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'role', headerName: 'Role', width: 100 },
+    { field: 'address', headerName: 'Address', width: 300 },
+    { field: 'language', headerName: 'Language', width: 80 },
+    {
+      field: 'age',
+      headerName: 'Age',
+      type: 'number',
+      width: 70,
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 180,
+    },
+  ]
+
+  const rows = allUsers.map((user) => {
+    const userAddress =
+      user.address !== undefined
+        ? `${user.address.streetName} ${user.address.streetNumber}, ${user.address.city}, ${user.address.zipCode}, ${user.address.country}`
+        : ''
+    return {
+      id: user._id,
+      thumbnailUrl: user.image,
+      email: user.email,
+      role: user.role,
+      address: userAddress,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    }
+  })
+
   return (
     <DataGrid
       rows={rows}
@@ -250,9 +162,17 @@ const UsersDataGrid: React.FC<IUsersDataGrid> = ({
         pagination: {
           paginationModel: { page: 0, pageSize: 10 },
         },
+        columns: {
+          columnVisibilityModel: {
+            // hide the id column
+            userId: false,
+          },
+        },
       }}
       pageSizeOptions={[10, 25, 50, 100]}
       checkboxSelection
+      disableRowSelectionOnClick
+      loading={isLoading}
     />
   )
 }
