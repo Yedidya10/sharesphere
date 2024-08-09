@@ -9,5 +9,5 @@ export interface AuthContextProps {
 }
 
 export default function AuthProvider({ children }: AuthContextProps) {
-  return <SessionProvider>{children}</SessionProvider>
+  return <SessionProvider refetchInterval={5 * 60}>{children}</SessionProvider>
 }
