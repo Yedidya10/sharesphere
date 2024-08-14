@@ -9,7 +9,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_URL
 // fetch user items from database
 async function getPendingRequestsItems() {
   const session = await getServerSession(authOptions)
-  const userId = session?.user.id
+  const userId = session?.user?.id
 
   try {
     const response = await fetch(
@@ -59,14 +59,14 @@ export default async function DashboardPage({
         width: '100%',
       }}
     >
-      {pendingRequestsItems.length > 0 && (
+      {/* {pendingRequestsItems.length > 0 && (
         <ItemsPendingRequestsList
           primary={true}
           label="ItemsPendingRequestsList"
           sampleTextProp="sampleTextProp"
           pendingRequestsItems={pendingRequestsItems}
         />
-      )}
+      )} */}
     </Box>
   )
 }
