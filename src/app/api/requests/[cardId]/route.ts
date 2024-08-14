@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from 'next/server'
 // Handle the HTTP GET request
 export async function GET(req: NextRequest) {
   const cardId = req.nextUrl.href.split('/')[3]
-  console.log(cardId)
 
   try {
     const requests = await Request.find({ itemId: cardId })

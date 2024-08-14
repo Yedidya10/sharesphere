@@ -34,7 +34,7 @@ export default async function RootLayout({
   params: { locale: string }
 }) {
   const session = await getServerSession(authOptions)
-  console.log('session:', session)
+
   // Validate that the incoming `locale` parameter is valid
   const isValidLocale = locales.some((cur) => cur === locale)
   if (!isValidLocale) notFound()
