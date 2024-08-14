@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 import { AdapterUser } from 'next-auth/adapters'
 
 // Define the structure of a User document using TypeScript interfaces
-interface IUser extends AdapterUser {
+export interface IUser extends AdapterUser {
   email: string
   firstName: string
   lastName: string

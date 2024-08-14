@@ -63,7 +63,8 @@ const SettingsMenuList: React.FC<ISettingsMenuList> = ({
           <MenuItem
             component={Link}
             href={
-              session.user.role === 'admin' ? '/adminDashboard' : '/dashboard'
+              // session.user.role === 'admin' ? '/adminDashboard' :
+              '/dashboard'
             }
             onClick={handleCloseMenu}
           >

@@ -42,15 +42,15 @@ export interface IUsersDataGrid {
 }
 
 const handleOpenModal = (id: number) => {
-  console.log(id)
+  console.info('Opening modal for user with id:', id)
 }
 
 const handleEditUser = (id: number) => {
-  console.log(id)
+  console.info('Editing user with id:', id)
 }
 
 const handleDeleteUser = (id: number) => {
-  console.log(id)
+  console.info('Deleting user with id:', id)
 }
 
 const UsersDataGrid: React.FC<IUsersDataGrid> = ({

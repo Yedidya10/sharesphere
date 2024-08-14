@@ -11,6 +11,7 @@ import { MongoDBAdapter } from '@auth/mongodb-adapter'
 import { Adapter } from 'next-auth/adapters'
 import EmailProvider from 'next-auth/providers/email'
 import GoogleProvider from 'next-auth/providers/google'
+import type { IUser } from '@/models/UserModel'
 
 // Check if the environment variables are set
 function getCredentials(providerName: string) {
@@ -37,6 +38,22 @@ export const config = {
       clientId: getCredentials('GOOGLE').clientId,
       clientSecret: getCredentials('GOOGLE').clientSecret,
       allowDangerousEmailAccountLinking: true,
+      profile(profile) {
+        return Promise.resolve({
+          id: profile.sub,
+          name: profile.name,
+          firstName: profile.given_name,
+          lastName: profile.family_name,
+          role: 'user', // Default role
+          email: profile.email,
+          phone: undefined,
+          image: profile.picture,
+          address: {},
+          lastLogin: new Date(),
+          updatedAt: new Date(),
+          createdAt: new Date(),
+        })
+      },
     }),
     // FacebookProvider({
     //   clientId: getCredentials('FACEBOOK').clientId,
@@ -68,29 +85,12 @@ export const config = {
   callbacks: {
     // The `session` callback is called when a new session is created or updated
     session: async ({ session, user }) => {
-      const userFirstName = user.name ? user.name.split(' ')[0] : ''
-      const userLastName = user.name ? user.name.split(' ')[1] : ''
-      const dbUser = await User.findOneAndUpdate(
-        { email: user.email },
-        {
-          lastLogin: new Date(),
-          firstName: userFirstName,
-          lastName: userLastName,
-          role: 'user',
-        }, // Set the user's role to 'user'
-        { new: true } // Return the updated user
-      )
+      session.user.id = user.id
+      session.user.firstName = user.firstName
+      session.user.lastName = user.lastName
+      session.user.role = user.role
 
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          role: dbUser.role,
-          id: dbUser._id,
-          firstName: dbUser.firstName,
-          lastName: dbUser.lastName,
-        },
-      }
+      return Promise.resolve(session)
     },
   },
 } satisfies NextAuthOptions

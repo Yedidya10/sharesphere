@@ -5,7 +5,7 @@ const base: IAllCards = {
   t: {
     noItemsFound: 'No items found',
   },
-  allCards: []
+  allCards: [],
 }
 
 export const mockAllCardsProps = {

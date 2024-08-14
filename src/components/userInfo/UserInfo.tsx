@@ -39,22 +39,29 @@ const UserInfo: React.FC<IUserInfo> = ({
   ...props
 }) => {
   const { data: session, status } = useSession()
-  const [userId, setUserId] = useState<string | undefined>(undefined)
-  const [userInfo, setUserInfo] = useState<any>(undefined)
+  const [userData, setUserData] = useState<any>(undefined)
 
   useEffect(() => {
     const getUserInfo = async () => {
-      const response = await fetch(`/api/users/${session?.user?.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-      if (response.ok) {
-        setUserInfo(data.user)
-      } else {
-        console.error('Failed to find user:', data)
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_URL}/api/users/${session?.user?.id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user')
+        }
+
+        const data = await response.json()
+        setUserData(data.user)
+      } catch (error) {
+        console.error('Failed to fetch user', error)
       }
     }
 
@@ -75,7 +82,7 @@ const UserInfo: React.FC<IUserInfo> = ({
             }}
           >
             <Typography variant="h6">User Info</Typography>
-            <EditProfileButton label={''} />
+            <EditProfileButton userData={userData} label={''} />
           </Box>
           <Box
             sx={{
@@ -92,8 +99,11 @@ const UserInfo: React.FC<IUserInfo> = ({
               }}
             >
               <Image
-                src={userInfo?.image || '/images/placeholder.png'}
-                alt={userInfo?.firstName}
+                src={
+                  userData?.image ||
+                  'https://images.freeimages.com/vhq/images/previews/715/generic-profile-image-placeholder-suit-118559.png'
+                }
+                alt={userData?.firstName}
                 fill={true}
                 style={{
                   borderRadius: '50%',
@@ -110,10 +120,10 @@ const UserInfo: React.FC<IUserInfo> = ({
               }}
             >
               <Typography>
-                {userInfo?.firstName} {userInfo?.lastName}
+                {userData?.firstName} {userData?.lastName}
               </Typography>
-              <Typography>Email: {userInfo?.email}</Typography>
-              <Typography>Phone: {userInfo?.phone}</Typography>
+              <Typography>Email: {userData?.email}</Typography>
+              <Typography>Phone: {userData?.phone}</Typography>
               <Box
                 sx={{
                   display: 'flex',
@@ -122,13 +132,13 @@ const UserInfo: React.FC<IUserInfo> = ({
                 }}
               >
                 <Typography>Address:</Typography>
-                {userInfo?.address && (
+                {userData?.address && (
                   <Typography>
-                    {userInfo?.address.streetName}{' '}
-                    {userInfo?.address.streetNumber}
+                    {userData?.address.streetName}{' '}
+                    {userData?.address.streetNumber}
                     {', '}
-                    {userInfo?.address.city} {userInfo?.address.country}{' '}
-                    {userInfo?.address.zipCode}
+                    {userData?.address.city} {userData?.address.country}{' '}
+                    {userData?.address.zipCode}
                   </Typography>
                 )}
               </Box>

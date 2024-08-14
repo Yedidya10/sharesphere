@@ -39,11 +39,10 @@ export type ItemAlertFormValues = {
 }
 
 export type EditProfileFormValues = {
-  firstName: string
-  lastName: string
-  email: string
-  imageUrl: string
-  phone: string
+  firstName?: string
+  lastName?: string
+  email?: string
+  phone?: string
   city: string
   streetName: string
   streetNumber: string

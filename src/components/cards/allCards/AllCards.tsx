@@ -1,5 +1,7 @@
 'use client'
 
+import UserProfileCompletionForm from '@/components/forms/userProfileCompletionForm/UserProfileCompletionForm'
+import EditProfileForm from '@/components/forms/editProfileForm/EditProfileForm'
 import SearchBar from '@/components/forms/searchBar/SearchBar'
 import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
@@ -8,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 const ItemCard = lazy(() => import('../itemCard/ItemCard'))
 
 export interface IAllCards {
@@ -16,6 +18,7 @@ export interface IAllCards {
   t: {
     noItemsFound: string
   }
+
   /**
    * Is this the principal call to action on the page?
    */
@@ -45,7 +48,46 @@ const AllCards: React.FC<IAllCards> = ({
   allCards,
   ...props
 }) => {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
+  const [openModal, setOpenModal] = useState(false)
+  const handleClose = () => setOpenModal(false)
+  const displayAddressForm = () => setOpenModal(true)
+  const [userId, setUserId] = useState('')
+  const [doItLater, setDoItLater] = useState(false)
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      setUserId(session.user.id)
+    }
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    if (userId) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`/api/users/${userId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            const user = data.user
+
+            if (!user.address && !doItLater) {
+              displayAddressForm()
+            }
+          }
+        } catch (error: any) {
+          throw new Error(error.message)
+        }
+      }
+      fetchData()
+    }
+  }, [userId, doItLater])
+
   const [searchQuery, setSearchQuery] = useState<string>('')
   const corrntUserId = session?.user?.id
 
@@ -124,6 +166,9 @@ const AllCards: React.FC<IAllCards> = ({
           </Typography>
         </Box>
       )}
+      <UserProfileCompletionForm
+        openModal={openModal}
+        handleClose={handleClose} label={''}      />
     </>
   )
 

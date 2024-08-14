@@ -13,6 +13,7 @@ export interface User {
     country: string
   }
   email: string
+  phone?: string
   image: string
   role: string
   createdAt?: Date

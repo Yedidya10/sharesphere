@@ -1,6 +1,7 @@
 'use client'
 
 import EditProfileForm from '@/components/forms/editProfileForm/EditProfileForm'
+import { User } from '@/utils/types/user'
 import EditIcon from '@mui/icons-material/Edit'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -8,6 +9,7 @@ import Tooltip from '@mui/material/Tooltip'
 import { useState } from 'react'
 
 export interface IEditProfileButton {
+  userData: User
   /**
    * Is this the principal call to action on the page?
    */
@@ -33,6 +35,7 @@ export interface IEditProfileButton {
 const EditProfileButton: React.FC<IEditProfileButton> = ({
   primary = false,
   label,
+  userData,
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const handleClose = () => setOpenModal(false)
@@ -52,6 +55,8 @@ const EditProfileButton: React.FC<IEditProfileButton> = ({
         Edit Profile
       </Button>
       <EditProfileForm
+        address={userData?.address}
+        phone={userData?.phone}
         openModal={openModal}
         handleClose={handleClose}
         label={''}

@@ -1,3 +1,4 @@
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import AllCards from '@/components/cards/allCards/AllCards'
 import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
@@ -26,8 +27,10 @@ async function getAllCards() {
 
 function AllItemsContent({
   allCards,
+
 }: {
   allCards: Item[]
+  
 }) {
   const t = useTranslations('AllItems')
   const cardsTranslations = {
@@ -41,7 +44,12 @@ function AllItemsContent({
         m: 'auto',
       }}
     >
-      <AllCards label={''} t={cardsTranslations} allCards={allCards} />
+      <AllCards
+        label={''}
+        t={cardsTranslations}
+        allCards={allCards}
+   
+      />
     </Box>
   )
 }
@@ -58,5 +66,9 @@ export default async function AllItems({
   unstable_setRequestLocale(locale)
 
   const allCards = await getAllCards()
-  return <AllItemsContent allCards={allCards} />
+  return (
+    <AllItemsContent
+      allCards={allCards}
+    />
+  )
 }

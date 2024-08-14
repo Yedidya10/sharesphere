@@ -15,10 +15,9 @@ export async function PUT(req: NextRequest) {
       {
         $set: {
           // email: updatedUser.email,
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
+          // firstName: updatedUser.firstName,
+          // lastName: updatedUser.lastName,
           phone: updatedUser.phone,
-          image: updatedUser.imageUrl,
           'address.streetName': updatedUser.streetName,
           'address.streetNumber': updatedUser.streetNumber,
           'address.city': updatedUser.city,
@@ -48,6 +47,7 @@ export async function PUT(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.href.split('/')[5]
+    console.log('User ID:', userId)
     const user = await User.findOne({ _id: userId })
     if (!user) {
       // If no user was found, return a 404 error

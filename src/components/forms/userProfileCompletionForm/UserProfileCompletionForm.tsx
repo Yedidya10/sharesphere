@@ -23,13 +23,10 @@ import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import SpringModal from '../../springModal/SpringModal'
-import { User } from '@/utils/types/user'
 
-export interface IEditProfileForm {
+export interface IUserProfileCompletionForm {
   openModal: boolean
   handleClose: () => void
-  address: User['address']
-  phone: User['phone']
   /**
    * Is this the principal call to action on the page?
    */
@@ -39,11 +36,11 @@ export interface IEditProfileForm {
    */
   backgroundColor?: string
   /**
-   * How large should the EditProfileForm be?
+   * How large should the UserProfileCompletionForm be?
    */
   size?: 'small' | 'medium' | 'large'
   /**
-   * EditProfileForm contents
+   * UserProfileCompletionForm contents
    */
   label: string
   /**
@@ -64,30 +61,22 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }))
 
-const EditProfileForm: React.FC<IEditProfileForm> = ({
+const UserProfileCompletionForm: React.FC<IUserProfileCompletionForm> = ({
   primary = false,
   label,
-  address,
-  phone,
   openModal,
   handleClose,
 }) => {
-  const { data: session, status, update } = useSession()
+  const { data: session, status } = useSession()
   const { locale } = useParams()
 
-  const handleClickBarcodeReader = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    let stream = null
-
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true })
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   const [userId, setUserId] = useState('')
+
+  useEffect(() => {
+    if (session?.user) {
+      setUserId(session.user.id)
+    }
+  }, [session])
 
   const {
     watch,
@@ -99,25 +88,18 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
   } = useForm<EditProfileFormValues>({
     mode: 'onChange',
     defaultValues: {
-      // for now, we don't want to update the user's name and email because it's coming from google
-      firstName: session?.user?.firstName || '',
-      lastName: session?.user?.lastName || '',
-      email: session?.user?.email || '',
-      city: address?.city || '',
-      streetName: address?.streetName || '',
-      streetNumber: address?.streetNumber || '',
-      zipCode: address?.zipCode || '',
+      city: '',
+      streetName: '',
+      streetNumber: '',
+      zipCode: '',
       country: 'Israel', // TODO: add country to the user's address
-      phone: phone || '',
+      phone: '',
     },
   })
 
   const onSubmit = async (data: EditProfileFormValues) => {
     try {
       const updatedUser = {
-        // firstName: data.firstName,
-        // lastName: data.lastName,
-        // email: data.email,
         city: data.city,
         streetName: data.streetName,
         streetNumber: data.streetNumber,
@@ -126,13 +108,18 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
         phone: data.phone,
       }
 
-      const response = await fetch(`/api/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUser),
-      })
+      console.log(`URL:, ${process.env.NEXT_PUBLIC_URL}/api/users/${userId}`)
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/users/${userId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedUser),
+        }
+      )
 
       if (response.ok) {
         // Optionally, you can redirect the user to a success page
@@ -203,168 +190,25 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
               mb: 4,
             }}
           >
-            Edit Profile
+            Complete your profile
+          </Typography>
+          <Typography
+            sx={{
+              color: 'primary.text',
+              mb: 2,
+            }}
+          >
+            Hello {session?.user?.firstName}, please fill in your address to
+            continue
           </Typography>
           <Grid
             container
             sx={{ mb: 2 }}
             columnSpacing={1}
             rowSpacing={2}
-            columns={20}
+            columns={100}
           >
-            <Grid xs={20} sm={10} md={5}>
-              <Controller
-                control={control}
-                name="firstName"
-                rules={{
-                  required: 'First name is required',
-                  pattern: {
-                    value:
-                      locale === 'he'
-                        ? firstAndLastHebrewNamePattern
-                        : firstAndLastEnglishNamePattern,
-                    message: `Please enter a valid ${
-                      locale === 'he' ? 'Hebrew' : 'English'
-                    } first name with a minimum of 2 letters`,
-                  },
-                }}
-                render={({
-                  field: { onChange, onBlur, value, name, ref },
-                  fieldState,
-                }) => (
-                  <FormControl fullWidth required error={!!fieldState.error}>
-                    <TextField
-                      id={name}
-                      inputRef={ref}
-                      value={value}
-                      label="First Name"
-                      disabled
-                      required
-                      error={!!fieldState.error}
-                      onChange={onChange} // send value to hook form
-                      onBlur={onBlur} // notify when input is touched/blur
-                    />
-                    <FormHelperText>
-                      {(function () {
-                        if (fieldState.error) {
-                          return fieldState.error.message
-                        }
-                        if (!fieldState.isDirty) {
-                          return ''
-                        }
-                        if (!fieldState.invalid) {
-                          return getValidText()
-                        }
-                      })()}
-                    </FormHelperText>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-            <Grid xs={20} sm={10} md={5}>
-              <Controller
-                control={control}
-                name="lastName"
-                rules={{
-                  required: 'Last name is required',
-                  pattern: {
-                    value:
-                      locale === 'he'
-                        ? firstAndLastHebrewNamePattern
-                        : firstAndLastEnglishNamePattern,
-                    message: `Please enter a valid ${
-                      locale === 'he' ? 'Hebrew' : 'English'
-                    } last name with a minimum of 2 letters`,
-                  },
-                }}
-                render={({
-                  field: { onChange, onBlur, value, name, ref },
-                  fieldState,
-                }) => (
-                  <FormControl
-                    fullWidth
-                    disabled
-                    required
-                    error={!!fieldState.error}
-                  >
-                    <TextField
-                      id={name}
-                      inputRef={ref}
-                      value={value}
-                      label="Last Name"
-                      disabled
-                      required
-                      error={!!fieldState.error}
-                      onChange={onChange} // send value to hook form
-                      onBlur={onBlur} // notify when input is touched/blur
-                    />
-                    <FormHelperText>
-                      {(function () {
-                        if (fieldState.error) {
-                          return fieldState.error.message
-                        }
-                        if (!fieldState.isDirty) {
-                          return ''
-                        }
-                        if (!fieldState.invalid) {
-                          return getValidText()
-                        }
-                      })()}
-                    </FormHelperText>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-            <Grid xs={20} sm={10} md={5}>
-              <Controller
-                control={control}
-                name="email"
-                rules={{
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Please enter a valid email address',
-                  },
-                }}
-                render={({
-                  field: { onChange, onBlur, value, name, ref },
-                  fieldState,
-                }) => (
-                  <FormControl
-                    fullWidth
-                    disabled
-                    required
-                    error={!!fieldState.error}
-                  >
-                    <TextField
-                      id={name}
-                      inputRef={ref}
-                      value={value}
-                      label="Email"
-                      disabled
-                      required
-                      error={!!fieldState.error}
-                      onChange={onChange} // send value to hook form
-                      onBlur={onBlur} // notify when input is touched/blur
-                    />
-                    <FormHelperText>
-                      {(function () {
-                        if (fieldState.error) {
-                          return fieldState.error.message
-                        }
-                        if (!fieldState.isDirty) {
-                          return ''
-                        }
-                        if (!fieldState.invalid) {
-                          return getValidText()
-                        }
-                      })()}
-                    </FormHelperText>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-            <Grid xs={20} sm={10} md={5}>
+            <Grid xs={100} sm={50} md={25}>
               <Controller
                 control={control}
                 name="phone"
@@ -411,7 +255,7 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 )}
               />
             </Grid>
-            <Grid xs={20} sm={10} md={6}>
+            <Grid xs={100} sm={50} md={20}>
               <Controller
                 control={control}
                 name="city"
@@ -460,7 +304,7 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 )}
               />
             </Grid>
-            <Grid xs={20} sm={10} md={6}>
+            <Grid xs={100} sm={50} md={25}>
               <Controller
                 control={control}
                 name="streetName"
@@ -510,7 +354,7 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 )}
               />
             </Grid>
-            <Grid xs={20} sm={10} md={4}>
+            <Grid xs={100} sm={50} md={15}>
               <Controller
                 control={control}
                 name="streetNumber"
@@ -562,7 +406,7 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 )}
               />
             </Grid>
-            <Grid xs={20} sm={10} md={4}>
+            <Grid xs={100} sm={50} md={15}>
               <Controller
                 control={control}
                 name="zipCode"
@@ -613,47 +457,77 @@ const EditProfileForm: React.FC<IEditProfileForm> = ({
                 )}
               />
             </Grid>
-          </Grid>
-          <Tooltip
-            followCursor
-            title={
-              !isValid
-                ? 'Please enter all required fields to submit the form'
-                : 'Click to submit the form'
-            }
-          >
-            <span>
-              <Button
-                sx={{
-                  p: 2,
-                }}
-                variant="contained"
-                fullWidth
-                disabled={!isValid || !isDirty}
-                type="submit"
-                value="Submit"
+            <Grid xs={100} sm={50} md={100}>
+              <Tooltip
+                followCursor
+                title={
+                  !isValid
+                    ? 'Please enter all required fields to submit the form'
+                    : 'Click to submit the form'
+                }
               >
-                Submit
+                <span>
+                  <Button
+                    sx={{
+                      p: 2,
+                    }}
+                    fullWidth
+                    variant="contained"
+                    disabled={!isValid || !isDirty}
+                    type="submit"
+                    value="Submit"
+                  >
+                    Submit
+                  </Button>
+                </span>
+              </Tooltip>
+            </Grid>
+            <Grid xs={100} sm={50} md={70}>
+              <Tooltip
+                followCursor
+                title={'Click to close the form'}
+                placement="right"
+              >
+                <span>
+                  <Button
+                    size="small"
+                    sx={{
+                      p: 1,
+                    }}
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => {
+                      handleClose()
+                      reset()
+                    }}
+                  >
+                    I&apos;ll do it later
+                  </Button>
+                </span>
+              </Tooltip>
+            </Grid>
+            <Grid xs={100} sm={50} md={30}>
+              <Button
+                size="small"
+                sx={{
+                  p: 1,
+                  m: 'auto',
+                }}
+                fullWidth
+                type="reset"
+                value="Reset"
+                onClick={() => {
+                  reset()
+                }}
+              >
+                Reset
               </Button>
-            </span>
-          </Tooltip>
-          <Button
-            sx={{
-              p: 2,
-              m: 'auto',
-            }}
-            type="reset"
-            value="Reset"
-            onClick={() => {
-              reset()
-            }}
-          >
-            Reset
-          </Button>
+            </Grid>
+          </Grid>
         </Box>
       )}
     </SpringModal>
   )
 }
 
-export default EditProfileForm
+export default UserProfileCompletionForm
