@@ -89,7 +89,7 @@
 //       }
 
 //       // Process the assembly data here
-//       console.log(`Assembly Status: ${assembly.ok || assembly.error}`)
+//      
 
 //       // Respond with a success message
 //       res.status(200).json({ message: 'Success!' })

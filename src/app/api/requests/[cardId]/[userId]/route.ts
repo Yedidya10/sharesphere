@@ -6,9 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // Handle the HTTP GET request
 export async function GET(req: NextRequest) {
   const cardId = req.nextUrl.href.split('/')[3]
-  console.log(cardId)
   const userId = req.nextUrl.href.split('/')[4]
-  console.log(userId)
 
   try {
     // Find the card with the given id
