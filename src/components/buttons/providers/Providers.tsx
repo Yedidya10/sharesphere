@@ -15,7 +15,6 @@ import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { useState } from 'react'
 import { AiFillApple as AppleIcon } from 'react-icons/ai'
-import styles from './Providers.module.scss'
 
 export interface IProviders {
   providersLoginText: string
@@ -98,7 +97,6 @@ const Providers: React.FC<IProviders> = ({
                           ? `1px solid ${appleColor}`
                           : '1px solid #000000',
                     }}
-                    className={styles.providerButton}
                     onClick={() => handleProviderLogin(provider)}
                   >
                     {loadingProvider === provider.id ? (
