@@ -20,6 +20,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import SpringModal from '../springModal/SpringModal'
 
+const BASE_URL = process.env.NEXT_PUBLIC_URL
 export interface ICardsDataGrid {
   sampleTextProp: string
   /**
@@ -68,21 +69,20 @@ const CardsDataGrid: React.FC<ICardsDataGrid> = ({
   useEffect(() => {
     async function fetchAllCards() {
       try {
-        const response = await fetch('/api/cards', {
+        const response = await fetch(`${BASE_URL}/api/cards`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         })
 
-        const data = await response.json()
-        const cards = data.cards
+        const items = await response.json()
 
         if (response.ok) {
-          setAllCards(cards)
+          setAllCards(items)
           return
         } else {
-          throw new Error(cards.error || 'Failed to fetch cards')
+          throw new Error(items.error || 'Failed to fetch cards')
         }
       } catch (error: any) {
         console.error(error.message)

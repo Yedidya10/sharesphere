@@ -1,20 +1,20 @@
 'use client'
 
-import UserProfileCompletionForm from '@/components/forms/userProfileCompletionForm/UserProfileCompletionForm'
-import EditProfileForm from '@/components/forms/editProfileForm/EditProfileForm'
 import SearchBar from '@/components/forms/searchBar/SearchBar'
+import UserProfileCompletionForm from '@/components/forms/userProfileCompletionForm/UserProfileCompletionForm'
 import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
+import AllItemsSkeletons from '@/components/skeletons/AllItemsSkeletons'
 import { useSession } from 'next-auth/react'
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 const ItemCard = lazy(() => import('../itemCard/ItemCard'))
 
 export interface IAllCards {
-  allCards: Item[]
+  // allCards: Item[]
   t: {
     noItemsFound: string
   }
@@ -45,27 +45,58 @@ const AllCards: React.FC<IAllCards> = ({
   primary = false,
   label,
   t,
-  allCards,
+  // allCards,
   ...props
 }) => {
   const { data: session, status } = useSession()
+  const [loading, setLoading] = useState(true)
+  const [allCards, setAllCards] = useState<Item[]>([])
   const [openModal, setOpenModal] = useState(false)
   const handleClose = () => setOpenModal(false)
-  const displayAddressForm = () => setOpenModal(true)
-  const [userId, setUserId] = useState('')
-  const [doItLater, setDoItLater] = useState(false)
 
-  useEffect(() => {
-    if (session?.user?.id) {
-      setUserId(session.user.id)
+  const checkModalDisplay = () => {
+    const nextShowTime = localStorage.getItem(
+      'nextProfileCompletionModalShowTime'
+    )
+    if (nextShowTime === 'never') {
+      return false
     }
-  }, [session?.user?.id])
+
+    if (!nextShowTime || new Date().getTime() > Number(nextShowTime)) {
+      return true
+    }
+  }
 
   useEffect(() => {
-    if (userId) {
+    const getAllCards = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_URL}/api/cards`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+
+        if (response.ok) {
+          const items = await response.json()
+          return setAllCards(items)
+        }
+      } catch (error: any) {
+        throw new Error(error.message)
+      } finally {
+        setLoading(false) // Set loading to false after the API call completes
+      }
+    }
+
+    getAllCards()
+
+    if (session?.user?.id && checkModalDisplay()) {
       const fetchData = async () => {
         try {
-          const response = await fetch(`/api/users/${userId}`, {
+          const response = await fetch(`/api/users/${session.user.id}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -76,8 +107,8 @@ const AllCards: React.FC<IAllCards> = ({
             const data = await response.json()
             const user = data.user
 
-            if (!user.address && !doItLater) {
-              displayAddressForm()
+            if (!user.address) {
+              setOpenModal(true)
             }
           }
         } catch (error: any) {
@@ -86,23 +117,21 @@ const AllCards: React.FC<IAllCards> = ({
       }
       fetchData()
     }
-  }, [userId, doItLater])
+  }, [session?.user.id])
 
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const corrntUserId = session?.user?.id
-
-  const filteredAllCards = allCards.filter((card) => {
+  const filteredSearchItems = allCards.filter((item: Item) => {
     const authorMatch =
-      card.author?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+      item.author?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
     const nameMatch =
-      card.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+      item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
     const isbnMatch =
-      card.ids?.isbn?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+      item.ids?.isbn?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
     const danacodeMatch =
-      card.ids?.danacode?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+      item.ids?.danacode?.toLowerCase().includes(searchQuery.toLowerCase()) ??
       false
     const barcodeMatch =
-      card.ids?.barcode?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+      item.ids?.barcode?.toLowerCase().includes(searchQuery.toLowerCase()) ??
       false
 
     return (
@@ -129,30 +158,33 @@ const AllCards: React.FC<IAllCards> = ({
     </Stack>
   )
 
+  const filteredVisibleItems = filteredSearchItems.filter(
+    (card: Item) =>
+      card.postingStatus === 'published' && card.ownerId !== session?.user?.id
+  )
+
   return (
     <>
       <SearchBar setSearchQuery={setSearchQuery} />
-      {filteredAllCards.length > 0 && (
+      {loading ? (
+        <AllItemsSkeletons />
+      ) : filteredVisibleItems.length > 0 ? (
         <Grid container rowSpacing={0} columnSpacing={2} columns={30}>
-          {filteredAllCards.map((card: Item) =>
-            card.postingStatus === 'published' &&
-            card.owner !== corrntUserId ? (
-              // @ts-ignore
-              <Grid key={card._id} xs={15} mb={7.5} sm={10} lg={6}>
-                <Suspense fallback={skeletonItem}>
-                  <ItemCard
-                    label={''}
-                    card={card}
-                    imageWidth={150}
-                    imageHeight={250}
-                  />
-                </Suspense>
-              </Grid>
-            ) : null
-          )}
+          {filteredVisibleItems.map((item: Item) => (
+            // @ts-ignore
+            <Grid key={item._id} xs={15} mb={7.5} sm={10} lg={6}>
+              <Suspense fallback={skeletonItem}>
+                <ItemCard
+                  label={''}
+                  item={item}
+                  imageWidth={150}
+                  imageHeight={250}
+                />
+              </Suspense>
+            </Grid>
+          ))}
         </Grid>
-      )}
-      {filteredAllCards.length === 0 && (
+      ) : (
         <Box
           sx={{
             display: 'flex',
@@ -168,51 +200,11 @@ const AllCards: React.FC<IAllCards> = ({
       )}
       <UserProfileCompletionForm
         openModal={openModal}
-        handleClose={handleClose} label={''}      />
+        handleClose={handleClose}
+        label={''}
+      />
     </>
   )
-
-  // return (
-  //   {filteredAllCards.length > 0 ? (
-
-  //     <Grid container rowSpacing={0} columnSpacing={2} columns={30}>
-  //     {isLoading ? ( // Check loading state
-  //       allAllCards.slice(0, 10).map((_, index) => (
-  //         <Grid key={index} xs={15} mb={7.5} sm={10} lg={6}>
-  //           <Skeleton variant="rectangular" width={180} height={300} />
-  //         </Grid>
-  //       ))
-  //     ) : (
-  //       filteredAllCards.map(
-  //         (card: ItemCoreWithLoanDetails) =>
-  //           card.status === 'active' && (
-  //             // card.owner !== corrntUserId && (
-  //             // @ts-ignore
-  //             <Grid key={card._id} xs={15} mb={7.5} sm={10} lg={6}>
-  //               <ItemCard
-  //                 label={''}
-  //                 card={card}
-  //                 imageWidth={180}
-  //                 imageHeight={300}
-  //               />
-  //             </Grid>
-  //   </Grid>
-  //   ) : (
-  //     <Box
-  //     xs={12}
-  //     sx={{
-  //       display: 'flex',
-  //       justifyContent: 'center',
-  //       alignItems: 'center',
-  //     }}
-  //   >
-  //     <Typography variant="h3" >
-  //       No cards found
-  //     </Typography>
-  //   </Box>
-  //   )}
-
-  // )
 }
 
 export default AllCards

@@ -14,7 +14,7 @@ import { lazy, Suspense, useState } from 'react'
 const CardInfo = lazy(() => import('../cardModal/CardModal'))
 
 export interface IItemCard {
-  card: Item
+  item: Item
   imageWidth: number
   imageHeight: number
   /**
@@ -42,8 +42,8 @@ export interface IItemCard {
 const ItemCard: React.FC<IItemCard> = ({
   imageHeight,
   imageWidth,
-  card,
-  card: { name, description, author, imageUrl },
+  item,
+  item: { name, description, author, imageUrl },
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const handleOpen = () => setOpenModal(true)
@@ -98,7 +98,7 @@ const ItemCard: React.FC<IItemCard> = ({
               }}
             >
               <Chip
-                label={card.mainCategory}
+                label={item.mainCategory}
                 size="small"
                 variant="outlined"
                 onClick={handleChipClick}
@@ -127,7 +127,7 @@ const ItemCard: React.FC<IItemCard> = ({
           openModal={openModal}
           handleClose={handleClose}
           label={''}
-          card={card}
+          card={item}
         />
       </Suspense>
     </>

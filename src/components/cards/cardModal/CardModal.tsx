@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 // import ItemAlertButton from '../../buttons/itemAlertButton/ItemAlertButton'
 import ItemRequestButton from '../../buttons/itemRequestButton/ItemRequestButton'
 import ItemRequestForm from '../../forms/itemRequestForm/ItemRequestForm'
@@ -59,35 +59,40 @@ const CardModal: React.FC<ICardModal> = ({
   ...props
 }) => {
   const { data: session, status } = useSession()
-  const [requests, setRequests] = React.useState<Request[]>()
-  const [openRequestForm, setOpenRequestForm] = React.useState(false)
-  const [isUserAlreadyRequest, setIsUserAlreadyRequest] = React.useState(false)
-  const [openAlertForm, setOpenAlertForm] = React.useState(false)
+  const [requests, setRequests] = useState<Request[]>()
+  const [openRequestForm, setOpenRequestForm] = useState(false)
+  const [isUserAlreadyRequest, setIsUserAlreadyRequest] =
+    useState<boolean>(false)
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false)
+  const [openAlertForm, setOpenAlertForm] = useState(false)
 
   useEffect(() => {
     const isRequest = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/requests/${card._id}/${session?.user?.id}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      try {
+        const response = await fetch(
+          `/api/requests/${card._id}/${session?.user?.id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+
+        if (!response.ok) {
+          setIsUserAlreadyRequest(false)
         }
-      )
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
+        const data = await response.json()
+        const { status } = data
+        setIsUserAlreadyRequest(status === 'pending' ? true : false)
+      } catch (error) {
+        console.error('Error fetching requests:', error)
       }
-
-      
-
-      const status = await response.json()
-      setIsUserAlreadyRequest(status === 'pending' ? true : false)
     }
 
     isRequest()
-  }, [session, card._id])
+  }, [session?.user?.id, card._id])
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -98,9 +103,6 @@ const CardModal: React.FC<ICardModal> = ({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            userId: session?.user?.id,
-          }),
         }
       )
 
@@ -116,10 +118,6 @@ const CardModal: React.FC<ICardModal> = ({
   }, [session, card._id])
 
   const handleRequestButtonClick = () => {
-    // Check if the item is already requested by the current user
-    if (isUserAlreadyRequest) {
-      return
-    }
     setOpenRequestForm(!openRequestForm)
   }
 
@@ -255,6 +253,7 @@ const CardModal: React.FC<ICardModal> = ({
           handleRequestFormClose={handleRequestButtonClick}
           // @ts-ignore
           cardId={card._id}
+          setIsUserAlreadyRequest={setIsUserAlreadyRequest}
         />
         <ItemAlertForm
           open={openAlertForm} // @ts-ignore
