@@ -3,27 +3,24 @@ import mongoose from 'mongoose'
 // Step 1: Define the Mongoose schema for the request model
 const requestSchema = new mongoose.Schema(
   {
-    itemId: { type: mongoose.Schema.Types.ObjectId },
-    borrowerId: { type: mongoose.Schema.Types.ObjectId },
+    itemId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    borrowerId: { type: mongoose.Schema.Types.ObjectId, required: true },
     dates: {
-      pickupDate: { type: Date },
-      returnDate: { type: Date },
-      loanPeriod: { type: Number },
-      createdAt: { type: Date, default: Date.now },
-      updatedAt: { type: Date },
+      pickupDate: { type: Date, required: true },
+      returnDate: { type: Date, required: true },
+      borrowingPeriod: { type: Number, required: true },
     },
     status: {
-      currentStatus: {
+      value: {
         type: String,
+        required: true,
         enum: ['pending', 'accepted', 'rejected', 'removed'],
       },
-      borrowerMessage: { type: String },
-      lenderMessage: { type: String },
-      createdAt: { type: Date, default: Date.now },
-      updatedAt: { type: Date },
     },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date },
+    messages: {
+      borrowerMessage: { type: String, required: false },
+      lenderMessage: { type: String, required: false },
+    },
   },
   {
     timestamps: true, // Enable timestamps option, which creates "createdAt" and "updatedAt" fields
