@@ -5,33 +5,7 @@ import Box from '@mui/material/Box'
 import { useTranslations } from 'next-intl'
 import { unstable_setRequestLocale } from 'next-intl/server'
 
-async function getAllCards() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/cards`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
-    const data = await response.json()
-    const cards = data.cards
-
-    if (response.ok) {
-      return cards
-    }
-  } catch (error: any) {
-    throw new Error(error.message)
-  }
-}
-
-function AllItemsContent({
-  allCards,
-
-}: {
-  allCards: Item[]
-  
-}) {
+function AllItemsContent({ allItems }: { allItems?: Item[] }) {
   const t = useTranslations('AllItems')
   const cardsTranslations = {
     noItemsFound: t('Cards.noItemsFound'),
@@ -44,11 +18,8 @@ function AllItemsContent({
         m: 'auto',
       }}
     >
-      <AllCards
-        label={''}
-        t={cardsTranslations}
-        allCards={allCards}
-   
+      <AllCards label={''} t={cardsTranslations} 
+      // allCards={allItems} 
       />
     </Box>
   )
@@ -65,10 +36,8 @@ export default async function AllItems({
   // For more information, see https://next-intl-docs.vercel.app/docs/getting-started/app-router/with-i18n-routing#add-unstable_setrequestlocale-to-all-layouts-and-pages
   unstable_setRequestLocale(locale)
 
-  const allCards = await getAllCards()
-  return (
-    <AllItemsContent
-      allCards={allCards}
-    />
-  )
+  //const allItems = await getAllCards()
+  return <AllItemsContent 
+  // allItems={allItems}
+   />
 }
