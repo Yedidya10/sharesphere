@@ -78,7 +78,6 @@ const UppyDashboard: React.FC<IUppyDashboard> = ({
   }, [uppy, houseId, roomId])
 
   uppy.on('complete', (result) => {
-    // console.log(result)
   })
 
   uppy.on('error', (error) => {

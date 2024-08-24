@@ -153,7 +153,6 @@ const CurrentUserOwnedCards: React.FC<ICurrentUserOwnedCards> = ({
           sx={{
             display: 'flex',
             paddingTop: '6rem',
-
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
