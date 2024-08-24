@@ -10,10 +10,10 @@ import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { useRecoilState } from 'recoil'
 import UserBorrowedCardInfo from '../userBorrowedCardInfo/UserBorrowedCardInfo'
+import { useEffect, useState } from 'react'
 
 export interface ICurrentUserBorrowedItems {
   sampleTextProp: string
-  userBorrowedItems: Item[]
   /**
    * Is this the principal call to action on the page?
    */
@@ -40,21 +40,61 @@ const CurrentUserBorrowedItems: React.FC<ICurrentUserBorrowedItems> = ({
   primary = false,
   label,
   sampleTextProp,
-  userBorrowedItems,
   ...props
 }) => {
   const { data: session, status } = useSession()
-  const [isOwner, setIsOwner] = React.useState<boolean | null>(null)
+  const [userId, setUserId] = useState<string | undefined>('')
+  const [userBorrowedItems, setUserBorrowedItems] = useState<Item[]>([])
+  const [userRequestedItems, setUserRequestedItems] = useState<Item[]>([])
+  const [isOwner, setIsOwner] = useState<boolean | null>(null)
   const [isCurrentUserBorrowedItemsExist, setIsCurrentUserBorrowedItemsExist] =
     useRecoilState(isUserOwnedItemsExistState)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (session?.user?.id) {
       setIsOwner(true)
     } else {
       setIsOwner(false)
     }
   }, [session?.user?.id])
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      setUserId(session.user.id)
+    }
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    if (userId) {
+      const getUserBorrowedItems = async () => {
+        const BASE_URL = process.env.NEXT_PUBLIC_URL
+
+        try {
+          const response = await fetch(
+            `${BASE_URL}/api/cards/userId/${userId}/borrowed`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+
+          if (response.status === 404 || !response.ok) {
+            // Return an empty array if no user items are found
+            return []
+          }
+
+          const data = await response.json()
+          setUserBorrowedItems(data)
+        } catch (error: any) {
+          throw new Error(error.message)
+        }
+      }
+
+      getUserBorrowedItems()
+    }
+  }, [userId])
 
   const {
     watch,
@@ -91,12 +131,13 @@ const CurrentUserBorrowedItems: React.FC<ICurrentUserBorrowedItems> = ({
     >
       {userBorrowedItems?.length !== 0 ? (
         <>
-          <LendingStatusFilter
+          {/* TODO: Fix the filter */}
+          {/* <LendingStatusFilter
             label="LendingStatusFilter"
             filterType="lendingStatus"
             filterName="Lending Status"
             control={control}
-          />
+          /> */}
 
           <Grid container spacing={2}>
             {userBorrowedItems?.map((card) => {
