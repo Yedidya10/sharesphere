@@ -71,7 +71,7 @@ const UserOwnedCardInfo: React.FC<IUserOwnedCardInfo> = ({
     name,
     description,
     imageUrl,
-    owner,
+    ownerId,
     condition,
     location,
     maxLoanPeriod,

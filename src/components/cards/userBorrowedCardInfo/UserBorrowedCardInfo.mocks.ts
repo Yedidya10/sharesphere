@@ -11,7 +11,7 @@ const base: IUserBorrowedCardInfo = {
       streetNumber: '',
       zipCode: '',
     },
-    owner: '',
+    ownerId: '',
     postingStatus: '',
 
     mainCategory: '',

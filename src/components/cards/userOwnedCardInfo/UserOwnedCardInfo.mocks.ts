@@ -12,7 +12,7 @@ const base: IUserOwnedCardInfo = {
       streetNumber: '',
       zipCode: '',
     },
-    owner: '',
+    ownerId: '',
     postingStatus: '',
     mainCategory: '',
     secondaryCategory: '',
