@@ -91,11 +91,13 @@ const ConditionInput: React.FC<IConditionInput> = ({
         fieldState,
       }) => (
         <TextField
+          
           id={name}
           inputRef={ref}
           value={value}
           required
           fullWidth
+          // TODO: If select is set you must pass the options of the select as children.???
           select
           label={`${(watch('mainCategory') as string)
             .split(' ')

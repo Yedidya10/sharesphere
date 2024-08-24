@@ -92,6 +92,7 @@ const MainCategoryInput: React.FC<IMainCategoryInput> = ({
           inputRef={ref}
           value={value}
           required
+          // TODO: If select is set you must pass the options of the select as children.???
           select
           label="Category"
           helperText={
