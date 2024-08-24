@@ -47,7 +47,6 @@ export async function PUT(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.href.split('/')[5]
-    console.log('User ID:', userId)
     const user = await User.findOne({ _id: userId })
     if (!user) {
       // If no user was found, return a 404 error

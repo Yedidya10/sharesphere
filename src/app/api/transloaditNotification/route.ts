@@ -108,7 +108,6 @@
 //       const notificationData = req.body
 
 //       // Process the notification data (e.g., update your database, send notifications, etc.)
-//       console.log('Transloadit Notification Data:', notificationData)
 
 //       // Respond with a success status code (e.g., 200 OK)
 //       NextResponse.json(
