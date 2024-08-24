@@ -21,7 +21,9 @@ import { forwardRef, useEffect, useState } from 'react'
 export interface IItemPendingRequest {
   sampleTextProp: string
   card: Item
-
+  pendingRequests: Request[]
+  setPendingRequests: React.Dispatch<React.SetStateAction<Request[]>>
+  onAllRequestsProcessed: (itemId: string) => void
   /**
    * Is this the principal call to action on the page?
    */
@@ -69,87 +71,53 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
   label,
   sampleTextProp,
   card,
+  pendingRequests,
+  setPendingRequests,
+  onAllRequestsProcessed,
   ...props
 }) => {
-  const [requests, setRequests] = useState<Request[]>()
+  const [borrowerId, setBorrowerId] = useState<string | null>(null)
+  const [requestId, setRequestId] = useState<string | undefined>(undefined)
+  const [pickupDate, setPickupDate] = useState<Date | null>(null)
+  const [returnDate, setReturnDate] = useState<Date | null>(null)
+  const [formattedStartDate, setFormattedStartDate] = useState<string | null>(
+    null
+  )
+  const [formattedEndDate, setFormattedEndDate] = useState<string | null>(null)
+  const [borrower, setBorrower] = useState<IBorrower | null>(null)
+  const { name, description, imageUrl } = card
+  const [open, setOpen] = useState(false)
+  const handleClickOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch(`/api/requests/${card._id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-
-        const data = await response.json()
-
-        if (response.ok) {
-          setRequests(data)
-        }
-
-        if (!response.ok) {
-          console.error('Failed to fetch requests')
-        }
-      } catch (error: any) {
-        console.error(error.message)
-      }
+    if (pendingRequests.length === 0) {
+      onAllRequestsProcessed(card._id!.toString())
     }
-
-    fetchRequests()
-  }, [card._id])
-
-  const { name, description, imageUrl } = card
-  const borrowerId =
-    requests && requests.length > 0
-      ? requests[0].borrowerId
-      : null
-  const requestId =
-    requests && requests.length > 0 ? requests[0]._id : null
-  const [borrower, setBorrower] = useState<IBorrower | null>(null)
-  const pickupDate =
-    requests && requests.length > 23
-      ? new Date(requests[0].dates.pickupDate)
-      : null
-  const formattedStartDate = pickupDate
-    ? format(pickupDate, 'dd-MM-yyyy')
-    : null
-  const returnDate =
-    requests && requests.length > 23
-      ? new Date(requests[0].dates.returnDate)
-      : null
-  const formattedEndDate = returnDate ? format(returnDate, 'dd-MM-yyyy') : null
-
-  const [open, setOpen] = useState(false)
-
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
+  }, [card._id, onAllRequestsProcessed, pendingRequests]);
 
   async function handleRejectRequest() {
     try {
-      const response = await fetch(`/api/cards/${card._id}/update/request`, {
+      const response = await fetch(`/api/requests/requestId/${requestId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           status: 'rejected',
-          requestId,
           // TODO: Add lenderMessage form input
         }),
       })
 
       if (!response.ok) {
-        console.error('Failed to reject request')
+        throw new Error('Failed to reject request')
       }
 
-      const data = await response.json()
+      setPendingRequests((prevRequests) =>
+        prevRequests.filter((request) => request._id !== requestId)
+      )
+
+      console.log('Pending requests:', pendingRequests)
     } catch (error: any) {
       console.error(error.message)
     }
@@ -157,53 +125,65 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
 
   async function handleAcceptRequest() {
     try {
-      const response = await fetch(`/api/cards/${card._id}/update/request`, {
+      const response = await fetch(`/api/requests/requestId/${requestId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           status: 'accepted',
-          requestId,
           // TODO: Add lenderMessage form input
         }),
       })
 
       if (!response.ok) {
-        console.error('Failed to accept request')
+        throw new Error('Failed to accept request')
       }
 
-      const data = await response.json()
+      setPendingRequests((prevRequests) =>
+        prevRequests.filter((request) => request._id !== requestId)
+      )
+
+      console.log('Pending requests:', pendingRequests)
     } catch (error: any) {
       console.error(error.message)
     }
   }
 
-  async function handleSuggest() {
-    try {
-      const response = await fetch(`/api/cards/${card._id}/update/request`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'suggested',
-          lenderMessage: 'I suggest another dates: ...',
-          requestId,
-        }),
-      })
+  // async function handleSuggest() {
+  //   try {
+  //     const response = await fetch(`/api/cards/${card._id}/update/request`, {
+  //       method: 'PATCH',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         status: 'suggested',
+  //         lenderMessage: 'I suggest another dates: ...',
+  //         requestId,
+  //       }),
+  //     })
 
-      if (!response.ok) {
-        console.error('Failed to suggest request')
-      }
+  //     if (!response.ok) {
+  //       console.error('Failed to suggest request')
+  //     }
 
-      const data = await response.json()
-    } catch (error: any) {
-      console.error(error.message)
-    } finally {
-      handleClose()
+  //     const data = await response.json()
+  //   } catch (error: any) {
+  //     console.error(error.message)
+  //   } finally {
+  //     handleClose()
+  //   }
+  // }
+
+  useEffect(() => {
+    if (pendingRequests && pendingRequests.length > 0) {
+      setBorrowerId(pendingRequests[0].borrowerId.toString())
+      setRequestId(pendingRequests[0]?._id?.toString())
+      setPickupDate(new Date(pendingRequests[0].dates.pickupDate))
+      setReturnDate(new Date(pendingRequests[0].dates.returnDate))
     }
-  }
+  }, [pendingRequests, setPendingRequests])
 
   useEffect(() => {
     async function fetchBorrower() {
@@ -231,7 +211,19 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
     }
 
     fetchBorrower()
-  }, [borrowerId])
+  }, [borrowerId, pendingRequests])
+
+  useEffect(() => {
+    if (pickupDate) {
+      setFormattedStartDate(format(pickupDate, 'dd-MM-yyyy'))
+    }
+  }, [pickupDate])
+
+  useEffect(() => {
+    if (returnDate) {
+      setFormattedEndDate(format(returnDate, 'dd-MM-yyyy'))
+    }
+  }, [returnDate])
 
   return (
     <Card sx={{ minWidth: 345, maxWidth: 345, width: 345 }}>
@@ -337,10 +329,9 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
               <Typography>End date: {formattedEndDate}</Typography>
               <Typography>
                 Message:{' '}
-                {/* {card.requests &&
-                card.requests[0].messages[0].sender === 'borrower'
-                  ? card.requests[0].messages[0].message
-                  : 'No message'} */}
+                {pendingRequests && pendingRequests.length > 0
+                  ? pendingRequests[0].messages?.borrowerMessage
+                  : ''}
               </Typography>
             </Box>
           </DialogContent>
@@ -365,7 +356,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
                 gap: 1,
               }}
             >
-              <Button
+              {/* <Button
                 sx={{
                   display: 'none',
                 }}
@@ -374,7 +365,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
                 }}
               >
                 Suggest Another Dates
-              </Button>
+              </Button> */}
               <Button
                 variant="contained"
                 onClick={() => {

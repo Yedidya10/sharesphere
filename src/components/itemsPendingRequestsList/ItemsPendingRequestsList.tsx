@@ -1,16 +1,18 @@
 'use client'
 
+import { Item } from '@/utils/types/item'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
-import React, { Suspense, lazy } from 'react'
+import Typography from '@mui/material/Typography'
+import { useSession } from 'next-auth/react'
+import { Suspense, lazy, useEffect, useState } from 'react'
+import { Request } from '@/utils/types/request'
 const ItemPendingRequest = lazy(
   () => import('@/components/itemPendingRequest/ItemPendingRequest')
 )
 
 export interface IItemsPendingRequestsList {
   sampleTextProp: string
-  pendingRequestsItems: any
   /**
    * Is this the principal call to action on the page?
    */
@@ -37,9 +39,63 @@ const ItemsPendingRequestsList: React.FC<IItemsPendingRequestsList> = ({
   primary = false,
   label,
   sampleTextProp,
-  pendingRequestsItems,
   ...props
 }) => {
+  const { data: session } = useSession()
+  const [userId, setUserId] = useState<string>('')
+  const [pendingRequestsItems, setPendingRequestsItems] = useState<Item[]>([])
+  const [pendingRequests, setPendingRequests] = useState<Request[] | []>([])
+
+  const handleAllRequestsProcessed = (itemId: string) => {
+    setPendingRequestsItems((prevItems) =>
+      prevItems.filter((item) => item._id!.toString() !== itemId)
+    )
+  }
+
+  useEffect(() => {
+    if (!pendingRequests) {
+      return
+    }
+  }, [pendingRequests])
+  useEffect(() => {
+    if (session) {
+      const userId = session?.user?.id
+      setUserId(userId)
+    }
+  }, [session])
+
+  useEffect(() => {
+    const BASE_URL = process.env.NEXT_PUBLIC_URL
+
+    if (userId) {
+      const getPendingRequestsItems = async () => {
+        try {
+          const response = await fetch(
+            `${BASE_URL}/api/cards/userId/${userId}/ownedCards/pendingRequests`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+
+          if (!response.ok || response.status === 404) {
+            return
+          }
+
+          const data = await response.json()
+          setPendingRequests(data.requests)
+          setPendingRequestsItems(data.items)
+        } catch (error: any) {
+          console.error('Error fetching user items:', error.message)
+        }
+      }
+
+      getPendingRequestsItems()
+    }
+  }, [userId])
+
   return (
     <Box
       sx={{
@@ -69,11 +125,14 @@ const ItemsPendingRequestsList: React.FC<IItemsPendingRequestsList> = ({
           gap: 2,
         }}
       >
-        {pendingRequestsItems.map((card: any) => (
-          <Suspense key={card.id} fallback={<CircularProgress />}>
+        {pendingRequestsItems.map((item: Item) => (
+          <Suspense key={item?._id?.toString()} fallback={<CircularProgress />}>
             <ItemPendingRequest
-              card={card}
-              label={card.details.name}
+              card={item}
+              pendingRequests={pendingRequests as Request[]}
+              setPendingRequests={setPendingRequests}
+              onAllRequestsProcessed={handleAllRequestsProcessed}
+              label={item?.name}
               sampleTextProp={''}
             />
           </Suspense>

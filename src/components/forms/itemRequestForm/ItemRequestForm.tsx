@@ -32,6 +32,7 @@ export interface IItemRequestForm {
   requests: Request[]
   cardId: string
   handleRequestFormClose: () => void
+  setIsUserAlreadyRequest: React.Dispatch<React.SetStateAction<boolean>>
   /**
    * Is this the principal call to action on the page?
    */
@@ -87,6 +88,7 @@ const ItemRequestForm: React.FC<IItemRequestForm> = ({
   maxLoanPeriod,
   requests,
   handleRequestFormClose,
+  setIsUserAlreadyRequest,
   cardId,
   open,
 }) => {
@@ -98,6 +100,11 @@ const ItemRequestForm: React.FC<IItemRequestForm> = ({
   const disabledDates = React.useMemo(() => {
     const dates = requests.map((request) => {
       const { pickupDate, returnDate } = request.dates || {}
+      const status = request.status?.value
+
+      if (status === 'rejected' || status === 'removed' || status === 'pending')
+        return []
+
       const start = new Date(pickupDate)
       const end = new Date(returnDate)
       const dates = []
@@ -178,38 +185,31 @@ const ItemRequestForm: React.FC<IItemRequestForm> = ({
           pickupDate,
           returnDate,
           borrowingPeriod: differenceInDays(returnDate, pickupDate),
-          updatedAt: new Date(),
         },
         status: {
           value: 'pending',
-          message: {
-            sender: 'borrower',
-            message: data.message,
-          },
-          updatedAt: new Date(),
+        },
+        messages: {
+          borrowerMessage: data.message,
+          lenderMessage: '',
         },
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}
-        /api/requests/${cardId}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            request,
-          }),
-        }
-      )
+      const res = await fetch(`/api/requests/${cardId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      })
 
       if (!res.ok) {
         setIsSubmitSuccess(false)
-        console.error('Failed to submit request:', res)
+        throw new Error('Error submitting request')
       }
 
       setIsSubmitSuccess(true)
+      setIsUserAlreadyRequest(true)
     } catch (error) {
       console.error(error)
     } finally {

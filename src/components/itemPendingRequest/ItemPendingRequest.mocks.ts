@@ -1,3 +1,5 @@
+import { Request } from '@/utils/types/request'
+import { SetStateAction } from 'react'
 import { IItemPendingRequest } from './ItemPendingRequest'
 
 const base: IItemPendingRequest = {
@@ -13,7 +15,7 @@ const base: IItemPendingRequest = {
       streetNumber: '',
       zipCode: '',
     },
-    owner: '',
+    ownerId: '',
     postingStatus: '',
     mainCategory: '',
     secondaryCategory: '',
@@ -24,6 +26,13 @@ const base: IItemPendingRequest = {
     imageUrl: '',
     isAvailable: true,
   },
+  pendingRequests: [],
+  setPendingRequests: function (value: SetStateAction<Request[]>): void {
+    throw new Error('Function not implemented.')
+  },
+  onAllRequestsProcessed: function (itemId: string): void {
+    throw new Error('Function not implemented.')
+  }
 }
 
 export const mockItemPendingRequestProps = {
