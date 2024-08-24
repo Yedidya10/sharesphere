@@ -13,7 +13,7 @@ export interface Item {
   condition: number
   maxLoanPeriod: number
   location: Location
-  owner: string
+  ownerId: string
   postingStatus: string
   isAvailable: boolean
   readonly createdAt?: Date

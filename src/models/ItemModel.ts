@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
-// Step 1: Define the Mongoose schema for the card model
-const cardSchema = new mongoose.Schema(
+// Step 1: Define the Mongoose schema for the Item model
+const itemSchema = new mongoose.Schema(
   {
     cardIds: {
       isbn: { type: String },
@@ -23,7 +23,7 @@ const cardSchema = new mongoose.Schema(
       streetNumber: { type: String },
       zipCode: { type: String },
     },
-    owner: {
+    ownerId: {
       type: mongoose.Schema.Types.ObjectId,
     },
     postingStatus: {
@@ -49,5 +49,5 @@ const cardSchema = new mongoose.Schema(
 
 // Step 2: Create and return the Mongoose model for the Card collection.
 // If the model already exists, return the existing model; otherwise, create a new one.
-export const Card =
-  mongoose.models.Card || mongoose.model<mongoose.Document>('Card', cardSchema)
+export const Item =
+  mongoose.models.Item || mongoose.model<mongoose.Document>('Item', itemSchema)

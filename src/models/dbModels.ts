@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { Card } from './CardModel'
+import { Item } from './ItemModel'
 import { User } from './UserModel'
 import { Request } from './RequestModel'
 
@@ -23,4 +23,4 @@ const connectToDatabase = async () => {
 // Call the connectToDatabase function to establish the connection
 connectToDatabase()
 
-export { Card, User, Request }
+export { Item, User, Request }
