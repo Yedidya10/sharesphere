@@ -22,8 +22,6 @@ async function getUserOwnedItems() {
       }
     )
 
-    const data = await response.json()
-
     if (response.status === 404) {
       // Return an empty array if no user items are found
       return []
@@ -34,7 +32,8 @@ async function getUserOwnedItems() {
       throw new Error('Failed to fetch user items')
     }
 
-    return data.cards
+    const items = await response.json()
+    return items
   } catch (error: any) {
     throw new Error(error.message)
   }
