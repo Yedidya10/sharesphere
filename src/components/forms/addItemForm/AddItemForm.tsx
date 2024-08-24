@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Suspense, lazy, useEffect, useState } from 'react'
-
+import IMuiSnackbar from '@/components/muiSnackbar/MuiSnackbar'
 import categories from '@/utils/categories/categories'
 import {
   regexAuthorEnglishNamePattern,
@@ -124,6 +124,9 @@ const AddItemForm: React.FC<IAddItemForm> = ({
   const { data: session, status } = useSession()
   const [ownerId, setOwnerId] = useState<string>('')
   const theme = useTheme()
+  const [isSubmitSuccess, setIsSubmitSuccess] = React.useState<boolean | null>(
+    null
+  )
   const isMobile = useMediaQuery(theme.breakpoints.down('mdl'))
 
   const isStepOptional = (step: number) => {
@@ -256,7 +259,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
 
   const onSubmit = async (data: IAddItemFormValues) => {
     try {
-      const card: Item = {
+      const item: Item = {
         ids: {
           isbn: data.isbn,
           danacode: data.danacode,
@@ -279,7 +282,7 @@ const AddItemForm: React.FC<IAddItemForm> = ({
           zipCode: data.zipCode,
           country: data.country,
         },
-        owner: ownerId,
+        ownerId,
         postingStatus: 'inReview',
         isAvailable: true,
       }
@@ -289,15 +292,19 @@ const AddItemForm: React.FC<IAddItemForm> = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(card),
+        body: JSON.stringify(item),
       })
 
-      const responseData = await response.json()
-      if (response.ok) {
-        // Optionally, you can redirect the user to a success page
-        // or show a success message on the form.
+      const itemResData = await response.json()
+      if (!response.ok) {
+        setIsSubmitSuccess(false)
+        console.error('Failed to create card:', itemResData)
+      }
+
+      if (itemResData) {
+        setIsSubmitSuccess(true)
       } else {
-        // Optionally, you can show an error message on the form.
+        setIsSubmitSuccess(false)
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -1540,6 +1547,22 @@ const AddItemForm: React.FC<IAddItemForm> = ({
             Go to login screen
           </Button>
         </Box>
+      )}
+      {isSubmitSuccess && (
+        <IMuiSnackbar
+          message={
+            isSubmitSuccess
+              ? 'Your item has been submitted successfully!'
+              : 'There was an error submitting your item. Please try again.'
+          }
+          severity={isSubmitSuccess ? 'success' : 'error'}
+          state={{
+            open: true,
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+          handleClose={() => setIsSubmitSuccess(null)}
+        />
       )}
     </>
   )

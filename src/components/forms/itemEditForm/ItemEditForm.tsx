@@ -79,13 +79,11 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
   const { locale } = useParams()
   const { data: session, status } = useSession()
 
-  const { cardIds, details, owner, condition, location, maxLoanPeriod } =
-    formProps
+  const { cardIds, details, location, maxLoanPeriod } = formProps
 
   const {
     mainCategory,
     secondaryCategory,
-    tertiaryCategory,
     name,
     author,
     brand,
@@ -301,6 +299,7 @@ const ItemEditForm: React.FC<IItemEditForm> = ({
                 inputRef={ref}
                 value={value}
                 required
+                // TODO: If select is set you must pass the options of the select as children.???
                 select
                 label="Category"
                 helperText={
