@@ -3,10 +3,10 @@ import { createTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface BreakpointOverrides {
-    xxs: true // add more `xs` breakpoint
-    xsm: true
-    mds: true
-    mdl: true
+    xxs: true // for extra extra small screens
+    xsm: true // for extra small screens
+    mds: true // for medium small screens
+    mdl: true // for medium large screens
     // mobile: true; // adds the `mobile` breakpoint
     // tablet: true;
     // laptop: true;
@@ -15,15 +15,15 @@ declare module '@mui/material/styles' {
 }
 
 interface Shape {
-  color: string;
-  width: number;
-  height: number;
-  boxShadow?: string; // Add boxShadow as an optional property
+  color: string
+  width: number
+  height: number
+  boxShadow?: string // Add boxShadow as an optional property
 }
 
 let myShape: Partial<Shape> = {
-  boxShadow: '10px 10px 5px grey' // This is now fine
-};
+  boxShadow: '10px 10px 5px grey', // This is now fine
+}
 
 const defaultTheme = createTheme({
   palette: {
