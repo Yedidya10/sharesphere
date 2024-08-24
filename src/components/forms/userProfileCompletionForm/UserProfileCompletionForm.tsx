@@ -72,6 +72,15 @@ const UserProfileCompletionForm: React.FC<IUserProfileCompletionForm> = ({
 
   const [userId, setUserId] = useState('')
 
+  const handleDoItLater = (days: number) => {
+    const delay = days * 24 * 60 * 60 * 1000 // Convert days to milliseconds
+    const nextShowTime = new Date().getTime() + delay
+    localStorage.setItem(
+      'nextProfileCompletionModalShowTime',
+      nextShowTime.toString()
+    )
+  }
+
   useEffect(() => {
     if (session?.user) {
       setUserId(session.user.id)
@@ -108,8 +117,6 @@ const UserProfileCompletionForm: React.FC<IUserProfileCompletionForm> = ({
         phone: data.phone,
       }
 
-      console.log(`URL:, ${process.env.NEXT_PUBLIC_URL}/api/users/${userId}`)
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_URL}/api/users/${userId}`,
         {
@@ -122,20 +129,18 @@ const UserProfileCompletionForm: React.FC<IUserProfileCompletionForm> = ({
       )
 
       if (response.ok) {
-        // Optionally, you can redirect the user to a success page
-        // or show a success message on the form.
-        const data = await response.json()
+        localStorage.setItem('nextProfileCompletionModalShowTime', 'never')
       } else {
         // Optionally, you can show an error message on the form.
         const error = await response.json()
-        console.error('Error updating user:', error)
+        console.error('Error updating user address:', error)
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error updating user:', error.message)
+        console.error('Error updating user address:', error.message)
       } else {
         // If the error is not an instance of Error (unlikely), you can handle it differently
-        console.error('Error updating user:', error)
+        console.error('Error updating user address:', error)
       }
     } finally {
       handleClose()
@@ -497,6 +502,7 @@ const UserProfileCompletionForm: React.FC<IUserProfileCompletionForm> = ({
                     variant="outlined"
                     fullWidth
                     onClick={() => {
+                      handleDoItLater(3)
                       handleClose()
                       reset()
                     }}
