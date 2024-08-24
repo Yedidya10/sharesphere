@@ -94,7 +94,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
     if (pendingRequests.length === 0) {
       onAllRequestsProcessed(card._id!.toString())
     }
-  }, [card._id, onAllRequestsProcessed, pendingRequests]);
+  }, [card._id, onAllRequestsProcessed, pendingRequests])
 
   async function handleRejectRequest() {
     try {
@@ -116,8 +116,6 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
       setPendingRequests((prevRequests) =>
         prevRequests.filter((request) => request._id !== requestId)
       )
-
-      console.log('Pending requests:', pendingRequests)
     } catch (error: any) {
       console.error(error.message)
     }
@@ -143,8 +141,6 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
       setPendingRequests((prevRequests) =>
         prevRequests.filter((request) => request._id !== requestId)
       )
-
-      console.log('Pending requests:', pendingRequests)
     } catch (error: any) {
       console.error(error.message)
     }
