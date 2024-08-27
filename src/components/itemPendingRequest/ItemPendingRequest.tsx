@@ -17,6 +17,8 @@ import { TransitionProps } from '@mui/material/transitions'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import { forwardRef, useEffect, useState } from 'react'
+import { Notification } from '@/utils/types/notification'
+import mongoose from 'mongoose'
 
 export interface IItemPendingRequest {
   sampleTextProp: string
@@ -76,7 +78,9 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
   onAllRequestsProcessed,
   ...props
 }) => {
-  const [borrowerId, setBorrowerId] = useState<string | null>(null)
+  const [borrowerId, setBorrowerId] = useState<
+    mongoose.Schema.Types.ObjectId | undefined
+  >(undefined)
   const [requestId, setRequestId] = useState<string | undefined>(undefined)
   const [pickupDate, setPickupDate] = useState<Date | null>(null)
   const [returnDate, setReturnDate] = useState<Date | null>(null)
@@ -97,20 +101,39 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
   }, [card._id, onAllRequestsProcessed, pendingRequests])
 
   async function handleRejectRequest() {
-    try {
-      const response = await fetch(`/api/requests/requestId/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'rejected',
-          // TODO: Add lenderMessage form input
-        }),
-      })
+    const notification: Notification = {
+      user: borrowerId!,
+      title: 'Item request rejected',
+      message: `Your request for item: ${card.name} has been rejected`,
+      image: card.imageUrl,
+      status: 'unread',
+      invisible: false,
+    }
 
-      if (!response.ok) {
-        throw new Error('Failed to reject request')
+    try {
+      const [requestResponse, notificationResponse] = await Promise.all([
+        fetch(`/api/requests/requestId/${requestId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: 'rejected',
+            // TODO: Add lenderMessage form input
+          }),
+        }),
+
+        fetch('/api/notifications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(notification),
+        }),
+      ])
+
+      if (!notificationResponse.ok || !requestResponse.ok) {
+        throw new Error('Failed to reject request or post notification')
       }
 
       setPendingRequests((prevRequests) =>
@@ -122,20 +145,38 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
   }
 
   async function handleAcceptRequest() {
-    try {
-      const response = await fetch(`/api/requests/requestId/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'accepted',
-          // TODO: Add lenderMessage form input
-        }),
-      })
+    const notification: Notification = {
+      user: borrowerId!,
+      title: 'Item request accepted',
+      message: `Your request for item "${card.name}" has been accepted`,
+      image: card.imageUrl,
+      status: 'unread',
+      invisible: false,
+    }
 
-      if (!response.ok) {
-        throw new Error('Failed to accept request')
+    try {
+      const [requestResponse, notificationResponse] = await Promise.all([
+        fetch(`/api/requests/requestId/${requestId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: 'accepted',
+            // TODO: Add lenderMessage form input
+          }),
+        }),
+        fetch('/api/notifications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(notification),
+        }),
+      ])
+
+      if (!requestResponse.ok || !notificationResponse.ok) {
+        throw new Error('Failed to accept request or post notification')
       }
 
       setPendingRequests((prevRequests) =>
@@ -174,7 +215,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
 
   useEffect(() => {
     if (pendingRequests && pendingRequests.length > 0) {
-      setBorrowerId(pendingRequests[0].borrowerId.toString())
+      setBorrowerId(pendingRequests[0].borrowerId)
       setRequestId(pendingRequests[0]?._id?.toString())
       setPickupDate(new Date(pendingRequests[0].dates.pickupDate))
       setReturnDate(new Date(pendingRequests[0].dates.returnDate))
@@ -253,7 +294,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
         </Box>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={handleClickOpen}>
+        <Button aria-hidden={false} size="small" onClick={handleClickOpen}>
           Show details
         </Button>
         <Dialog
