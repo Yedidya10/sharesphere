@@ -3,8 +3,20 @@ import mongoose from 'mongoose'
 // Step 1: Define the Mongoose schema for the request model
 const requestSchema = new mongoose.Schema(
   {
-    itemId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    borrowerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    itemId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Item',
+    },
+    borrowerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    // lenderId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'User',
+    // },
     dates: {
       pickupDate: { type: Date, required: true },
       returnDate: { type: Date, required: true },
