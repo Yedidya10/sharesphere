@@ -1,5 +1,5 @@
-import { Item, Request } from '../../../../../models/dbModels'
 import { NextRequest, NextResponse } from 'next/server'
+import { Request } from '@/models/dbModels'
 
 export async function GET(req: NextRequest) {
   const itemId = req.nextUrl.href.split('/')[5]
