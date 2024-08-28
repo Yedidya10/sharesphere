@@ -7,5 +7,5 @@ export interface Notification {
   status: 'unread' | 'read'
   invisible: boolean
   image?: string
-  user: mongoose.Schema.Types.ObjectId
+  userId: mongoose.Schema.Types.ObjectId
 }

@@ -124,7 +124,7 @@ const ProfileNotificationsButton: React.FC<IProfileNotificationsButton> = ({
 
     setNotifications((prev) =>
       prev.filter(
-        (notification) => String(notification.user) !== notificationId
+        (notification) => String(notification.userId) !== notificationId
       )
     )
   }

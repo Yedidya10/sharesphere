@@ -1,6 +1,7 @@
 'use client'
 
 import { Item } from '@/utils/types/item'
+import { Notification } from '@/utils/types/notification'
 import { Request } from '@/utils/types/request'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -15,10 +16,9 @@ import Slide from '@mui/material/Slide'
 import Typography from '@mui/material/Typography'
 import { TransitionProps } from '@mui/material/transitions'
 import { format } from 'date-fns'
+import mongoose from 'mongoose'
 import Image from 'next/image'
 import { forwardRef, useEffect, useState } from 'react'
-import { Notification } from '@/utils/types/notification'
-import mongoose from 'mongoose'
 
 export interface IItemPendingRequest {
   sampleTextProp: string
@@ -102,7 +102,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
 
   async function handleRejectRequest() {
     const notification: Notification = {
-      user: borrowerId!,
+      userId: borrowerId!,
       title: 'Item request rejected',
       message: `Your request for item: ${card.name} has been rejected`,
       image: card.imageUrl,
@@ -146,7 +146,7 @@ const ItemPendingRequest: React.FC<IItemPendingRequest> = ({
 
   async function handleAcceptRequest() {
     const notification: Notification = {
-      user: borrowerId!,
+      userId: borrowerId!,
       title: 'Item request accepted',
       message: `Your request for item "${card.name}" has been accepted`,
       image: card.imageUrl,
